@@ -93,33 +93,7 @@ function mailer() {
   });
 }
 
-async function sendPinEmail(to, name, code, platformName) {
-  const transport = mailer();
-
-  if (!transport) {
-    throw new Error('Correo SMTP no configurado.');
-  }
-
-  await transport.sendMail({
-    from: process.env.SMTP_FROM,
-    to,
-    subject: 'Tu PIN de recompensa de run',
-    text: `Hola ${name},
-
-Tu solicitud fue aprobada.
-
-Tu PIN para ${
-      platformName || 'la plataforma seleccionada'
-    } es:
-
-${code}
-
-Úsalo una sola vez en el lugar autorizado.
-
-Equipo run`
-  });
-}
-
+// Configuración inicial de Admin
 app.get('/api/setup/status', (_req, res) => {
   res.json({
     ok: true,
@@ -131,58 +105,36 @@ app.get('/api/setup/status', (_req, res) => {
 
 app.post('/api/setup/admin', (req, res) => {
   if (db.prepare('SELECT id FROM admins LIMIT 1').get()) {
-    return jsonError(
-      res,
-      409,
-      'El administrador ya está configurado.'
-    );
+    return jsonError(res, 409, 'El administrador ya está configurado.');
   }
 
-  const email = String(req.body?.email || '')
-    .trim()
-    .toLowerCase();
-
+  const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
   const confirm = String(req.body?.confirmPassword || '');
 
-  if (
-    !email ||
-    !password ||
-    password.length < 8 ||
-    password !== confirm
-  ) {
+  if (!email || !password || password.length < 8 || password !== confirm) {
     return jsonError(
       res,
       400,
-      'Revisa el correo y las dos contraseñas. Deben coincidir y tener al menos 8 caracteres.'
+      'Revisa el correo y las contraseñas. Deben coincidir y tener al menos 8 caracteres.'
     );
   }
 
   const result = db
-    .prepare(
-      'INSERT INTO admins(email,password_hash) VALUES (?,?)'
-    )
+    .prepare('INSERT INTO admins(email,password_hash) VALUES (?,?)')
     .run(email, bcrypt.hashSync(password, 12));
 
-  res.cookie(
-    'run_session',
-    tokenFor('admin', result.lastInsertRowid),
-    {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 86400000
-    }
-  );
-
-  res.json({
-    ok: true,
-    kind: 'admin',
-    user: { email }
+  res.cookie('run_session', tokenFor('admin', result.lastInsertRowid), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 86400000
   });
+
+  res.json({ ok: true, kind: 'admin', user: { email } });
 });
 
-// Ruta para iniciar sesión como Admin (Añadida para que no falle el acceso)
+// Login de Administrador
 app.post('/api/auth/login', (req, res) => {
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
@@ -193,25 +145,17 @@ app.post('/api/auth/login', (req, res) => {
 
   const admin = db.prepare('SELECT * FROM admins WHERE email = ?').get(email);
   if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
-    return jsonError(res, 401, 'Credenciales inválidas.');
+    return jsonError(res, 401, 'Credenciales de administrador inválidas.');
   }
 
-  res.cookie(
-    'run_session',
-    tokenFor('admin', admin.id),
-    {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 86400000
-    }
-  );
-
-  res.json({
-    ok: true,
-    kind: 'admin',
-    user: { email: admin.email }
+  res.cookie('run_session', tokenFor('admin', admin.id), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 86400000
   });
+
+  res.json({ ok: true, kind: 'admin', user: { email: admin.email } });
 });
 
 app.get('/api/public/config', (_req, res) => {
@@ -220,66 +164,85 @@ app.get('/api/public/config', (_req, res) => {
     threshold: threshold(),
     coinsPerDollar: coinsPerDollar(),
     platforms: db
-      .prepare(
-        'SELECT id,slot,name,logo_url,link FROM platforms WHERE active=1 ORDER BY slot'
-      )
+      .prepare('SELECT id,slot,name,logo_url,link FROM platforms WHERE active=1 ORDER BY slot')
       .all()
   });
 });
 
+// Registro de Usuario Normal (Con validación limpia de contraseña)
 app.post('/api/auth/register', (req, res) => {
-  const { name, email, password } = req.body || {};
+  const { name, email, password, confirmPassword } = req.body || {};
 
-  if (
-    !name ||
-    !email ||
-    !password ||
-    password.length < 8
-  ) {
-    return jsonError(
-      res,
-      400,
-      'Nombre, correo y contraseña de al menos 8 caracteres son obligatorios.'
-    );
+  if (!name || !email || !password) {
+    return jsonError(res, 400, 'Todos los campos son obligatorios.');
+  }
+
+  if (password.length < 8) {
+    return jsonError(res, 400, 'La contraseña debe tener al menos 8 caracteres.');
+  }
+
+  if (confirmPassword && password !== confirmPassword) {
+    return jsonError(res, 400, 'Las contraseñas no coinciden.');
   }
 
   const normalized = String(email).trim().toLowerCase();
 
   try {
     const info = db
-      .prepare(
-        'INSERT INTO users(name,email,password_hash) VALUES (?,?,?)'
-      )
+      .prepare('INSERT INTO users(name,email,password_hash) VALUES (?,?,?)')
       .run(
         String(name).trim(),
         normalized,
         bcrypt.hashSync(password, 12)
       );
 
-    res.cookie(
-      'run_session',
-      tokenFor('user', info.lastInsertRowid),
-      {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 7 * 86400000
-      }
-    );
+    res.cookie('run_session', tokenFor('user', info.lastInsertRowid), {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 86400000
+    });
 
     res.json({
       ok: true,
+      kind: 'user',
       user: safeUser(info.lastInsertRowid)
     });
   } catch {
-    return jsonError(
-      res,
-      409,
-      'Ese correo ya está registrado.'
-    );
+    return jsonError(res, 409, 'Ese correo ya está registrado. Inicia sesión.');
   }
+});
+
+// Login de Usuario Normal (Para que Carmen entre directo a su panel)
+app.post('/api/auth/user-login', (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  const password = String(req.body?.password || '');
+
+  if (!email || !password) {
+    return jsonError(res, 400, 'Correo y contraseña obligatorios.');
+  }
+
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+    return jsonError(res, 401, 'Correo o contraseña incorrectos.');
+  }
+
+  res.cookie('run_session', tokenFor('user', user.id), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 86400000
+  });
+
+  res.json({
+    ok: true,
+    kind: 'user',
+    user: safeUser(user.id)
+  });
 });
 
 app.listen(port, () => {
   console.log(`Servidor corriendo en el puerto ${port}`);
 });
+
+ 
