@@ -182,6 +182,38 @@ app.post('/api/setup/admin', (req, res) => {
   });
 });
 
+// Ruta para iniciar sesión como Admin (Añadida para que no falle el acceso)
+app.post('/api/auth/login', (req, res) => {
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  const password = String(req.body?.password || '');
+
+  if (!email || !password) {
+    return jsonError(res, 400, 'Correo y contraseña obligatorios.');
+  }
+
+  const admin = db.prepare('SELECT * FROM admins WHERE email = ?').get(email);
+  if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
+    return jsonError(res, 401, 'Credenciales inválidas.');
+  }
+
+  res.cookie(
+    'run_session',
+    tokenFor('admin', admin.id),
+    {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 86400000
+    }
+  );
+
+  res.json({
+    ok: true,
+    kind: 'admin',
+    user: { email: admin.email }
+  });
+});
+
 app.get('/api/public/config', (_req, res) => {
   res.json({
     ok: true,
@@ -247,6 +279,7 @@ app.post('/api/auth/register', (req, res) => {
     );
   }
 });
+
 app.listen(port, () => {
   console.log(`Servidor corriendo en el puerto ${port}`);
 });
