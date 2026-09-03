@@ -27,11 +27,12 @@ function toast(t) {
 }
 
 function layout(body, title = 'run', sub = 'Recompensas y diamantes') {
+  if (!app) return;
   app.innerHTML = `<div class="shell"><header class="top"><div class="brand"><div class="mark">◆</div><div><strong>${title}</strong><small>${sub}</small></div></div>${me ? '<button id="logout">Salir</button>' : ''}</header>${body}</div>`;
   $('#logout')?.addEventListener('click', async () => {
-    await api('/api/auth/logout', { method: 'POST' });
+    try { await api('/api/auth/logout', { method: 'POST' }); } catch(e){}
     me = null;
-    start();
+    renderLogin();
   });
 }
 
@@ -68,20 +69,14 @@ function renderLogin() {
     </section>
   `);
  
-  $('#loginForm').addEventListener('submit', async e => {
+  $('#loginForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(e.target));
     try {
-      // Intentar login general / admin
       const d = await api('/api/auth/login', { method: 'POST', body: JSON.stringify(formData) });
       me = d.user;
-      if (d.kind === 'admin') {
-        renderAdmin();
-      } else {
-        renderUser();
-      }
+      d.kind === 'admin' ? renderAdmin() : renderUser();
     } catch (errAdmin) {
-      // Si falla, intentamos como usuario normal
       try {
         const d2 = await api('/api/auth/user-login', { method: 'POST', body: JSON.stringify(formData) });
         me = d2.user;
@@ -92,7 +87,7 @@ function renderLogin() {
     }
   });
  
-  $('#toRegister').addEventListener('click', renderRegister);
+  $('#toRegister')?.addEventListener('click', renderRegister);
 }
 
 function renderRegister() {
@@ -122,7 +117,7 @@ function renderRegister() {
     </section>
   `);
  
-  $('#registerForm').addEventListener('submit', async e => {
+  $('#registerForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.target));
     if (fd.password !== fd.confirmPassword) {
@@ -135,7 +130,7 @@ function renderRegister() {
     } catch (e) { toast(e.message); }
   });
  
-  $('#toLogin').addEventListener('click', renderLogin);
+  $('#toLogin')?.addEventListener('click', renderLogin);
 }
 
 function renderAdminSetup() {
@@ -161,7 +156,7 @@ function renderAdminSetup() {
     </section>
   `, 'run — configuración inicial', 'Panel de administración');
  
-  $('#setupForm').addEventListener('submit', async e => {
+  $('#setupForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.target));
     if (fd.password !== fd.confirmPassword) {
@@ -276,7 +271,7 @@ async function renderAdmin() {
       } catch (e) { toast(e.message); }
     }));
    
-    $('#pinForm').addEventListener('submit', async e => {
+    $('#pinForm')?.addEventListener('submit', async e => {
       e.preventDefault();
       try {
         await api('/api/admin/pins', { method: 'POST', body: JSON.stringify(Object.fromEntries(new FormData(e.target))) });
@@ -308,12 +303,10 @@ async function start() {
     if (!setup.configured) return renderAdminSetup();
     const d = await api('/api/me');
     me = d.user;
-    if (d.kind === 'admin') {
-      renderAdmin();
-    } else {
-      renderUser();
-    }
+    d.kind === 'admin' ? renderAdmin() : renderUser();
   } catch {
     renderLogin();
   }
 }
+
+start();
