@@ -13,19 +13,14 @@ CREATE TABLE IF NOT EXISTS admins (
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email);
-
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   coins INTEGER NOT NULL DEFAULT 0,
-  email_verified INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 CREATE TABLE IF NOT EXISTS platforms (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,48 +31,12 @@ CREATE TABLE IF NOT EXISTS platforms (
   active INTEGER NOT NULL DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS coin_ledger (
+CREATE TABLE IF NOT EXISTS wheel_prizes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL REFERENCES users(id),
-  amount INTEGER NOT NULL,
-  kind TEXT NOT NULL CHECK(kind IN ('earn','redeem','refund','adjustment')),
-  description TEXT NOT NULL,
-  external_id TEXT,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_ledger_external_id ON coin_ledger(external_id) WHERE external_id IS NOT NULL;
-
-CREATE TABLE IF NOT EXISTS offer_events (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  external_id TEXT NOT NULL UNIQUE,
-  user_id INTEGER NOT NULL REFERENCES users(id),
-  revenue_cents INTEGER NOT NULL DEFAULT 0,
+  position INTEGER NOT NULL UNIQUE,
+  label TEXT NOT NULL,
   coins INTEGER NOT NULL,
-  status TEXT NOT NULL DEFAULT 'confirmed',
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS pins (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  platform_id INTEGER NOT NULL REFERENCES platforms(id),
-  code TEXT NOT NULL UNIQUE,
-  value_cents INTEGER NOT NULL DEFAULT 100,
-  status TEXT NOT NULL DEFAULT 'available' CHECK(status IN ('available','assigned','cancelled')),
-  assigned_user_id INTEGER REFERENCES users(id),
-  assigned_at TEXT
-);
-
-CREATE TABLE IF NOT EXISTS redemptions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL REFERENCES users(id),
-  platform_id INTEGER NOT NULL REFERENCES platforms(id),
-  coins_cost INTEGER NOT NULL,
-  pin_id INTEGER REFERENCES pins(id),
-  status TEXT NOT NULL DEFAULT 'requested' CHECK(status IN ('requested','approved','sent','rejected')),
-  requested_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  sent_at TEXT,
-  admin_note TEXT
+  color TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS settings (
@@ -86,28 +45,36 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 `);
 
-// Inicializar los 5 slots de plataformas por defecto
+// Inicializar 5 slots de plataformas
 for (let slot = 1; slot <= 5; slot += 1) {
   db.prepare('INSERT OR IGNORE INTO platforms(slot) VALUES (?)').run(slot);
 }
 
-function setDefault(key, value) {
-  db.prepare('INSERT OR IGNORE INTO settings(key,value) VALUES (?,?)').run(key, String(value));
+// Premios iniciales de la ruleta (configurables desde el panel de admin)
+const defaultPrizes = [
+  { pos: 1, label: '1 Moneda (Migaja)', coins: 1, color: '#46e0da' },
+  { pos: 2, label: '2 Monedas', coins: 2, color: '#806cff' },
+  { pos: 3, label: '5 Monedas', coins: 5, color: '#ffd166' },
+  { pos: 4, label: '1 Moneda', coins: 1, color: '#ef476f' },
+  { pos: 5, label: '10 Monedas', coins: 10, color: '#06d6a0' },
+  { pos: 6, label: '50 Monedas (Premio Gordo)', coins: 50, color: '#118ab2' }
+];
+
+for (const p of defaultPrizes) {
+  db.prepare('INSERT OR IGNORE INTO wheel_prizes(position, label, coins, color) VALUES (?, ?, ?, ?)').run(p.pos, p.label, p.coins, p.color);
 }
 
-setDefault('coins_per_dollar', process.env.COINS_PER_DOLLAR || 1000);
-setDefault('redeem_threshold', process.env.REDEEM_THRESHOLD || 5000);
+// Configuración por defecto (AdMob IDs, umbrales y banners)
+db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('coins_per_dollar', '5000')").run();
+db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('admob_banner', 'ca-app-pub-3940256099942544/6300978111')").run();
+db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('admob_interstitial', 'ca-app-pub-3940256099942544/1033173712')").run();
+db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('admob_rewarded', 'ca-app-pub-3940256099942544/5224354917')").run();
 
-// Configuración de Admin por variables de entorno si existen
+// Crear admin por defecto si se configuran las variables de entorno
 if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
   const email = process.env.ADMIN_EMAIL.toLowerCase().trim();
   const hash = bcrypt.hashSync(process.env.ADMIN_PASSWORD, 12);
-  const existing = db.prepare('SELECT id FROM admins WHERE email = ?').get(email);
-  if (!existing) {
-    db.prepare('INSERT INTO admins(email,password_hash) VALUES (?,?)').run(email, hash);
-  } else {
-    db.prepare('UPDATE admins SET password_hash=? WHERE email=?').run(hash, email);
-  }
+  db.prepare('INSERT OR REPLACE INTO admins(email,password_hash) VALUES (?,?)').run(email, hash);
 }
 
 export default db;
