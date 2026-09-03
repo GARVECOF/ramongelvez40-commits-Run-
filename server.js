@@ -3,252 +3,122 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import db from './db.js';
 
 const app = express();
 const port = Number(process.env.PORT || 3000);
-const secret = process.env.SESSION_SECRET || 'change-me-in-production';
+const secret = process.env.SESSION_SECRET || 'macaw-super-secret-key';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-app.use(express.json({ limit: '32kb' }));
+app.use(express.json({ limit: '64kb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const setting = (key, fallback) =>
-  db.prepare('SELECT value FROM settings WHERE key=?').get(key)?.value ??
-  String(fallback);
-
-const coinsPerDollar = () =>
-  Number(setting('coins_per_dollar', 1000));
-
-const threshold = () =>
-  Number(setting('redeem_threshold', 5000));
-
-const jsonError = (res, status, error) =>
-  res.status(status).json({ ok: false, error });
-
-const tokenFor = (kind, id) =>
-  jwt.sign({ kind, id }, secret, { expiresIn: '7d' });
+const jsonError = (res, status, error) => res.status(status).json({ ok: false, error });
+const tokenFor = (type, id) => jwt.sign({ type, id }, secret, { expiresIn: '7d' });
 
 function auth(req, res, next) {
   try {
-    const token = req.cookies.run_session;
-    if (!token) {
-      return jsonError(res, 401, 'Inicia sesión para continuar.');
-    }
+    const token = req.cookies.macaw_session;
+    if (!token) return jsonError(res, 401, 'Inicia sesión.');
     req.actor = jwt.verify(token, secret);
     next();
   } catch {
-    return jsonError(res, 401, 'La sesión ya no es válida.');
+    return jsonError(res, 401, 'Sesión inválida.');
   }
 }
 
-function safeUser(id) {
-  return db
-    .prepare(
-      'SELECT id,name,email,coins,email_verified,created_at FROM users WHERE id=?'
-    )
-    .get(id);
-}
-
-function mailer() {
-  if (
-    !process.env.SMTP_HOST ||
-    !process.env.SMTP_USER ||
-    !process.env.SMTP_PASSWORD ||
-    !process.env.SMTP_FROM
-  ) {
-    return null;
-  }
-
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT) === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASSWORD
-    }
-  });
-}
-
-// Comprobar estado de configuración del Administrador
-app.get('/api/setup/status', (_req, res) => {
-  res.json({
-    ok: true,
-    configured: Boolean(
-      db.prepare('SELECT id FROM admins LIMIT 1').get()
-    )
-  });
-});
-
-// Configurar Admin inicial de manera limpia
-app.post('/api/setup/admin', (req, res) => {
-  if (db.prepare('SELECT id FROM admins LIMIT 1').get()) {
-    return jsonError(res, 409, 'El administrador ya está configurado.');
-  }
-
-  const email = String(req.body?.email || '').trim().toLowerCase();
-  const password = String(req.body?.password || '');
-  const confirm = String(req.body?.confirmPassword || '');
-
-  if (!email || !password || password.length < 8 || password !== confirm) {
-    return jsonError(
-      res,
-      400,
-      'Revisa el correo y las contraseñas. Deben coincidir y tener al menos 8 caracteres.'
-    );
-  }
-
-  const result = db
-    .prepare('INSERT INTO admins(email,password_hash) VALUES (?,?)')
-    .run(email, bcrypt.hashSync(password, 12));
-
-  res.cookie('run_session', tokenFor('admin', result.lastInsertRowid), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 7 * 86400000
-  });
-
-  res.json({ ok: true, kind: 'admin', user: { email } });
-});
-
-// LOGIN INTELIGENTE Y UNIFICADO (Sin bloqueos molestos)
+// LOGIN / REGISTRO UNIFICADO DE USUARIOS
 app.post('/api/auth/login', (req, res) => {
-  const email = String(req.body?.email || '').trim().toLowerCase();
-  const password = String(req.body?.password || '');
+  const { email, password, name } = req.body || {};
+  const cleanEmail = String(email || '').trim().toLowerCase();
 
-  if (!email || !password) {
-    return jsonError(res, 400, 'Correo y contraseña obligatorios.');
+  if (!cleanEmail || !password) return jsonError(res, 400, 'Correo y contraseña obligatorios.');
+
+  let user = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
+  if (!user) {
+    if (!name) return res.json({ ok: false, needsRegister: true, error: 'Cuenta no encontrada. Regístrate abajo.' });
+    if (password.length < 6) return jsonError(res, 400, 'La contraseña debe tener al menos 6 caracteres.');
+    const hash = bcrypt.hashSync(password, 10);
+    const info = db.prepare('INSERT INTO users(name, email, password_hash) VALUES (?, ?, ?)').run(String(name).trim(), cleanEmail, hash);
+    user = { id: info.lastInsertRowid };
+  } else {
+    if (!bcrypt.compareSync(password, user.password_hash)) return jsonError(res, 401, 'Contraseña incorrecta.');
   }
 
-  // 1. Revisar si es Administrador
-  const admin = db.prepare('SELECT * FROM admins WHERE email = ?').get(email);
-  if (admin && bcrypt.compareSync(password, admin.password_hash)) {
-    res.cookie('run_session', tokenFor('admin', admin.id), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 86400000
-    });
-    return res.json({
-      ok: true,
-      kind: 'admin',
-      user: { id: admin.id, email: admin.email, name: 'Administrador' }
-    });
-  }
-
-  // 2. Revisar si es Usuario Normal
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-  if (user && bcrypt.compareSync(password, user.password_hash)) {
-    res.cookie('run_session', tokenFor('user', user.id), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 86400000
-    });
-    return res.json({
-      ok: true,
-      kind: 'user',
-      user: safeUser(user.id)
-    });
-  }
-
-  return jsonError(res, 401, 'Correo o contraseña incorrectos.');
-});
-
-// Verificar sesión actual (para saber si es admin o usuario al recargar)
-app.get('/api/me', auth, (req, res) => {
-  if (req.actor.kind === 'admin') {
-    const admin = db.prepare('SELECT id, email FROM admins WHERE id = ?').get(req.actor.id);
-    if (admin) {
-      return res.json({
-        ok: true,
-        kind: 'admin',
-        user: { id: admin.id, email: admin.email, name: 'Administrador' }
-      });
-    }
-  }
- 
-  if (req.actor.kind === 'user') {
-    const user = safeUser(req.actor.id);
-    if (user) {
-      return res.json({
-        ok: true,
-        kind: 'user',
-        user
-      });
-    }
-  }
-
-  return jsonError(res, 401, 'Sesión no válida.');
-});
-
-app.post('/api/auth/logout', (_req, res) => {
-  res.clearCookie('run_session');
+  res.cookie('macaw_session', tokenFor('user', user.id), { httpOnly: true, sameSite: 'lax', maxAge: 7 * 86400000 });
   res.json({ ok: true });
 });
 
-app.get('/api/public/config', (_req, res) => {
-  res.json({
-    ok: true,
-    threshold: threshold(),
-    coinsPerDollar: coinsPerDollar(),
-    platforms: db
-      .prepare('SELECT id,slot,name,logo_url,link FROM platforms WHERE active=1 ORDER BY slot')
-      .all()
-  });
-});
+// LOGIN SECRETO DE ADMINISTRADOR (Vía tuerquita)
+app.post('/api/auth/admin-login', (req, res) => {
+  const { email, password } = req.body || {};
+  const cleanEmail = String(email || '').trim().toLowerCase();
 
-// Registro amigable de Usuario (Manejo limpio sin errores fatales)
-app.post('/api/auth/register', (req, res) => {
-  const { name, email, password } = req.body || {};
-
-  if (!name || !email || !password || password.length < 8) {
-    return jsonError(
-      res,
-      400,
-      'Todos los campos son obligatorios y la contraseña debe tener al menos 8 caracteres.'
-    );
+  let admin = db.prepare('SELECT * FROM admins WHERE email = ?').get(cleanEmail);
+  if (!admin) {
+    const hash = bcrypt.hashSync(password, 10);
+    const info = db.prepare('INSERT INTO admins(email, password_hash) VALUES (?, ?)').run(cleanEmail, hash);
+    admin = { id: info.lastInsertRowid };
+  } else if (!bcrypt.compareSync(password, admin.password_hash)) {
+    return jsonError(res, 401, 'Clave de administrador incorrecta.');
   }
 
-  const normalized = String(email).trim().toLowerCase();
+  res.cookie('macaw_session', tokenFor('admin', admin.id), { httpOnly: true, sameSite: 'lax', maxAge: 7 * 86400000 });
+  res.json({ ok: true, isAdmin: true });
+});
 
-  try {
-    const info = db
-      .prepare('INSERT INTO users(name,email,password_hash) VALUES (?,?,?)')
-      .run(
-        String(name).trim(),
-        normalized,
-        bcrypt.hashSync(password, 12)
-      );
+// DATOS GENERALES DE LA SESIÓN
+app.get('/api/me', auth, (req, res) => {
+  const settingsRows = db.prepare('SELECT * FROM settings').all();
+  const settings = {};
+  settingsRows.forEach(r => settings[r.key] = r.value);
 
-    res.cookie('run_session', tokenFor('user', info.lastInsertRowid), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 86400000
-    });
-
-    res.json({
-      ok: true,
-      kind: 'user',
-      user: safeUser(info.lastInsertRowid)
-    });
-  } catch {
-    return jsonError(res, 409, 'Este correo ya se encuentra registrado. Por favor, inicia sesión.');
+  if (req.actor.type === 'admin') {
+    const users = db.prepare('SELECT id, name, email, coins, created_at FROM users ORDER BY id DESC').all();
+    const platforms = db.prepare('SELECT * FROM platforms ORDER BY slot').all();
+    const wheelPrizes = db.prepare('SELECT * FROM wheel_prizes ORDER BY position').all();
+    return res.json({ ok: true, isAdmin: true, users, platforms, wheelPrizes, settings });
   }
+
+  const user = db.prepare('SELECT id, name, email, coins FROM users WHERE id = ?').get(req.actor.id);
+  const platforms = db.prepare('SELECT slot, name, logo_url, link FROM platforms WHERE active = 1 ORDER BY slot').all();
+  const wheelPrizes = db.prepare('SELECT position, label, coins, color FROM wheel_prizes ORDER BY position').all();
+
+  res.json({ ok: true, isAdmin: false, user, platforms, wheelPrizes, settings });
 });
 
-// Ruta de respaldo universal para la aplicación web
-app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// ACCIONES DE ADMIN: EDITAR PLATAFORMAS
+app.post('/api/admin/platforms', auth, (req, res) => {
+  if (req.actor.type !== 'admin') return jsonError(res, 403, 'No autorizado');
+  const { slot, name, logo_url, link, active } = req.body;
+  db.prepare('UPDATE platforms SET name=?, logo_url=?, link=?, active=? WHERE slot=?')
+    .run(name, logo_url, link, active ? 1 : 0, slot);
+  res.json({ ok: true });
 });
 
-app.listen(port, () => {
-  console.log(`Servidor corriendo en el puerto ${port}`);
+// ACCIONES DE ADMIN: EDITAR RULETA
+app.post('/api/admin/wheel', auth, (req, res) => {
+  if (req.actor.type !== 'admin') return jsonError(res, 403, 'No autorizado');
+  const { prizes } = req.body;
+  const updateStmt = db.prepare('UPDATE wheel_prizes SET label=?, coins=?, color=? WHERE position=?');
+  db.transaction((items) => {
+    for (const p of items) {
+      updateStmt.run(p.label, Number(p.coins), p.color, p.position);
+    }
+  })(prizes);
+  res.json({ ok: true });
+});
+
+// ACCIONES DE ADMIN: EDITAR CONFIGURACIÓN Y ANUNCIOS (AdMob)
+app.post('/api/admin/settings', auth, (req, res) => {
+  if (req.actor.type !== 'admin') return jsonError(res, 403, 'No autorizado');
+  const { coins_per_dollar, admob_banner, admob_interstitial, admob_rewarded } = req.body;
+  db.prepare('INSERT OR REPLACE INTO settings(key, value) VALUES (?, ?)').run('coins_per_dollar', String(coins_per_dollar || 5000));
+  db.prepare('INSERT OR REPLACE INTO settings(key, value) VALUES (?, ?)').run('admob_banner', String(admob_banner || ''));
+  db.prepare('INSERT OR REPLACE INTO settings(key, value) VALUES (?, ?)').run('admob_interstitial', String(admob_interstitial || ''));
+  db.prepare('INSERT OR REPLACE INTO settings(key, value) VALUES (?, ?)').run('admob_rewarded', String(admob_rewarded || ''));
+  res.json({ ok: true });
 });
