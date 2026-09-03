@@ -12,6 +12,9 @@ CREATE TABLE IF NOT EXISTS admins (
   password_hash TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_admins_email ON admins(email);
+
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
@@ -21,6 +24,9 @@ CREATE TABLE IF NOT EXISTS users (
   email_verified INTEGER NOT NULL DEFAULT 0,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
 CREATE TABLE IF NOT EXISTS platforms (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   slot INTEGER NOT NULL UNIQUE,
@@ -29,6 +35,7 @@ CREATE TABLE IF NOT EXISTS platforms (
   link TEXT NOT NULL DEFAULT '',
   active INTEGER NOT NULL DEFAULT 0
 );
+
 CREATE TABLE IF NOT EXISTS coin_ledger (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL REFERENCES users(id),
@@ -38,7 +45,9 @@ CREATE TABLE IF NOT EXISTS coin_ledger (
   external_id TEXT,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_ledger_external_id ON coin_ledger(external_id) WHERE external_id IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS offer_events (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   external_id TEXT NOT NULL UNIQUE,
@@ -48,6 +57,7 @@ CREATE TABLE IF NOT EXISTS offer_events (
   status TEXT NOT NULL DEFAULT 'confirmed',
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
 CREATE TABLE IF NOT EXISTS pins (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   platform_id INTEGER NOT NULL REFERENCES platforms(id),
@@ -57,6 +67,7 @@ CREATE TABLE IF NOT EXISTS pins (
   assigned_user_id INTEGER REFERENCES users(id),
   assigned_at TEXT
 );
+
 CREATE TABLE IF NOT EXISTS redemptions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER NOT NULL REFERENCES users(id),
@@ -68,21 +79,26 @@ CREATE TABLE IF NOT EXISTS redemptions (
   sent_at TEXT,
   admin_note TEXT
 );
+
 CREATE TABLE IF NOT EXISTS settings (
   key TEXT PRIMARY KEY,
   value TEXT NOT NULL
 );
 `);
 
+// Inicializar los 5 slots de plataformas por defecto
 for (let slot = 1; slot <= 5; slot += 1) {
   db.prepare('INSERT OR IGNORE INTO platforms(slot) VALUES (?)').run(slot);
 }
+
 function setDefault(key, value) {
   db.prepare('INSERT OR IGNORE INTO settings(key,value) VALUES (?,?)').run(key, String(value));
 }
+
 setDefault('coins_per_dollar', process.env.COINS_PER_DOLLAR || 1000);
 setDefault('redeem_threshold', process.env.REDEEM_THRESHOLD || 5000);
 
+// Configuración de Admin por variables de entorno si existen
 if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
   const email = process.env.ADMIN_EMAIL.toLowerCase().trim();
   const hash = bcrypt.hashSync(process.env.ADMIN_PASSWORD, 12);
@@ -95,3 +111,5 @@ if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
 }
 
 export default db;
+
+ 
