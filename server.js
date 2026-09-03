@@ -36,32 +36,14 @@ const tokenFor = (kind, id) =>
 function auth(req, res, next) {
   try {
     const token = req.cookies.run_session;
-
     if (!token) {
       return jsonError(res, 401, 'Inicia sesión para continuar.');
     }
-
     req.actor = jwt.verify(token, secret);
     next();
   } catch {
     return jsonError(res, 401, 'La sesión ya no es válida.');
   }
-}
-
-function adminOnly(req, res, next) {
-  if (req.actor?.kind !== 'admin') {
-    return jsonError(res, 403, 'Acceso solo para administración.');
-  }
-
-  next();
-}
-
-function userOnly(req, res, next) {
-  if (req.actor?.kind !== 'user') {
-    return jsonError(res, 403, 'Acceso solo para usuarios.');
-  }
-
-  next();
 }
 
 function safeUser(id) {
@@ -93,7 +75,7 @@ function mailer() {
   });
 }
 
-// Configuración inicial de Admin
+// Comprobar estado de configuración del Administrador
 app.get('/api/setup/status', (_req, res) => {
   res.json({
     ok: true,
@@ -103,6 +85,7 @@ app.get('/api/setup/status', (_req, res) => {
   });
 });
 
+// Configurar Admin inicial de manera limpia
 app.post('/api/setup/admin', (req, res) => {
   if (db.prepare('SELECT id FROM admins LIMIT 1').get()) {
     return jsonError(res, 409, 'El administrador ya está configurado.');
@@ -134,7 +117,7 @@ app.post('/api/setup/admin', (req, res) => {
   res.json({ ok: true, kind: 'admin', user: { email } });
 });
 
-// Login unificado y corregido (Distingue perfectamente entre Administrador y Usuario)
+// LOGIN INTELIGENTE Y UNIFICADO (Sin bloqueos molestos)
 app.post('/api/auth/login', (req, res) => {
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
@@ -143,7 +126,7 @@ app.post('/api/auth/login', (req, res) => {
     return jsonError(res, 400, 'Correo y contraseña obligatorios.');
   }
 
-  // 1. Intentar como Administrador
+  // 1. Revisar si es Administrador
   const admin = db.prepare('SELECT * FROM admins WHERE email = ?').get(email);
   if (admin && bcrypt.compareSync(password, admin.password_hash)) {
     res.cookie('run_session', tokenFor('admin', admin.id), {
@@ -152,10 +135,14 @@ app.post('/api/auth/login', (req, res) => {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 86400000
     });
-    return res.json({ ok: true, kind: 'admin', user: { id: admin.id, email: admin.email, name: 'Administrador' } });
+    return res.json({
+      ok: true,
+      kind: 'admin',
+      user: { id: admin.id, email: admin.email, name: 'Administrador' }
+    });
   }
 
-  // 2. Intentar como Usuario Normal
+  // 2. Revisar si es Usuario Normal
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
   if (user && bcrypt.compareSync(password, user.password_hash)) {
     res.cookie('run_session', tokenFor('user', user.id), {
@@ -174,6 +161,38 @@ app.post('/api/auth/login', (req, res) => {
   return jsonError(res, 401, 'Correo o contraseña incorrectos.');
 });
 
+// Verificar sesión actual (para saber si es admin o usuario al recargar)
+app.get('/api/me', auth, (req, res) => {
+  if (req.actor.kind === 'admin') {
+    const admin = db.prepare('SELECT id, email FROM admins WHERE id = ?').get(req.actor.id);
+    if (admin) {
+      return res.json({
+        ok: true,
+        kind: 'admin',
+        user: { id: admin.id, email: admin.email, name: 'Administrador' }
+      });
+    }
+  }
+ 
+  if (req.actor.kind === 'user') {
+    const user = safeUser(req.actor.id);
+    if (user) {
+      return res.json({
+        ok: true,
+        kind: 'user',
+        user
+      });
+    }
+  }
+
+  return jsonError(res, 401, 'Sesión no válida.');
+});
+
+app.post('/api/auth/logout', (_req, res) => {
+  res.clearCookie('run_session');
+  res.json({ ok: true });
+});
+
 app.get('/api/public/config', (_req, res) => {
   res.json({
     ok: true,
@@ -185,20 +204,16 @@ app.get('/api/public/config', (_req, res) => {
   });
 });
 
-// Registro de Usuario Normal
+// Registro amigable de Usuario (Manejo limpio sin errores fatales)
 app.post('/api/auth/register', (req, res) => {
-  const { name, email, password, confirmPassword } = req.body || {};
+  const { name, email, password } = req.body || {};
 
-  if (!name || !email || !password) {
-    return jsonError(res, 400, 'Todos los campos son obligatorios.');
-  }
-
-  if (password.length < 8) {
-    return jsonError(res, 400, 'La contraseña debe tener al menos 8 caracteres.');
-  }
-
-  if (confirmPassword && password !== confirmPassword) {
-    return jsonError(res, 400, 'Las contraseñas no coinciden.');
+  if (!name || !email || !password || password.length < 8) {
+    return jsonError(
+      res,
+      400,
+      'Todos los campos son obligatorios y la contraseña debe tener al menos 8 caracteres.'
+    );
   }
 
   const normalized = String(email).trim().toLowerCase();
@@ -225,60 +240,11 @@ app.post('/api/auth/register', (req, res) => {
       user: safeUser(info.lastInsertRowid)
     });
   } catch {
-    return jsonError(res, 409, 'Ese correo ya está registrado. Inicia sesión.');
+    return jsonError(res, 409, 'Este correo ya se encuentra registrado. Por favor, inicia sesión.');
   }
 });
 
-// Login de Usuario Normal (Alternativo)
-app.post('/api/auth/user-login', (req, res) => {
-  const email = String(req.body?.email || '').trim().toLowerCase();
-  const password = String(req.body?.password || '');
-
-  if (!email || !password) {
-    return jsonError(res, 400, 'Correo y contraseña obligatorios.');
-  }
-
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    return jsonError(res, 401, 'Correo o contraseña incorrectos.');
-  }
-
-  res.cookie('run_session', tokenFor('user', user.id), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 7 * 86400000
-  });
-
-  res.json({
-    ok: true,
-    kind: 'user',
-    user: safeUser(user.id)
-  });
-});
-
-// Endpoint para verificar sesión activa al recargar
-app.get('/api/me', auth, (req, res) => {
-  if (req.actor.kind === 'admin') {
-    const admin = db.prepare('SELECT id, email FROM admins WHERE id = ?').get(req.actor.id);
-    if (admin) {
-      return res.json({ ok: true, kind: 'admin', user: { id: admin.id, email: admin.email, name: 'Administrador' } });
-    }
-  } else if (req.actor.kind === 'user') {
-    const user = safeUser(req.actor.id);
-    if (user) {
-      return res.json({ ok: true, kind: 'user', user });
-    }
-  }
-  return jsonError(res, 401, 'Sesión no válida.');
-});
-
-app.post('/api/auth/logout', (_req, res) => {
-  res.clearCookie('run_session');
-  res.json({ ok: true });
-});
-
-// Regla de respaldo obligatoria para evitar 404 de frontend
+// Ruta de respaldo universal para la aplicación web
 app.get('*', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
