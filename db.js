@@ -45,12 +45,10 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 `);
 
-// Inicializar 5 slots de plataformas
 for (let slot = 1; slot <= 5; slot += 1) {
   db.prepare('INSERT OR IGNORE INTO platforms(slot) VALUES (?)').run(slot);
 }
 
-// Premios iniciales de la ruleta (configurables desde el panel de admin)
 const defaultPrizes = [
   { pos: 1, label: '1 Moneda (Migaja)', coins: 1, color: '#46e0da' },
   { pos: 2, label: '2 Monedas', coins: 2, color: '#806cff' },
@@ -64,13 +62,11 @@ for (const p of defaultPrizes) {
   db.prepare('INSERT OR IGNORE INTO wheel_prizes(position, label, coins, color) VALUES (?, ?, ?, ?)').run(p.pos, p.label, p.coins, p.color);
 }
 
-// Configuración por defecto (AdMob IDs, umbrales y banners)
 db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('coins_per_dollar', '5000')").run();
 db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('admob_banner', 'ca-app-pub-3940256099942544/6300978111')").run();
 db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('admob_interstitial', 'ca-app-pub-3940256099942544/1033173712')").run();
 db.prepare("INSERT OR IGNORE INTO settings(key, value) VALUES ('admob_rewarded', 'ca-app-pub-3940256099942544/5224354917')").run();
 
-// Crear admin por defecto si se configuran las variables de entorno
 if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
   const email = process.env.ADMIN_EMAIL.toLowerCase().trim();
   const hash = bcrypt.hashSync(process.env.ADMIN_PASSWORD, 12);
@@ -78,5 +74,3 @@ if (process.env.ADMIN_EMAIL && process.env.ADMIN_PASSWORD) {
 }
 
 export default db;
-
- 
