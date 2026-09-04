@@ -33,12 +33,13 @@
     /* Banner Fijo Inferior */
     .admob-banner-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #121936ee; border-top: 1px solid var(--line); padding: 8px; text-align: center; z-index: 99; font-size: 11px; color: var(--muted); }
    
-    /* Ruleta Pro Circular */
+    /* Ruleta Pro Visible con Secciones */
     .wheel-container { display: flex; flex-direction: column; align-items: center; position: relative; margin: 20px 0; }
-    .wheel-outer { position: relative; width: 240px; height: 240px; border-radius: 50%; border: 6px solid var(--yellow); box-shadow: 0 0 25px rgba(255,209,102,0.4); overflow: hidden; }
-    .wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1); background: conic-gradient(#46e0da 0deg 90deg, #806cff 90deg 180deg, #ffd166 180deg 270deg, #ff6b6b 270deg 360deg); }
+    .wheel-outer { position: relative; width: 260px; height: 260px; border-radius: 50%; border: 6px solid var(--yellow); box-shadow: 0 0 25px rgba(255,209,102,0.4); overflow: hidden; background: #0d132d; }
+    .wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1); }
+    .wheel-slice { position: absolute; width: 50%; height: 50%; top: 50%; left: 50%; transform-origin: 0% 0%; display: flex; align-items: center; justify-content: flex-end; padding-right: 25px; font-weight: bold; font-size: 13px; color: #0b1024; text-shadow: 0 1px 2px rgba(255,255,255,0.6); }
     .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 22px solid #ff4757; position: absolute; top: -10px; z-index: 20; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-    .wheel-center-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #ffd166, #f39c12); color: #0b1024; border: 3px solid #fff; font-weight: bold; font-size: 13px; cursor: pointer; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+    .wheel-center-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #ffd166, #f39c12); color: #0b1024; border: 3px solid #fff; font-weight: bold; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
    
     .footer-links { text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted); }
     .footer-links a { color: var(--cyan); text-decoration: none; margin: 0 10px; }
@@ -75,12 +76,24 @@
   <button class="btn" style="background:transparent; margin-top:5px;" onclick="closeAdminModal()">Cancelar</button>
 </div>
 
-<!-- MODAL INTERSTITIAL / ANUNCIO DE NIVEL -->
+<!-- MODAL ANUNCIO RECOMPENSADO (OBLIGATORIO PARA GIRAR) -->
+<div id="rewardedAdModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 110; background: #121936; border: 2px solid var(--yellow); text-align: center;">
+  <h3>📺 Anuncio Recompensado (Unity Ads)</h3>
+  <p style="font-size: 12px; color: var(--muted);">Para girar la ruleta y ganar tus monedas, debes ver este anuncio patrocinado completo:</p>
+  <div style="background: #0d132d; padding: 25px; border-radius: 12px; margin: 15px 0; border: 1px dashed var(--yellow);">
+    <div style="font-size: 32px; margin-bottom: 8px;">⏳</div>
+    <b id="adTimerText">Cargando anuncio ID: 800367195... (Espere 5s)</b>
+    <p style="font-size: 11px; color: var(--muted); margin-top: 5px;">Patrocinador Oficial MacawCoin</p>
+  </div>
+  <button id="claimRewardBtn" class="btn cyan" disabled style="opacity: 0.5;" onclick="finishRewardAdAndSpin()">Verificando Anuncio...</button>
+</div>
+
+<!-- MODAL INTERSTITIAL DE NIVELES -->
 <div id="interstitialModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: #121936; border: 2px solid var(--yellow); text-align: center;">
-  <h3>📺 Anuncio Publicitario Patrocinado</h3>
-  <p style="font-size: 12px; color: var(--muted);">¡Ve anuncios y gana más recompensas al completar tu nivel!</p>
+  <h3>📺 Anuncio Interstitial Patrocinado</h3>
+  <p style="font-size: 12px; color: var(--muted);">Disfruta este anuncio antes de pasar de nivel:</p>
   <div style="background: #0d132d; padding: 20px; border-radius: 12px; margin: 15px 0; border: 1px dashed var(--yellow);">
-    <b>Red de Anuncios Activa (Unity Ads)</b>
+    <b>Red Publicitaria Activa</b>
     <p style="font-size: 11px; color: var(--muted);">Game ID: 800367195</p>
   </div>
   <button class="btn cyan" onclick="closeInterstitial()">Cerrar Anuncio y Reclamar Bono</button>
@@ -126,7 +139,7 @@
       <div class="card" style="max-width: 380px; margin: 30px auto; text-align: center;">
         <div style="font-size: 35px; margin-bottom: 10px;">🦜💎</div>
         <h2>MacawCoin</h2>
-        <p style="color: var(--muted); font-size: 13px;">Ve anuncios y gana más recompensas. ¡Interactúa para completar tus 5000 monedas más pronto!</p>
+        <p style="color: var(--muted); font-size: 13px;">Gana monedas viendo anuncios y girando la ruleta.</p>
         <div id="regNameBox" class="hidden"><input type="text" id="name" class="input" placeholder="Tu Nombre"></div>
         <input type="email" id="email" class="input" placeholder="Correo electrónico">
         <input type="password" id="password" class="input" placeholder="Contraseña (mínimo 6)">
@@ -180,25 +193,25 @@
         <button class="btn cyan" style="margin-top: 15px;" onclick="requestRedemption(${threshold})" ${coins < threshold ? 'disabled style="opacity:0.5"' : ''}>Retirar $1 (PIN / Recompensa)</button>
       </div>
 
-      <!-- RULETA PRO ESTILO CHINO / COLORIDA CON UNITY ADS -->
+      <!-- RULETA PRO CON SECCIONES VISIBLES DE MONEDAS Y CAJAS -->
       <div class="card" style="text-align: center;">
-        <h3>🎡 Ruleta de la Suerte Pro</h3>
-        <p style="font-size: 12px; color: var(--muted);">Ve el anuncio real de Unity Ads, gira la ruleta y gana monedas o cajas de regalo con tiradas extras.</p>
+        <h3>🎡 Ruleta de la Suerta Pro</h3>
+        <p style="font-size: 12px; color: var(--muted);">Presiona girar para ver el anuncio publicitario y ganar tu premio.</p>
        
         <div class="wheel-container">
           <div class="wheel-pointer"></div>
           <div class="wheel-outer">
             <div id="wheelElem" class="wheel"></div>
-            <button class="wheel-center-btn" onclick="spinWheelWithRewardAd()">GIRAR</button>
+            <button class="wheel-center-btn" onclick="openRewardAdModal()">GIRAR</button>
           </div>
         </div>
         <p id="wheelResultMsg" style="font-size: 13px; font-weight: bold; color: var(--yellow); margin-top: 10px;"></p>
       </div>
 
-      <!-- PLATAFORMAS / NIVELES FIJOS CON INTERSTITIAL -->
+      <!-- PLATAFORMAS / NIVELES FIJOS -->
       <div class="card">
         <h3>Juegos y Niveles Patrocinados</h3>
-        <p style="font-size: 12px; color: var(--muted);">Interactúa con las aplicaciones o juegos para sumar más recompensas y completar tus 5000 monedas más rápido.</p>
+        <p style="font-size: 12px; color: var(--muted);">Interactúa con las plataformas para ganar bonos extras.</p>
         <div class="grid" style="margin-top: 15px;">
           ${state.platforms.length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
             state.platforms.map(p => `
@@ -211,6 +224,31 @@
         </div>
       </div>
     `;
+
+    setTimeout(buildWheelSlices, 50);
+  }
+
+  // Dibuja las secciones de la ruleta con sus respectivos textos y colores de forma dinámica
+  function buildWheelSlices() {
+    const wheel = document.getElementById('wheelElem');
+    if (!wheel) return;
+    const prizes = state.wheelPrizes && state.wheelPrizes.length > 0 ? state.wheelPrizes : [
+      {label: '3 🪙', color: '#46e0da'}, {label: '🎁 Caja', color: '#806cff'},
+      {label: '4 🪙', color: '#ffd166'}, {label: '5 🪙', color: '#ff6b6b'},
+      {label: '2 🪙', color: '#4ecdc4'}, {label: '🎁 Extra', color: '#ffe66d'}
+    ];
+   
+    let html = '';
+    const sliceAngle = 360 / prizes.length;
+    prizes.forEach((p, index) => {
+      const angle = index * sliceAngle;
+      html += `
+        <div class="wheel-slice" style="background: ${p.color}; transform: rotate(${angle}deg) skewY(${90 - sliceAngle}deg);">
+          <span style="transform: skewY(${-(90 - sliceAngle)}deg) rotate(${sliceAngle/2}deg); position: absolute; right: 20px;">${p.label}</span>
+        </div>
+      `;
+    });
+    wheel.innerHTML = html;
   }
 
   function triggerLevelInterstitial(link) {
@@ -228,19 +266,47 @@
     loadData();
   }
 
-  async function spinWheelWithRewardAd() {
-    alert('📺 [Unity Ads Recompensado]: Game ID 800367195 cargando anuncio... Míralo completo para girar.');
+  // Abre el anuncio recompensado obligatorio antes del giro
+  function openRewardAdModal() {
+    const modal = document.getElementById('rewardedAdModal');
+    const claimBtn = document.getElementById('claimRewardBtn');
+    const timerText = document.getElementById('adTimerText');
+   
+    modal.classList.remove('hidden');
+    claimBtn.disabled = true;
+    claimBtn.style.opacity = '0.5';
+    claimBtn.innerText = "Viendo Anuncio...";
+   
+    let countdown = 5;
+    timerText.innerText = `📺 Anuncio Unity Ads reproduciéndose... (${countdown}s)`;
+   
+    const interval = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        timerText.innerText = `📺 Anuncio Unity Ads reproduciéndose... (${countdown}s)`;
+      } else {
+        clearInterval(interval);
+        timerText.innerText = `✅ ¡Anuncio completado con éxito!`;
+        claimBtn.disabled = false;
+        claimBtn.style.opacity = '1';
+        claimBtn.innerText = "Girar Ruleta y Reclamar";
+      }
+    }, 1000);
+  }
+
+  async function finishRewardAdAndSpin() {
+    document.getElementById('rewardedAdModal').classList.add('hidden');
+   
     const res = await fetch('/api/user/spin', { method: 'POST' });
     const data = await res.json();
    
-    // Girar la ruleta de forma totalmente aleatoria y fluida
     const wheel = document.getElementById('wheelElem');
     const randomSpin = 1800 + Math.floor(Math.random() * 360);
     currentWheelDegree += randomSpin;
     wheel.style.transform = `rotate(${currentWheelDegree}deg)`;
 
     setTimeout(() => {
-      document.getElementById('wheelResultMsg').innerText = "🎉 ¡Anuncio visto y ruleta girada con éxito! Revisa tus monedas.";
+      document.getElementById('wheelResultMsg').innerText = "🎉 ¡Premio acreditado a tu cuenta con éxito!";
       loadData();
     }, 4000);
   }
@@ -252,10 +318,10 @@
           <h2>Panel de Control Admin Pro ⚙️</h2>
           <button class="btn" style="width: auto;" onclick="logout()">Cerrar Sesión</button>
         </div>
-        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Configura tus redes de anuncios con nombres libres, plataformas fijas y premios.</p>
+        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Configura tus redes de anuncios, plataformas fijas y premios de la ruleta.</p>
       </div>
 
-      <!-- CONFIGURACIÓN DE ANUNCIOS LIBRE Y ACTIVACIÓN -->
+      <!-- CONFIGURACIÓN DE ANUNCIOS -->
       <div class="card">
         <h3>Configuración de Red de Anuncios & Retiros</h3>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
@@ -264,26 +330,22 @@
             <input type="number" id="cfgCoins" class="input" value="${state.settings.coins_per_dollar || 5000}">
           </div>
           <div>
-            <label style="font-size: 11px; color: var(--muted);">Nombre / ID Banner (Ej: Unity Banner):</label>
+            <label style="font-size: 11px; color: var(--muted);">Banner ID / Nombre:</label>
             <input type="text" id="cfgBanner" class="input" value="${state.settings.admob_banner || 'Banner_Android'}">
           </div>
           <div>
-            <label style="font-size: 11px; color: var(--muted);">Nombre / ID Interstitial:</label>
+            <label style="font-size: 11px; color: var(--muted);">Interstitial ID / Nombre:</label>
             <input type="text" id="cfgInterstitial" class="input" value="${state.settings.admob_interstitial || 'Interstitial_Android'}">
           </div>
           <div>
-            <label style="font-size: 11px; color: var(--muted);">Nombre / ID Recompensado (Unity):</label>
-            <input type="text" id="cfgRewarded" class="input" value="${state.settings.admob_rewarded || 'Rewarded_Android'}">
+            <label style="font-size: 11px; color: var(--muted);">Rewarded ID / Nombre (Unity):</label>
+            <input type="text" id="cfgRewarded" class="input" value="${state.settings.admob_rewarded || '800367195'}">
           </div>
         </div>
-        <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
-          <input type="checkbox" id="adsActiveToggle" checked style="width: 20px; height: 20px;">
-          <label style="font-size: 13px; font-weight: bold; color: var(--cyan);">Activar anuncios obligatorios en la aplicación</label>
-        </div>
-        <button class="btn cyan" style="margin-top: 15px; width: auto;" onclick="saveSettings()">Guardar Ajustes y Activar Anuncios</button>
+        <button class="btn cyan" style="margin-top: 15px; width: auto;" onclick="saveSettings()">Guardar Ajustes</button>
       </div>
 
-      <!-- GESTIÓN DE LAS 5 PLATAFORMAS (FIJAS, NO SE BORRAN) -->
+      <!-- PLATAFORMAS FIJAS -->
       <div class="card">
         <h3>Gestionar Plataformas Fijas</h3>
         ${state.platforms.map(p => `
@@ -300,11 +362,11 @@
 
       <!-- GESTIÓN DE PREMIOS DE LA RULETA -->
       <div class="card">
-        <h3>Gestionar Premios de la Ruleta (Monedas y Cajas de Regalo)</h3>
+        <h3>Gestionar Premios de la Ruleta (Monedas y Cajas)</h3>
         ${state.wheelPrizes.map(wp => `
           <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #0d132d; padding: 8px; border-radius: 10px; flex-wrap: wrap;">
             <span style="font-weight: bold; color: var(--yellow);">Pos #${wp.position}</span>
-            <input type="text" id="wp_label_${wp.position}" class="input" value="${wp.label}" placeholder="Etiqueta" style="flex:2; margin:0;">
+            <input type="text" id="wp_label_${wp.position}" class="input" value="${wp.label}" placeholder="Ej: 3 🪙 o 🎁 Caja" style="flex:2; margin:0;">
             <input type="number" id="wp_coins_${wp.position}" class="input" value="${wp.coins}" placeholder="Monedas" style="flex:1; margin:0;">
             <input type="color" id="wp_color_${wp.position}" value="${wp.color}" style="width: 45px; height: 35px; border:0; background:none; cursor:pointer;">
           </div>
