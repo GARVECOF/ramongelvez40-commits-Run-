@@ -3,248 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Usuario y Control</title>
+  <title>Plataforma con Barra de Retorno</title>
   <style>
-    :root {
-      --cyan: #46e0da;
-      --yellow: #ffd700;
-      --muted: #8a99ad;
-      --line: #1f2947;
+    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; background: #0b1024; }
+    /* Barra superior fija con el botón de retorno */
+    #top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background: #121936;
+      border-bottom: 1px solid #1f2947;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 15px;
+      box-sizing: border-box;
+      z-index: 9999;
     }
-    body { background: #0b1024; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; box-sizing: border-box; }
-    .card { background: #121936; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
-    .hidden { display: none; }
-    .btn { background: #1f2947; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; text-decoration: none; display: inline-block; box-sizing: border-box; }
-    .btn.cyan { background: var(--cyan); color: #0b1024; }
-    .input { width: 100%; padding: 10px; background: #0d132d; border: 1px solid var(--line); color: #fff; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-    .platform-item { background: #0d132d; border: 1px solid var(--line); border-radius: 10px; padding: 15px; text-align: center; }
-    .progress-bar-container { background: #0d132d; border-radius: 8px; height: 12px; width: 100%; overflow: hidden; margin: 10px 0; border: 1px solid var(--line); }
-    .progress-bar-fill { background: var(--cyan); height: 100%; width: 0%; transition: width 0.4s ease; }
+    .btn-return {
+      background: #46e0da;
+      color: #0b1024;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    /* Contenedor donde carga la oferta o juego */
+    #content-frame {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      width: 100%;
+      height: calc(100% - 50px);
+      border: none;
+    }
   </style>
 </head>
 <body>
 
-<div id="app">
-  <!-- El contenido se renderiza dinámicamente -->
-</div>
+  <!-- BARRA SUPERIOR FIJA QUE SIEMPRE VE EL USUARIO -->
+  <div id="top-bar">
+    <span style="color: #fff; font-size: 13px; font-weight: bold;">🎮 Zona de Juegos y Ofertas</span>
+    <!-- Botón para regresar al panel principal de puntos -->
+    <a href="https://ramongelvez40-commits-run.onrender.com" class="btn-return">⬅️ Volver a mi Panel</a>
+  </div>
 
-<!-- MODAL DE ACCESO ADMIN (La tuerquita) -->
-<div id="adminModal" class="card hidden" style="max-width: 350px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; border: 2px solid var(--cyan);">
-  <h3>⚙️ Acceso Administrador</h3>
-  <input type="email" id="adminEmail" class="input" placeholder="Correo Admin">
-  <input type="password" id="adminPassword" class="input" placeholder="Contraseña">
-  <button class="btn cyan" onclick="loginAdmin()">Entrar al Panel</button>
-  <button class="btn" style="margin-top: 8px;" onclick="closeAdminModal()">Cancelar</button>
-</div>
-
-<script>
-  // URL de tu aplicación en Render para el botón de retorno de los usuarios
-  const APP_URL = "https://ramongelvez40-commits-run.onrender.com";
-
-  let state = { user: null, isAdmin: false, platforms: [], users: [], settings: {} };
-
-  async function loadData() {
-    try {
-      const res = await fetch('/api/state');
-      state = await res.json();
-    } catch (e) {
-      if (!state.platforms || state.platforms.length === 0) {
-        state.platforms = [
-          { slot: 1, name: 'Offerwall 1', logo_url: '🎮', link: 'https://offerwall.me', active: true },
-          { slot: 2, name: 'Monlix', logo_url: '🚀', link: 'https://monlix.com', active: true },
-          { slot: 3, name: 'App 3', logo_url: '💎', link: 'https://ejemplo3.com', active: true },
-          { slot: 4, name: 'App 4', logo_url: '🔥', link: 'https://ejemplo4.com', active: true },
-          { slot: 5, name: 'App 5', logo_url: '⭐', link: 'https://ejemplo5.com', active: true }
-        ];
-      }
-      if (!state.users) state.users = [{ name: 'Luis Ramón', email: 'luis@correo.com', coins: 0, pinsWithdrawn: 0 }];
-      if (!state.user) state.user = { name: 'Luis Ramón', email: 'luis@correo.com', coins: 0, pinsWithdrawn: 0 };
-    }
-    render();
-  }
-
-  function render() {
-    if (state.isAdmin) {
-      renderAdmin();
-    } else {
-      renderUser();
-    }
-  }
-
-  function renderUser() {
-    const userCoins = state.user ? state.user.coins || 0 : 0;
-    const pinStep = 5000; // Cada 5,000 monedas es un pin
-   
-    const currentGoal = pinStep;
-    const currentProgressCoins = userCoins % pinStep;
-    const progressPercent = userCoins === 0 ? 0 : Math.min(100, (currentProgressCoins / pinStep) * 100);
-    const canWithdrawPin = userCoins >= pinStep;
-
-    document.getElementById('app').innerHTML = `
-      <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <div>
-            <h2 style="margin: 0;">Hola, ${state.user ? state.user.name : 'Usuario'} 👋</h2>
-            <p style="color: var(--muted); font-size: 12px; margin: 2px 0 0 0;">${state.user ? state.user.email : ''}</p>
-          </div>
-          <button class="btn" style="width: auto; padding: 8px 12px; font-size: 18px;" onclick="openAdminModal()" title="Admin">⚙️</button>
-        </div>
-
-        <!-- SECCIÓN DE MONEDAS Y PROGRESO DE PINES -->
-        <div style="background: #0d132d; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--line);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; color: var(--muted);">Tus Monedas Acumuladas:</span>
-            <span style="color: var(--cyan); font-weight: bold; font-size: 18px;">${userCoins} 🪙</span>
-          </div>
-
-          <div style="margin-top: 10px;">
-            <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px;">
-              <span>Progreso para el siguiente Pin (Meta: 5,000 🪙)</span>
-              <span>${currentProgressCoins} / ${currentGoal} 🪙</span>
-            </div>
-            <div class="progress-bar-container">
-              <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
-            </div>
-          </div>
-
-          ${canWithdrawPin ? `
-            <button class="btn cyan" style="margin-top: 12px; padding: 10px;" onclick="withdrawPin()">🎁 ¡Retirar Pin Disponible (${pinStep} 🪙)!</button>
-            <p style="font-size: 11px; color: var(--cyan); margin: 6px 0 0 0; text-align: center;">¡Al retirar tu pin, la barra vuelve a cero para el siguiente nivel!</p>
-          ` : `
-            <p style="font-size: 11px; color: var(--yellow); margin: 8px 0 0 0; text-align: center;">
-              💡 Cada <strong>5,000 monedas</strong> puedes reclamar tu pin o seguir acumulando hacia los 10k, 20k...
-            </p>
-          `}
-        </div>
-      </div>
-
-      <!-- PLATAFORMAS / URLs CON BOTÓN DE RETORNO CLARO -->
-      <div class="card">
-        <h3>Plataformas Disponibles</h3>
-        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Al abrir una plataforma, se abrirá en pestaña nueva. Usa el botón de abajo para volver aquí a revisar tus puntos cuando desees:</p>
-       
-        <!-- BOTÓN DE RETORNO A LA APP -->
-        <a href="${APP_URL}" target="_blank" class="btn cyan" style="margin-bottom: 15px; text-align: center;">
-          🔄 Volver a mi Panel / Ver Puntos (Esta App)
-        </a>
-
-        <div class="grid">
-          ${state.platforms.filter(p => p.active).length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
-            state.platforms.filter(p => p.active).map(p => `
-              <div class="platform-item">
-                <div style="font-size: 26px; margin-bottom: 8px;">${p.logo_url || '🎮'}</div>
-                <strong>${p.name}</strong>
-                <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="window.open('${p.link}', '_blank')">Abrir Plataforma</button>
-              </div>
-            `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  function renderAdmin() {
-    document.getElementById('app').innerHTML = `
-      <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2>Panel de Control Admin Pro ⚙️</h2>
-          <button class="btn" style="width: auto;" onclick="logout()">Cerrar Sesión</button>
-        </div>
-        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Controla tus plataformas y el registro de usuarios para pagos de pines.</p>
-      </div>
-
-      <div class="card">
-        <h3>👥 Usuarios Registrados (Control de Pines y Pagos)</h3>
-        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Visualiza las monedas y pines de cada usuario para proceder con sus pagos.</p>
-        <div style="background: #0d132d; padding: 12px; border-radius: 8px;">
-          ${state.users && state.users.length > 0 ? state.users.map(u => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; gap: 10px;">
-              <div>
-                <strong>${u.name}</strong><br>
-                <span style="font-size: 11px; color: var(--muted);">${u.email}</span>
-              </div>
-              <div style="text-align: right; display: flex; align-items: center; gap: 15px;">
-                <div>
-                  <span style="color: var(--cyan); font-weight: bold; font-size: 15px;">${u.coins} 🪙</span><br>
-                  <span style="font-size: 10px; color: var(--yellow);">Pines retirados: ${u.pinsWithdrawn || 0}</span>
-                </div>
-                <button class="btn cyan" style="font-size: 11px; padding: 6px 12px; width: auto;" onclick="payUser('${u.email}')">Pagar Pin</button>
-              </div>
-            </div>
-          `).join('') : '<p style="color: var(--muted); font-size: 12px;">No hay usuarios registrados todavía.</p>'}
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Gestionar 5 Plataformas Dinámicas (Guardado Permanente)</h3>
-        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Marca el ganchito de seguridad "Activa" para asegurar que la URL quede guardada.</p>
-        ${state.platforms.map(p => `
-          <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #0d132d; padding: 10px; border-radius: 10px; flex-wrap: wrap;">
-            <span style="font-weight: bold; color: var(--cyan);">#${p.slot}</span>
-            <input type="text" id="p_name_${p.slot}" class="input" value="${p.name}" placeholder="Nombre" style="flex:1; margin:0; min-width: 90px;">
-            <input type="text" id="p_logo_${p.slot}" class="input" value="${p.logo_url}" placeholder="Emoji" style="width: 55px; margin:0;">
-            <input type="text" id="p_link_${p.slot}" class="input" value="${p.link}" placeholder="URL" style="flex:2; margin:0; min-width: 120px;">
-            <label style="font-size: 11px; white-space: nowrap; color: var(--yellow); cursor: pointer;">
-              <input type="checkbox" id="p_active_${p.slot}" ${p.active ? 'checked' : ''}> Activa (Guardar)
-            </label>
-            <button class="btn cyan" style="width: auto; padding: 6px 12px;" onclick="savePlatform(${p.slot})">Guardar</button>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  function withdrawPin() {
-    if (state.user.coins >= 5000) {
-      state.user.coins -= 5000;
-      state.user.pinsWithdrawn = (state.user.pinsWithdrawn || 0) + 1;
-      alert('¡Has retirado tu pin con éxito! La barra ha vuelto a cero.');
-      render();
-    }
-  }
-
-  async function savePlatform(slot) {
-    const name = document.getElementById(`p_name_${slot}`).value;
-    const logo_url = document.getElementById(`p_logo_${slot}`).value;
-    const link = document.getElementById(`p_link_${slot}`).value;
-    const active = document.getElementById(`p_active_${slot}`).checked;
-
-    const index = state.platforms.findIndex(p => p.slot === slot);
-    if (index !== -1) {
-      state.platforms[index] = { slot, name, logo_url, link, active };
-    }
-
-    alert('¡Plataforma guardada y asegurada con éxito!');
-    render();
-  }
-
-  async function payUser(email) {
-    alert(`Procesando pago de pin para el usuario: ${email}`);
-  }
-
-  function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
-  function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
-
-  async function loginAdmin() {
-    const email = document.getElementById('adminEmail').value;
-    const password = document.getElementById('adminPassword').value;
-   
-    if(email !== "") {
-      state.isAdmin = true;
-      closeAdminModal();
-      render();
-    } else {
-      alert('Ingresa un correo válido');
-    }
-  }
-
-  async function logout() {
-    state.isAdmin = false;
-    loadData();
-  }
-
-  loadData();
-</script>
+  <!-- MARCO DE LA PLATAFORMA -->
+  <iframe id="content-frame" src="https://offerwall.me" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
 
 </body>
 </html>
