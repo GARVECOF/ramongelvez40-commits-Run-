@@ -155,7 +155,31 @@ app.post('/api/user/redeem', auth, (req, res) => {
 });
 
 // ==========================================
-// RUTA DE POSTBACK (CON TUS LLAVES CONFIGURADAS)
+// CONSULTA DE CAMPAÑAS DESDE LA API DE OFFERWALL
+// ==========================================
+app.get('/api/user/offers', auth, async (req, res) => {
+  if (req.actor.type !== 'user') return jsonError(res, 403, 'No autorizado');
+ 
+  const userId = req.actor.id;
+  const userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+ 
+  const PUBLIC_API_KEY = "mx3HW0edwc645oWaujD8ie9a00jbD0";
+  const BEARER_TOKEN = "FAM5c1ZqgP8QajVAVi81hkktgTidt3UqXWD0jr6Y";
+
+  try {
+    const offerwallUrl = `https://offerwall.me/slapi.php?api=${PUBLIC_API_KEY}&token=${BEARER_TOKEN}&id=${userId}&ip=${userIp}&country=ALL`;
+    const response = await fetch(offerwallUrl);
+    const data = await response.json();
+
+    res.json({ ok: true, offers: data.data || [] });
+  } catch (error) {
+    console.error("Error al obtener campañas de Offerwall:", error);
+    res.json({ ok: true, offers: [] });
+  }
+});
+
+// ==========================================
+// RUTA DE POSTBACK (RECIBE DESDE EL .IO)
 // ==========================================
 app.get('/api/recibir-premio', (req, res) => {
   const { subId, transId, reward, signature } = req.query;
@@ -164,10 +188,7 @@ app.get('/api/recibir-premio', (req, res) => {
     return res.status(400).send("ERROR: Faltan datos");
   }
 
-  // Tus credenciales oficiales integradas
-  const PUBLIC_API_KEY = "mx3HW0edwc645oWaujD8ie9a00jbD0";
   const SECRET_KEY = "MWZXb9IBG6wxrzFYfoi8Q6wUHDEvlZsi";
-  const BEARER_TOKEN = "FAM5c1ZqgP8QajVAVi81hkktgTidt3UqXWD0jr6Y";
 
   if (signature) {
     const calculatedSignature = crypto
@@ -217,5 +238,3 @@ app.get('*', (_req, res) => {
 app.listen(port, () => {
   console.log(`MacawCoin Backend corriendo en el puerto ${port}`);
 });
-
- 
