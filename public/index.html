@@ -3,123 +3,211 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plataforma con Barra de Retorno</title>
+  <title>Panel de Control - MacaCoin</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
-      height: 100%;
-      overflow-x: hidden;
       font-family: sans-serif;
       background: #0b1024;
+      color: #fff;
     }
-   
-    /* Barra superior fija con el botón de retorno */
-    #top-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 55px;
-      background: #121936;
-      border-bottom: 1px solid #1f2947;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 15px;
-      box-sizing: border-box;
-      z-index: 9999;
-    }
-
-    .btn-return {
-      background: #46e0da;
-      color: #0b1024;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    /* Contenedor principal donde va la info y el frame */
-    .main-container {
-      padding-top: 65px;
-      padding-left: 15px;
-      padding-right: 15px;
+    .container {
       max-width: 600px;
       margin: 0 auto;
+      padding: 20px;
     }
-
-    /* Caja de instrucción y copiado en el panel */
-    .panel-box {
+    /* Cabecera con el periquito y diamante */
+    .header {
       background: #121936;
-      border: 2px solid #46e0da;
+      border: 1px solid #1f2947;
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .user-info {
+      background: #0b1024;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #46e0da;
+      text-align: left;
+    }
+    /* Barra de progreso de monedas */
+    .progress-box {
+      background: #121936;
+      border: 1px solid #1f2947;
       border-radius: 12px;
       padding: 15px;
       margin-bottom: 20px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
-
-    /* Contenedor donde carga la oferta o juego */
-    #content-frame {
+    .progress-bar-container {
+      background: #0b1024;
+      border-radius: 10px;
+      height: 20px;
       width: 100%;
-      height: calc(100vh - 140px);
+      border: 1px solid #46e0da;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    .progress-bar {
+      background: #46e0da;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    /* Cuadrícula de las 5 plataformas */
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .platform-card {
+      background: #121936;
+      border: 1px solid #1f2947;
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+    .platform-card a {
+      display: inline-block;
+      margin-top: 10px;
+      background: #46e0da;
+      color: #0b1024;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    .btn-action {
+      background: #46e0da;
+      color: #0b1024;
       border: none;
+      padding: 10px 20px;
       border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
 
-  <!-- BARRA SUPERIOR FIJA QUE SIEMPRE VE EL USUARIO -->
-  <div id="top-bar">
-    <span style="color: #fff; font-size: 12px; font-weight: bold; line-height: 1.2;">
-      ⚠️ Zona de Retorno<br>
-      <span style="color: #46e0da; font-size: 10px; font-weight: normal;">Usa el enlace guardado para volver</span>
-    </span>
-    <!-- Botón para regresar al panel principal -->
-    <a href="https://ramongelvez40-commits-run.onrender.com" class="btn-return">⬅️ Volver</a>
-  </div>
-
-  <div class="main-container">
-    <!-- SECCIÓN FIJA PARA COPIAR EL ENLACE DISFRAZADO -->
-    <div class="panel-box">
-      <h3 style="color: #46e0da; margin: 0 0 8px 0; font-size: 15px;">📲 Guarda tu enlace de retorno</h3>
-      <p style="color: #fff; font-size: 13px; margin: 0 0 12px 0; line-height: 1.4;">
-        Copia este enlace y guárdalo en tu WhatsApp. Lo necesitarás para volver al panel cada vez que quieras retirar tus premios:
-      </p>
+  <div class="container">
+   
+    <!-- CABECERA: Periquito con diamante y datos del usuario -->
+    <div class="header">
+      <div style="font-size: 28px; margin-bottom: 5px;">🦜💎</div>
+      <h2 style="margin: 0; color: #46e0da; font-size: 18px;">MacaCoin - Panel de Control</h2>
      
-      <div style="background: #0b1024; padding: 10px; border-radius: 8px; border: 1px dashed #1f2947; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-        <!-- Enlace disfrazado visualmente -->
-        <span style="color: #46e0da; font-size: 12px; word-break: break-all; text-align: left; width: 100%;">
-          🔗 app.macacoin.panel/retirardinero
-        </span>
-        <button onclick="copiarEnlacePanelPrincipal()" style="background: #46e0da; color: #0b1024; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; width: 100%;">
-          📋 Copiar Enlace para WhatsApp
-        </button>
+      <div class="user-info" id="userInfoBox">
+        <strong>👤 Nombre:</strong> <span id="nombreUsuario">Cargando...</span><br>
+        <strong>📧 Correo:</strong> <span id="correoUsuario">Cargando...</span><br>
+        <strong>📱 Número:</strong> <span id="numeroUsuario">Cargando...</span>
       </div>
     </div>
 
-    <!-- MARCO DE LA PLATAFORMA -->
-    <iframe id="content-frame" src="https://offerwall.me" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+    <!-- BARRA DE PROGRESO (0 a 50,000 con reinicio cada 5,000) -->
+    <div class="progress-box">
+      <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #fff;">Progreso de Monedas (Meta: 5,000 para Retirar)</h3>
+      <p style="font-size: 12px; color: #46e0da; margin: 0 0 10px 0;"><span id="monedasActuales">0</span> / 5,000 Monedas</p>
+     
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="barraProgreso"></div>
+      </div>
+     
+      <button class="btn-action" onclick="reclamarPremio()">🎁 Reclamar Premio (5k)</button>
+    </div>
+
+    <!-- LAS 5 PLATAFORMAS DISPONIBLES (FIJAS Y GUARDADAS) -->
+    <h3 style="font-size: 15px; color: #46e0da; margin-bottom: 10px;">Plataformas Disponibles</h3>
+    <div class="platforms-grid">
+     
+      <div class="platform-card">
+        <span style="font-size: 20px;">🎮</span>
+        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">Offerwall.me</div>
+        <!-- Aquí colocas tu enlace -->
+        <a href="https://offerwall.me" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
+      </div>
+
+      <div class="platform-card">
+        <span style="font-size: 20px;">🚀</span>
+        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">Monlix</div>
+        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
+      </div>
+
+      <div class="platform-card">
+        <span style="font-size: 20px;">💎</span>
+        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">App 3</div>
+        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
+      </div>
+
+      <div class="platform-card">
+        <span style="font-size: 20px;">🔥</span>
+        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">App 4</div>
+        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
+      </div>
+
+      <div class="platform-card">
+        <span style="font-size: 20px;">⭐</span>
+        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">App 5</div>
+        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
+      </div>
+
+    </div>
+
   </div>
 
   <script>
-    function copiarEnlacePanelPrincipal() {
-      // El enlace real y funcional de Render que se copia por debajo
-      const linkReal = "https://ramongelvez40-commits-run.onrender.com";
-     
-      navigator.clipboard.writeText(linkReal).then(function() {
-        alert("✅ ¡Enlace copiado con éxito!\n\nPégalo en tu WhatsApp para tenerlo guardado.");
-      }, function(err) {
-        alert("❌ Cópialo manualmente: " + linkReal);
-      });
+    // 1. CARGAR DATOS DEL USUARIO (Guardados de forma fija en el navegador)
+    window.onload = function() {
+      let nombre = localStorage.getItem('macacoin_nombre') || "Usuario Invitado";
+      let correo = localStorage.getItem('macacoin_correo') || "correo@ejemplo.com";
+      let numero = localStorage.getItem('macacoin_numero') || "+57 3000000000";
+
+      // Si no están guardados, puedes pedirlos por prompt la primera vez o dejarlos fijos
+      document.getElementById('nombreUsuario').innerText = nombre;
+      document.getElementById('correoUsuario').innerText = correo;
+      document.getElementById('numeroUsuario').innerText = numero;
+
+      actualizarBarra();
+    };
+
+    // 2. SISTEMA DE MONEDAS Y BARRA DE PROGRESO (Meta de 5,000)
+    let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
+
+    function sumarMonedas(cantidad) {
+      monedas += cantidad;
+      if (monedas > 5000) monedas = 5000; // Tope máximo de la barra actual
+      localStorage.setItem('macacoin_monedas', monedas);
+      actualizarBarra();
+    }
+
+    function actualizarBarra() {
+      document.getElementById('monedasActuales').innerText = monedas;
+      let porcentaje = (monedas / 5000) * 100;
+      document.getElementById('barraProgreso').style.width = porcentaje + "%";
+    }
+
+    function reclamarPremio() {
+      if (monedas >= 5000) {
+        alert("🎉 ¡Felicitaciones! Has completado la meta de 5,000 monedas. Vuelve al panel o WhatsApp para retirar tu premio.");
+        monedas = 0; // Se reinicia a cero como pediste para la siguiente ronda
+        localStorage.setItem('macacoin_monedas', monedas);
+        actualizarBarra();
+      } else {
+        alert("⚠️ Aún te faltan monedas para completar la meta de 5,000 y poder retirar.");
+      }
     }
   </script>
 
 </body>
 </html>
+
+ 
