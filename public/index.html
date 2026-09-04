@@ -168,10 +168,6 @@
 
     window.onload = function() {
       cargarAdminDatos();
-      // Si hay sesión activa de usuario, mostrar panel de usuario, pero el Admin entra libre con su tuerca
-      if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
-        // No forzar si el admin está abierto o quiere abrirlo
-      }
     }
 
     function registrarUsuario() {
@@ -225,7 +221,6 @@
       location.reload();
     }
 
-    // Tuerquita Admin - Abre el panel administrador sin destruir la sesión de usuario
     function abrirAdmin() {
       let claveAdmin = prompt("Introduce la clave de Administrador:");
       if(claveAdmin === "admin123" || claveAdmin === "1234") {
@@ -239,7 +234,6 @@
     }
 
     function volverAlLoginDesdeAdmin() {
-      // Si el usuario ya había iniciado sesión antes de entrar al admin, lo devuelve a su panel; si no, al login limpio
       if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
         mostrarPanelUsuario();
       } else {
@@ -248,17 +242,16 @@
       }
     }
 
-    // Guardar nombres y enlaces desde el Admin (AHORA SE QUEDA EN EL ADMIN SIN SACARTE)
+    // CONEXIÓN DIRECTA ADMIN -> USUARIO (Guarda y vincula el enlace)
     function guardarPlataformasAdmin() {
       for(let i=1; i<=5; i++) {
         let nameVal = document.getElementById('adminName'+i).value.trim();
         let urlVal = document.getElementById('adminUrl'+i).value.trim();
        
-        localStorage.setItem('macacoin_name_plat'+i, nameVal || ('Plataforma ' + i));
+        localStorage.setItem('macacoin_name_plat'+i, nameVal);
         localStorage.setItem('macacoin_url_plat'+i, urlVal);
       }
-      alert("✅ ¡Plataformas y enlaces guardados con éxito! (Te mantienes en el panel de control)");
-      // Ya no te bota al panel de usuario, te deja tranquilo aquí configurando
+      alert("✅ ¡Enlace conectado con éxito para los usuarios!");
       cargarAdminDatos();
     }
 
@@ -316,27 +309,38 @@
       localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
     }
 
-    // Mostrar dinámicamente las plataformas en el panel de usuario
+    // CONEXIÓN DIRECTA USUARIO <- ADMIN (Muestra el botón "Abrir" si hay enlace)
     function renderizarPlataformasUsuario() {
       let grid = document.getElementById('userPlatformsGrid');
       let html = "";
 
       for(let i=1; i<=5; i++) {
-        let name = localStorage.getItem('macacoin_name_plat'+i) || ('Plataforma ' + i);
-        let url = localStorage.getItem('macacoin_url_plat'+i) || "";
+        let name = localStorage.getItem('macacoin_name_plat'+i);
+        let url = localStorage.getItem('macacoin_url_plat'+i);
 
-        // Si no hay enlace configurado, no muestra el botón o avisa
-        let linkFinal = url;
-        if(linkFinal && !linkFinal.startsWith('http://') && !linkFinal.startsWith('https://')) {
-          linkFinal = 'https://' + linkFinal;
+        if(!name || name === "") {
+          name = "Plataforma " + i;
         }
 
-        html += `
-          <div class="platform-card">
-            <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
-            ${url ? `<a href="${linkFinal}" target="_blank">Abrir</a>` : `<span style="font-size:10px; color:#888; display:block; margin-top:8px;">Próximamente</span>`}
-          </div>
-        `;
+        if(url && url !== "") {
+          let linkFinal = url;
+          if(!linkFinal.startsWith('http://') && !linkFinal.startsWith('https://')) {
+            linkFinal = 'https://' + linkFinal;
+          }
+          html += `
+            <div class="platform-card">
+              <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
+              <a href="${linkFinal}" target="_blank">Abrir</a>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="platform-card">
+              <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
+              <span style="font-size:10px; color:#888; display:block; margin-top:8px;">Próximamente</span>
+            </div>
+          `;
+        }
       }
       grid.innerHTML = html;
     }
@@ -370,3 +374,5 @@
 
 </body>
 </html>
+
+ 
