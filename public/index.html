@@ -14,7 +14,7 @@
     body { background: #0b1024; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; box-sizing: border-box; }
     .card { background: #121936; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
     .hidden { display: none; }
-    .btn { background: #1f2947; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
+    .btn { background: #1f2947; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; text-decoration: none; display: inline-block; box-sizing: border-box; }
     .btn.cyan { background: var(--cyan); color: #0b1024; }
     .input { width: 100%; padding: 10px; background: #0d132d; border: 1px solid var(--line); color: #fff; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
@@ -39,6 +39,9 @@
 </div>
 
 <script>
+  // URL de tu aplicación en Render para el botón de retorno de los usuarios
+  const APP_URL = "https://ramongelvez40-commits-run.onrender.com";
+
   let state = { user: null, isAdmin: false, platforms: [], users: [], settings: {} };
 
   async function loadData() {
@@ -73,7 +76,6 @@
     const userCoins = state.user ? state.user.coins || 0 : 0;
     const pinStep = 5000; // Cada 5,000 monedas es un pin
    
-    // Cálculo de la meta actual y el progreso en base a ciclos de 5,000
     const currentGoal = pinStep;
     const currentProgressCoins = userCoins % pinStep;
     const progressPercent = userCoins === 0 ? 0 : Math.min(100, (currentProgressCoins / pinStep) * 100);
@@ -86,18 +88,16 @@
             <h2 style="margin: 0;">Hola, ${state.user ? state.user.name : 'Usuario'} 👋</h2>
             <p style="color: var(--muted); font-size: 12px; margin: 2px 0 0 0;">${state.user ? state.user.email : ''}</p>
           </div>
-          <!-- Botón de la tuerquita para entrar al panel de admin -->
           <button class="btn" style="width: auto; padding: 8px 12px; font-size: 18px;" onclick="openAdminModal()" title="Admin">⚙️</button>
         </div>
 
-        <!-- SECCIÓN DE MONEDAS Y PROGRESO DE RETIRO DE PINES -->
+        <!-- SECCIÓN DE MONEDAS Y PROGRESO DE PINES -->
         <div style="background: #0d132d; padding: 15px; border-radius: 10px; margin-top: 15px; border: 1px solid var(--line);">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 13px; color: var(--muted);">Tus Monedas Acumuladas:</span>
             <span style="color: var(--cyan); font-weight: bold; font-size: 18px;">${userCoins} 🪙</span>
           </div>
 
-          <!-- Barra de progreso dinámica que vuelve a cero al retirar el pin -->
           <div style="margin-top: 10px;">
             <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px;">
               <span>Progreso para el siguiente Pin (Meta: 5,000 🪙)</span>
@@ -110,19 +110,25 @@
 
           ${canWithdrawPin ? `
             <button class="btn cyan" style="margin-top: 12px; padding: 10px;" onclick="withdrawPin()">🎁 ¡Retirar Pin Disponible (${pinStep} 🪙)!</button>
-            <p style="font-size: 11px; color: var(--cyan); margin: 6px 0 0 0; text-align: center;">¡Tienes suficiente para un pin! Al retirarlo, la barra volverá a cero para que sigas acumulando hacia los 10k, 20k...</p>
+            <p style="font-size: 11px; color: var(--cyan); margin: 6px 0 0 0; text-align: center;">¡Al retirar tu pin, la barra vuelve a cero para el siguiente nivel!</p>
           ` : `
             <p style="font-size: 11px; color: var(--yellow); margin: 8px 0 0 0; text-align: center;">
-              💡 Cada <strong>5,000 monedas</strong> puedes retirar tu pin. Puedes retirar o seguir sumando para metas más altas.
+              💡 Cada <strong>5,000 monedas</strong> puedes reclamar tu pin o seguir acumulando hacia los 10k, 20k...
             </p>
           `}
         </div>
       </div>
 
-      <!-- PLATAFORMAS / URLs -->
+      <!-- PLATAFORMAS / URLs CON BOTÓN DE RETORNO CLARO -->
       <div class="card">
         <h3>Plataformas Disponibles</h3>
-        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Haz clic en una plataforma para abrirla en una pestaña nueva y comenzar a sumar:</p>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Al abrir una plataforma, se abrirá en pestaña nueva. Usa el botón de abajo para volver aquí a revisar tus puntos cuando desees:</p>
+       
+        <!-- BOTÓN DE RETORNO A LA APP -->
+        <a href="${APP_URL}" target="_blank" class="btn cyan" style="margin-bottom: 15px; text-align: center;">
+          🔄 Volver a mi Panel / Ver Puntos (Esta App)
+        </a>
+
         <div class="grid">
           ${state.platforms.filter(p => p.active).length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
             state.platforms.filter(p => p.active).map(p => `
@@ -147,7 +153,6 @@
         <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Controla tus plataformas y el registro de usuarios para pagos de pines.</p>
       </div>
 
-      <!-- CONTROL DE USUARIOS REGISTRADOS Y GANANCIAS -->
       <div class="card">
         <h3>👥 Usuarios Registrados (Control de Pines y Pagos)</h3>
         <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Visualiza las monedas y pines de cada usuario para proceder con sus pagos.</p>
@@ -170,7 +175,6 @@
         </div>
       </div>
 
-      <!-- GESTIÓN DE LAS 5 PLATAFORMAS CON GANCHITO DE SEGURIDAD -->
       <div class="card">
         <h3>Gestionar 5 Plataformas Dinámicas (Guardado Permanente)</h3>
         <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Marca el ganchito de seguridad "Activa" para asegurar que la URL quede guardada.</p>
@@ -192,9 +196,9 @@
 
   function withdrawPin() {
     if (state.user.coins >= 5000) {
-      state.user.coins -= 5000; // Descuenta las 5,000 del pin retirado
+      state.user.coins -= 5000;
       state.user.pinsWithdrawn = (state.user.pinsWithdrawn || 0) + 1;
-      alert('¡Has retirado tu pin con éxito! La barra ha vuelto a cero para que sigas acumulando hacia el siguiente nivel.');
+      alert('¡Has retirado tu pin con éxito! La barra ha vuelto a cero.');
       render();
     }
   }
