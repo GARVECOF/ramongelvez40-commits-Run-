@@ -102,9 +102,14 @@
       </div>
 
       <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
-     
-      <!-- Las plataformas que configure el admin aparecen aquí -->
-      <div class="platforms-grid" id="userPlatformsGrid"></div>
+    
+      <!-- Las plataformas que configure el admin aparecen aquí + Offer Wall fijo -->
+      <div class="platforms-grid" id="userPlatformsGrid">
+        <div class="platform-card">
+          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Offer Wall Principal</div>
+          <a href="https://getafilenow.com/script_include.php?id=1912064" target="_blank">Abrir</a>
+        </div>
+      </div>
 
       <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
     </div>
@@ -113,7 +118,7 @@
     <div id="adminSection" class="hidden">
       <h3 style="color: #46e0da; font-size: 16px; text-align: center;">⚙️ Panel de Administrador</h3>
       <p style="font-size: 11px; color: #aaa; text-align: center;">Personaliza los nombres, enlaces y revisa los usuarios.</p>
-     
+    
       <!-- CONTROL DE USUARIOS -->
       <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">👥 Control y Ganancias de Usuarios</h4>
       <div id="listaUsuariosAdmin" style="background: #0b1024; padding: 8px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; text-align: left; margin-bottom: 15px; border: 1px solid #1f2947;">
@@ -122,7 +127,7 @@
 
       <!-- CONFIGURACIÓN DE LAS 5 PLATAFORMAS -->
       <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas</h4>
-     
+    
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
         <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Offerwall"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 1:</label><input type="text" id="adminUrl1" class="input-box" placeholder="https://..."></div>
@@ -175,7 +180,6 @@
       let correo = document.getElementById('regCorreo').value.trim();
       let numero = document.getElementById('regNumero').value.trim();
      
-      // .trim() elimina espacios en blanco que el teclado agregue por error
       let p1 = document.getElementById('regPassword').value.trim();
       let p2 = document.getElementById('regPasswordConfirm').value.trim();
 
@@ -184,7 +188,6 @@
         return;
       }
      
-      // Si el usuario llena el campo de confirmar contraseña, verificamos
       if(p2 !== "" && p1 !== p2) {
         alert("❌ Las contraseñas no coinciden. Verifícalas bien.");
         return;
@@ -314,7 +317,14 @@
 
     function renderizarPlataformasUsuario() {
       let grid = document.getElementById('userPlatformsGrid');
-      let html = "";
+     
+      // Iniciamos con el Offer Wall principal fijo con su URL exacta
+      let html = `
+        <div class="platform-card">
+          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Offer Wall Principal</div>
+          <a href="https://getafilenow.com/script_include.php?id=1912064" target="_blank">Abrir</a>
+        </div>
+      `;
 
       for(let i=1; i<=5; i++) {
         let name = localStorage.getItem('macacoin_name_plat'+i);
@@ -348,7 +358,7 @@
     }
 
     let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-   
+  
     function actualizarBarraMonedas() {
       document.getElementById('lblMonedas').innerText = monedas;
       let pct = (monedas / 5000) * 100;
@@ -360,7 +370,7 @@
         alert("🎉 ¡Meta completada de 5,000 monedas!");
         monedas = 0;
         localStorage.setItem('macacoin_monedas', monedas);
-       
+      
         let correoActual = localStorage.getItem('macacoin_correo');
         let nombreActual = localStorage.getItem('macacoin_nombre');
         if(correoActual) {
@@ -376,5 +386,3 @@
 
 </body>
 </html>
-
- 
