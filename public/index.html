@@ -5,14 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Plataforma con Barra de Retorno</title>
   <style>
-    body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: sans-serif; background: #0b1024; }
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+      font-family: sans-serif;
+      background: #0b1024;
+    }
+   
     /* Barra superior fija con el botón de retorno */
     #top-bar {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 50px;
+      height: 55px;
       background: #121936;
       border-bottom: 1px solid #1f2947;
       display: flex;
@@ -22,6 +30,7 @@
       box-sizing: border-box;
       z-index: 9999;
     }
+
     .btn-return {
       background: #46e0da;
       color: #0b1024;
@@ -32,15 +41,35 @@
       cursor: pointer;
       text-decoration: none;
       font-size: 13px;
+      white-space: nowrap;
     }
+
+    /* Contenedor principal donde va la info y el frame */
+    .main-container {
+      padding-top: 65px;
+      padding-left: 15px;
+      padding-right: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Caja de instrucción y copiado en el panel */
+    .panel-box {
+      background: #121936;
+      border: 2px solid #46e0da;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
     /* Contenedor donde carga la oferta o juego */
     #content-frame {
-      position: absolute;
-      top: 50px;
-      left: 0;
       width: 100%;
-      height: calc(100% - 50px);
+      height: calc(100vh - 140px);
       border: none;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -48,13 +77,49 @@
 
   <!-- BARRA SUPERIOR FIJA QUE SIEMPRE VE EL USUARIO -->
   <div id="top-bar">
-    <span style="color: #fff; font-size: 13px; font-weight: bold;">🎮 Zona de Juegos y Ofertas</span>
-    <!-- Botón para regresar al panel principal de puntos -->
-    <a href="https://ramongelvez40-commits-run.onrender.com" class="btn-return">⬅️ Volver a mi Panel</a>
+    <span style="color: #fff; font-size: 12px; font-weight: bold; line-height: 1.2;">
+      ⚠️ Zona de Retorno<br>
+      <span style="color: #46e0da; font-size: 10px; font-weight: normal;">Usa el enlace guardado para volver</span>
+    </span>
+    <!-- Botón para regresar al panel principal -->
+    <a href="https://ramongelvez40-commits-run.onrender.com" class="btn-return">⬅️ Volver</a>
   </div>
 
-  <!-- MARCO DE LA PLATAFORMA -->
-  <iframe id="content-frame" src="https://offerwall.me" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+  <div class="main-container">
+    <!-- SECCIÓN FIJA PARA COPIAR EL ENLACE DISFRAZADO -->
+    <div class="panel-box">
+      <h3 style="color: #46e0da; margin: 0 0 8px 0; font-size: 15px;">📲 Guarda tu enlace de retorno</h3>
+      <p style="color: #fff; font-size: 13px; margin: 0 0 12px 0; line-height: 1.4;">
+        Copia este enlace y guárdalo en tu WhatsApp. Lo necesitarás para volver al panel cada vez que quieras retirar tus premios:
+      </p>
+     
+      <div style="background: #0b1024; padding: 10px; border-radius: 8px; border: 1px dashed #1f2947; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+        <!-- Enlace disfrazado visualmente -->
+        <span style="color: #46e0da; font-size: 12px; word-break: break-all; text-align: left; width: 100%;">
+          🔗 app.macacoin.panel/retirardinero
+        </span>
+        <button onclick="copiarEnlacePanelPrincipal()" style="background: #46e0da; color: #0b1024; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; width: 100%;">
+          📋 Copiar Enlace para WhatsApp
+        </button>
+      </div>
+    </div>
+
+    <!-- MARCO DE LA PLATAFORMA -->
+    <iframe id="content-frame" src="https://offerwall.me" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+  </div>
+
+  <script>
+    function copiarEnlacePanelPrincipal() {
+      // El enlace real y funcional de Render que se copia por debajo
+      const linkReal = "https://ramongelvez40-commits-run.onrender.com";
+     
+      navigator.clipboard.writeText(linkReal).then(function() {
+        alert("✅ ¡Enlace copiado con éxito!\n\nPégalo en tu WhatsApp para tenerlo guardado.");
+      }, function(err) {
+        alert("❌ Cópialo manualmente: " + linkReal);
+      });
+    }
+  </script>
 
 </body>
 </html>
