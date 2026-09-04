@@ -9,7 +9,7 @@
     .container { max-width: 500px; margin: 40px auto; padding: 20px; background: #121936; border: 1px solid #1f2947; border-radius: 12px; position: relative; }
    
     /* Tuerquita de Administración arriba a la derecha */
-    .admin-gear { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; text-decoration: none; }
+    .admin-gear { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; text-decoration: none; z-index: 10; }
 
     /* Estilo de formularios y botones */
     .form-group { margin-bottom: 15px; text-align: left; }
@@ -25,10 +25,10 @@
     /* Se ocultan secciones hasta iniciar sesión */
     .hidden { display: none; }
 
-    /* Panel de usuario y plataformas */
+    /* Panel de usuario y plataformas dinámicas */
     .platforms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
     .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; text-align: center; }
-    .platform-card a { display: inline-block; margin-top: 8px; background: #46e0da; color: #0b1024; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; }
+    .platform-card a { display: inline-block; margin-top: 8px; background: #46e0da; color: #0b1024; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; cursor: pointer; }
    
     /* Barra de progreso */
     .progress-bar-container { background: #0b1024; border-radius: 8px; height: 16px; width: 100%; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
@@ -94,7 +94,7 @@
         📱 <b>Número:</b> <span id="lblNumero"></span>
       </div>
 
-      <!-- Barra de progreso (0 a 5,000 monedas) -->
+      <!-- Barra de progreso -->
       <div style="background: #0b1024; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #1f2947; text-align: center;">
         <div style="font-size: 12px; margin-bottom: 4px;">Progreso: <span id="lblMonedas">0</span> / 5,000 Monedas</div>
         <div class="progress-bar-container"><div class="progress-bar" id="barraProgreso"></div></div>
@@ -102,44 +102,59 @@
       </div>
 
       <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
-      <div class="platforms-grid">
-        <div class="platform-card"><div>🎮 Offerwall</div><a id="linkPlat1" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
-        <div class="platform-card"><div>🚀 Monlix</div><a id="linkPlat2" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
-        <div class="platform-card"><div>💎 App 3</div><a id="linkPlat3" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
-        <div class="platform-card"><div>🔥 App 4</div><a id="linkPlat4" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
-        <div class="platform-card"><div>⭐ App 5</div><a id="linkPlat5" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
-      </div>
+     
+      <!-- Las plataformas que configure el admin aparecen aquí -->
+      <div class="platforms-grid" id="userPlatformsGrid"></div>
 
       <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
     </div>
 
-    <!-- 3. PANEL DE ADMINISTRADOR (Con control de usuarios y plataformas) -->
+    <!-- 3. PANEL DE ADMINISTRADOR -->
     <div id="adminSection" class="hidden">
       <h3 style="color: #46e0da; font-size: 16px; text-align: center;">⚙️ Panel de Administrador</h3>
-      <p style="font-size: 11px; color: #aaa; text-align: center;">Gestiona los enlaces y revisa el recuento de tus usuarios.</p>
+      <p style="font-size: 11px; color: #aaa; text-align: center;">Personaliza los nombres, enlaces y revisa los usuarios.</p>
      
-      <!-- SECCIÓN DE CONTROL DE USUARIOS (Para llevar la cuenta) -->
+      <!-- CONTROL DE USUARIOS -->
       <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">👥 Control y Ganancias de Usuarios</h4>
       <div id="listaUsuariosAdmin" style="background: #0b1024; padding: 8px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; text-align: left; margin-bottom: 15px; border: 1px solid #1f2947;">
         Cargando usuarios...
       </div>
 
-      <!-- SECCIÓN DE PLATAFORMAS -->
-      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Enlaces de Plataformas</h4>
-      <div class="form-group"><label>Enlace Plataforma 1:</label><input type="text" id="adminPlat1" class="input-box"></div>
-      <div class="form-group"><label>Enlace Plataforma 2:</label><input type="text" id="adminPlat2" class="input-box"></div>
-      <div class="form-group"><label>Enlace Plataforma 3:</label><input type="text" id="adminPlat3" class="input-box"></div>
-      <div class="form-group"><label>Enlace Plataforma 4:</label><input type="text" id="adminPlat4" class="input-box"></div>
-      <div class="form-group"><label>Enlace Plataforma 5:</label><input type="text" id="adminPlat5" class="input-box"></div>
+      <!-- CONFIGURACIÓN DE LAS 5 PLATAFORMAS -->
+      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas</h4>
+     
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Offerwall"></div>
+        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 1:</label><input type="text" id="adminUrl1" class="input-box" placeholder="https://..."></div>
+      </div>
 
-      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Cambios</button>
-      <button onclick="volverAlLoginDesdeAdmin()" style="background: none; border: none; color: #46e0da; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px;">⬅️ Volver</button>
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 2 - Nombre:</label><input type="text" id="adminName2" class="input-box" placeholder="Ej: Monlix"></div>
+        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 2:</label><input type="text" id="adminUrl2" class="input-box" placeholder="https://..."></div>
+      </div>
+
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 3 - Nombre:</label><input type="text" id="adminName3" class="input-box" placeholder="Ej: App 3"></div>
+        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 3:</label><input type="text" id="adminUrl3" class="input-box" placeholder="https://..."></div>
+      </div>
+
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 4 - Nombre:</label><input type="text" id="adminName4" class="input-box" placeholder="Ej: App 4"></div>
+        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 4:</label><input type="text" id="adminUrl4" class="input-box" placeholder="https://..."></div>
+      </div>
+
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #1f2947;">
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 5 - Nombre:</label><input type="text" id="adminName5" class="input-box" placeholder="Ej: App 5"></div>
+        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 5:</label><input type="text" id="adminUrl5" class="input-box" placeholder="https://..."></div>
+      </div>
+
+      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Plataformas</button>
+      <button onclick="volverAlLoginDesdeAdmin()" style="background: none; border: none; color: #46e0da; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px;">⬅️ Volver al Panel / Login</button>
     </div>
 
   </div>
 
   <script>
-    // Mostrar/Ocultar clave con el ojito
     function togglePass(idInput, btn) {
       let input = document.getElementById(idInput);
       if (input.type === "password") {
@@ -153,8 +168,9 @@
 
     window.onload = function() {
       cargarAdminDatos();
+      // Si hay sesión activa de usuario, mostrar panel de usuario, pero el Admin entra libre con su tuerca
       if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
-        mostrarPanelUsuario();
+        // No forzar si el admin está abierto o quiere abrirlo
       }
     }
 
@@ -174,20 +190,16 @@
         return;
       }
 
-      // Guardar sesión actual
       localStorage.setItem('macacoin_nombre', nombre);
       localStorage.setItem('macacoin_correo', correo);
       localStorage.setItem('macacoin_numero', numero);
       localStorage.setItem('macacoin_sesion_activa', 'true');
 
-      // Inicializar monedas de este usuario si no existen
       if(!localStorage.getItem('macacoin_monedas')) {
         localStorage.setItem('macacoin_monedas', '0');
       }
 
-      // Registrar o actualizar en la lista general de usuarios para el Admin
       actualizarListaUsuariosAdminGeneral(nombre, correo, parseInt(localStorage.getItem('macacoin_monedas')));
-
       mostrarPanelUsuario();
     }
 
@@ -205,7 +217,7 @@
       document.getElementById('lblNumero').innerText = numero;
 
       actualizarBarraMonedas();
-      cargarPlataformasEnUsuario();
+      renderizarPlataformasUsuario();
     }
 
     function cerrarSesion() {
@@ -213,7 +225,7 @@
       location.reload();
     }
 
-    // Tuerquita Admin
+    // Tuerquita Admin - Abre el panel administrador sin destruir la sesión de usuario
     function abrirAdmin() {
       let claveAdmin = prompt("Introduce la clave de Administrador:");
       if(claveAdmin === "admin123" || claveAdmin === "1234") {
@@ -227,35 +239,44 @@
     }
 
     function volverAlLoginDesdeAdmin() {
+      // Si el usuario ya había iniciado sesión antes de entrar al admin, lo devuelve a su panel; si no, al login limpio
       if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
         mostrarPanelUsuario();
       } else {
-        location.reload();
+        document.getElementById('adminSection').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
       }
     }
 
-    // Guardar enlaces y recargar admin
+    // Guardar nombres y enlaces desde el Admin (AHORA SE QUEDA EN EL ADMIN SIN SACARTE)
     function guardarPlataformasAdmin() {
       for(let i=1; i<=5; i++) {
-        let val = document.getElementById('adminPlat'+i).value;
-        localStorage.setItem('macacoin_url_plat'+i, val);
+        let nameVal = document.getElementById('adminName'+i).value.trim();
+        let urlVal = document.getElementById('adminUrl'+i).value.trim();
+       
+        localStorage.setItem('macacoin_name_plat'+i, nameVal || ('Plataforma ' + i));
+        localStorage.setItem('macacoin_url_plat'+i, urlVal);
       }
-      alert("✅ ¡Cambios guardados con éxito!");
-      volverAlLoginDesdeAdmin();
+      alert("✅ ¡Plataformas y enlaces guardados con éxito! (Te mantienes en el panel de control)");
+      // Ya no te bota al panel de usuario, te deja tranquilo aquí configurando
+      cargarAdminDatos();
     }
 
     function cargarAdminDatos() {
-      // Cargar plataformas
       for(let i=1; i<=5; i++) {
-        let val = localStorage.getItem('macacoin_url_plat'+i) || "#";
-        let campo = document.getElementById('adminPlat'+i);
-        if(campo) campo.value = val;
+        let nameVal = localStorage.getItem('macacoin_name_plat'+i) || ('Plataforma ' + i);
+        let urlVal = localStorage.getItem('macacoin_url_plat'+i) || "";
+       
+        let nameInput = document.getElementById('adminName'+i);
+        let urlInput = document.getElementById('adminUrl'+i);
+       
+        if(nameInput) nameInput.value = nameVal;
+        if(urlInput) urlInput.value = urlVal;
       }
-      // Cargar lista de usuarios para que el Admin lleve la cuenta
+
       let contenedor = document.getElementById('listaUsuariosAdmin');
       let lista = JSON.parse(localStorage.getItem('macacoin_lista_usuarios')) || [];
      
-      // Asegurarse de incluir al usuario activo actual si existe
       let nombreActual = localStorage.getItem('macacoin_nombre');
       if(nombreActual) {
         let correoActual = localStorage.getItem('macacoin_correo');
@@ -276,7 +297,7 @@
         lista.forEach((u, index) => {
           html += `<div style="border-bottom: 1px solid #1f2947; padding: 4px 0;">
             <b>#${index+1}</b> ${u.nombre} (${u.correo})<br>
-            💰 Producción: <b>${u.monedas || 0} monedas</b>
+            💰 Monedas: <b>${u.monedas || 0}</b>
           </div>`;
         });
         contenedor.innerHTML = html;
@@ -295,29 +316,32 @@
       localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
     }
 
-    function cargarPlataformasEnUsuario() {
+    // Mostrar dinámicamente las plataformas en el panel de usuario
+    function renderizarPlataformasUsuario() {
+      let grid = document.getElementById('userPlatformsGrid');
+      let html = "";
+
       for(let i=1; i<=5; i++) {
-        let val = localStorage.getItem('macacoin_url_plat'+i) || "#";
-        document.getElementById('linkPlat'+i).href = val;
+        let name = localStorage.getItem('macacoin_name_plat'+i) || ('Plataforma ' + i);
+        let url = localStorage.getItem('macacoin_url_plat'+i) || "";
+
+        // Si no hay enlace configurado, no muestra el botón o avisa
+        let linkFinal = url;
+        if(linkFinal && !linkFinal.startsWith('http://') && !linkFinal.startsWith('https://')) {
+          linkFinal = 'https://' + linkFinal;
+        }
+
+        html += `
+          <div class="platform-card">
+            <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
+            ${url ? `<a href="${linkFinal}" target="_blank">Abrir</a>` : `<span style="font-size:10px; color:#888; display:block; margin-top:8px;">Próximamente</span>`}
+          </div>
+        `;
       }
+      grid.innerHTML = html;
     }
 
-    // Monedas y barra de progreso
     let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-    function sumarMonedas(cant) {
-      monedas += cant;
-      if(monedas > 5000) monedas = 5000;
-      localStorage.setItem('macacoin_monedas', monedas);
-     
-      // Actualizar también en la lista general del Admin
-      let correoActual = localStorage.getItem('macacoin_correo');
-      let nombreActual = localStorage.getItem('macacoin_nombre');
-      if(correoActual) {
-        actualizarListaUsuariosAdminGeneral(nombreActual, correoActual, monedas);
-      }
-
-      actualizarBarraMonedas();
-    }
    
     function actualizarBarraMonedas() {
       document.getElementById('lblMonedas').innerText = monedas;
@@ -327,7 +351,7 @@
 
     function reclamarPremio() {
       if(monedas >= 5000) {
-        alert("🎉 ¡Meta completada de 5,000 monedas! Vuelve al panel para reclamar tu retiro.");
+        alert("🎉 ¡Meta completada de 5,000 monedas!");
         monedas = 0;
         localStorage.setItem('macacoin_monedas', monedas);
        
