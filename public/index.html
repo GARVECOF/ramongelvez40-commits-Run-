@@ -2,206 +2,114 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MacawCoin - Recompensas & Ruleta Pro</title>
+  <meta name="viewport" content="width=device-lib, initial-scale=1.0">
+  <title>Panel de Usuario y Control</title>
   <style>
-    :root { --bg: #0b1024; --panel: #121936; --text: #f8f9ff; --muted: #a8b0d2; --purple: #806cff; --cyan: #46e0da; --yellow: #ffd166; --line: #ffffff18; }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 15% -10%, #27235c 0, #0b1024 43%); font-family: Inter, system-ui, sans-serif; color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; padding-bottom: 70px; }
-    .shell { width: min(100%, 950px); }
-    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .brand { display: flex; gap: 12px; align-items: center; }
-    .mascot-avatar { width: 55px; height: 55px; border-radius: 18px; background: linear-gradient(135deg, #46e0da, #806cff); display: grid; place-items: center; font-size: 28px; box-shadow: 0 4px 20px rgba(70,224,218,0.4); }
-    .brand strong { font-size: 20px; display: block; }
-    .brand small { font-size: 11px; color: var(--muted); }
-    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    .btn { background: linear-gradient(135deg, #806cff, #5c4ed6); color: white; border: 0; padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
-    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn.cyan { background: linear-gradient(135deg, #46e0da, #218e9a); color: #0b1024; }
-    .input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--line); background: #0d132d; color: var(--text); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
-    .platform-item { background: #1a2145; padding: 18px; border-radius: 14px; border: 1px solid var(--line); text-align: center; }
-    .progress-bar { width: 100%; background: #0d132d; height: 16px; border-radius: 10px; overflow: hidden; margin: 15px 0; border: 1px solid var(--line); }
-    .progress-fill { background: linear-gradient(90deg, #46e0da, #806cff); height: 100%; width: 0%; transition: width 0.4s ease; }
-    .gear-btn { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 18px; }
-    .gear-btn:hover { color: var(--cyan); border-color: var(--cyan); }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
-    th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); }
-    th { color: var(--muted); }
-    .hidden { display: none !important; }
-    /* Estilos Banner Fijo Inferior */
-    .admob-banner-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #121936ee; border-top: 1px solid var(--line); padding: 8px; text-align: center; z-index: 99; font-size: 11px; color: var(--muted); }
-    /* Ruleta */
-    .wheel-container { display: flex; flex-direction: column; align-items: center; position: relative; margin: 20px 0; }
-    .wheel { width: 200px; height: 200px; border-radius: 50%; border: 5px solid var(--cyan); position: relative; overflow: hidden; transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1); box-shadow: 0 0 20px rgba(70,224,218,0.3); }
-    .wheel-pointer { width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 20px solid var(--yellow); position: absolute; top: -10px; z-index: 10; }
-    .footer-links { text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted); }
-    .footer-links a { color: var(--cyan); text-decoration: none; margin: 0 10px; }
+    :root {
+      --cyan: #46e0da;
+      --yellow: #ffd700;
+      --muted: #8a99ad;
+      --line: #1f2947;
+    }
+    body { background: #0b1024; color: #fff; font-family: sans-serif; margin: 0; padding: 20px; }
+    .card { background: #121936; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+    .hidden { display: none; }
+    .btn { background: #1f2947; color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
+    .btn.cyan { background: var(--cyan); color: #0b1024; }
+    .input { width: 100%; padding: 10px; background: #0d132d; border: 1px solid var(--line); color: #fff; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .platform-item { background: #0d132d; border: 1px solid var(--line); border-radius: 10px; padding: 15px; text-align: center; }
   </style>
 </head>
 <body>
 
-<div class="shell">
-  <div class="top">
-    <div class="brand">
-      <div class="mascot-avatar" title="¡Perico Diamantino!">🦜</div>
-      <div>
-        <strong>MacawCoin</strong>
-        <small>Recompensas & Entretenimiento</small>
-      </div>
-    </div>
-    <button class="gear-btn" onclick="openAdminModal()" title="Panel Admin">⚙️</button>
-  </div>
-
-  <div id="app"></div>
-
-  <div class="footer-links">
-    <a href="/terminos" target="_blank">Términos y Condiciones</a> |
-    <a href="/privacidad" target="_blank">Política de Privacidad</a>
-  </div>
+<div id="app">
+  <!-- El contenido del usuario o admin se renderiza aquí -->
 </div>
 
-<!-- MODAL ADMIN (Tuerquita) -->
-<div id="adminModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: #121936; border: 2px solid var(--cyan);">
-  <h3>Panel Admin Secreto ⚙️</h3>
-  <input type="email" id="adminEmail" class="input" placeholder="Correo Admin">
-  <input type="password" id="adminPassword" class="input" placeholder="Contraseña Admin">
-  <button class="btn cyan" onclick="loginAdmin()">Entrar al Panel</button>
-  <button class="btn" style="background:transparent; margin-top:5px;" onclick="closeAdminModal()">Cancelar</button>
-</div>
-
-<!-- MODAL INTERSTITIAL / ANUNCIO DE NIVEL -->
-<div id="interstitialModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: #121936; border: 2px solid var(--yellow); text-align: center;">
-  <h3>📺 Anuncio Patrocinado (Interstitial)</h3>
-  <p style="font-size: 12px; color: var(--muted);">¡Has completado una fase o nivel! Disfruta este anuncio:</p>
-  <div style="background: #0d132d; padding: 20px; border-radius: 12px; margin: 15px 0; border: 1px dashed var(--yellow);">
-    <b>Patrocinador Oficial MacawCoin</b>
-    <p style="font-size: 11px; color: var(--muted);">ID de anuncio AdMob activo.</p>
-  </div>
-  <button class="btn cyan" onclick="closeInterstitial()">Cerrar Anuncio y Reclamar Bono</button>
-</div>
-
-<!-- BANNER FIJO INFERIOR -->
-<div class="admob-banner-footer" id="bannerFooter">
-  <span>[Anuncio Banner AdMob Fijo] Patrocinador MacawCoin</span>
+<!-- MODAL DE REGISTRO / AUTENTICACIÓN DE USUARIO -->
+<div id="registerModal" class="card" style="max-width: 400px; margin: 40px auto;">
+  <h3>📝 Registro de Usuario</h3>
+  <p style="font-size: 12px; color: var(--muted);">Regístrate para guardar tus ganancias y aparecer en el panel de desarrollador.</p>
+  <input type="text" id="regName" class="input" placeholder="Tu Nombre">
+  <input type="email" id="regEmail" class="input" placeholder="Tu Correo Electrónico">
+  <button class="btn cyan" onclick="registerUser()">Registrarse y Entrar</button>
 </div>
 
 <script>
-  let state = { user: null, isAdmin: false, platforms: [], wheelPrizes: [], users: [], settings: {} };
+  let state = { user: null, isAdmin: false, platforms: [], users: [], settings: {} };
 
   async function loadData() {
     try {
-      const res = await fetch('/api/me');
+      const res = await fetch('/api/state');
       const data = await res.json();
-      if (data.ok) {
-        state.isAdmin = data.isAdmin;
-        state.settings = data.settings || {};
-        if (data.isAdmin) {
-          state.users = data.users;
-          state.platforms = data.platforms;
-          state.wheelPrizes = data.wheelPrizes;
-          renderAdmin();
-        } else {
-          state.user = data.user;
-          state.platforms = data.platforms;
-          state.wheelPrizes = data.wheelPrizes;
-          renderUser();
-        }
-      } else {
-        renderAuth();
-      }
-    } catch {
-      renderAuth();
+      state = data;
+      render();
+    } catch (e) {
+      // Modo local o interfaz estática base si el backend no responde directo
+      renderUserInterface();
     }
   }
 
-  function renderAuth() {
-    document.getElementById('app').innerHTML = `
-      <div class="card" style="max-width: 380px; margin: 30px auto; text-align: center;">
-        <div style="font-size: 35px; margin-bottom: 10px;">🦜💎</div>
-        <h2>MacawCoin</h2>
-        <p style="color: var(--muted); font-size: 13px;">Gana monedas, gira la ruleta de la suerte y retira tus recompensas.</p>
-        <div id="regNameBox" class="hidden"><input type="text" id="name" class="input" placeholder="Tu Nombre"></div>
-        <input type="email" id="email" class="input" placeholder="Correo electrónico">
-        <input type="password" id="password" class="input" placeholder="Contraseña (mínimo 6)">
-        <button class="btn" onclick="submitAuth()">Continuar</button>
-        <p id="toggleText" style="font-size: 12px; margin-top: 15px; color: var(--cyan); cursor: pointer;" onclick="toggleRegister()">¿No tienes cuenta? Regístrate</p>
-      </div>
-    `;
+  function render() {
+    if (state.isAdmin) {
+      renderAdmin();
+    } else if (!state.user) {
+      document.getElementById('registerModal').classList.remove('hidden');
+    } else {
+      document.getElementById('registerModal').classList.add('hidden');
+      renderUserInterface();
+    }
   }
 
-  let isRegistering = false;
-  function toggleRegister() {
-    isRegistering = !isRegistering;
-    document.getElementById('regNameBox').classList.toggle('hidden', !isRegistering);
-    document.getElementById('toggleText').innerText = isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate';
-  }
-
-  async function submitAuth() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const name = isRegistering ? document.getElementById('name').value : undefined;
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, name })
-    });
-    const data = await res.json();
-    if (data.ok) loadData();
-    else if (data.needsRegister) { isRegistering = true; document.getElementById('regNameBox').classList.remove('hidden'); alert(data.error); }
-    else alert(data.error);
-  }
-
-  function renderUser() {
-    const coins = state.user.coins;
-    const threshold = Number(state.settings.coins_per_dollar || 5000);
-    const progress = Math.min(100, (coins / threshold) * 100);
-
-    document.getElementById('app').innerHTML = `
+  function renderUserInterface() {
+    const container = document.getElementById('app');
+    container.innerHTML = `
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <small style="color: var(--muted);">Bienvenido, ${state.user.name}</small>
-            <h2 style="margin: 5px 0;">🪙 ${coins} Monedas</h2>
-          </div>
-          <button class="btn" style="width: auto;" onclick="logout()">Salir</button>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
-          <span>Mínimo retiro: ${threshold.toLocaleString()} monedas ($1)</span>
-          <span>${coins} / ${threshold.toLocaleString()}</span>
-        </div>
-        <button class="btn cyan" style="margin-top: 15px;" onclick="requestRedemption(${threshold})" ${coins < threshold ? 'disabled style="opacity:0.5"' : ''}>Retirar $1 (PIN / Recompensa)</button>
+        <h2>Panel de Usuario 🎮</h2>
+        <p style="color: var(--muted); font-size: 13px;">Accede a tus plataformas disponibles desde aquí.</p>
+        ${state.user ? `<p style="font-size: 12px; color: var(--cyan);">Usuario: ${state.user.name} | Monedas: ${state.user.coins || 0} 🪙</p>` : ''}
       </div>
 
-      <!-- RULETA DE LA SUERTE CON ANUNCIO RECOMPENSADO -->
-      <div class="card" style="text-align: center;">
-        <h3>🎡 Ruleta de Migajas (Premio Instantáneo)</h3>
-        <p style="font-size: 12px; color: var(--muted);">Ve el anuncio recompensado para girar y ganar monedas.</p>
-        <div class="wheel-container">
-          <div class="wheel-pointer"></div>
-          <div id="wheelElem" class="wheel" style="display: flex; flex-wrap: wrap; background: #1a2145;">
-            ${state.wheelPrizes.map(p => `
-              <div style="width: 50%; height: 50%; background: ${p.color}; display: grid; place-items: center; font-size: 10px; font-weight: bold; color: #0b1024; border: 1px solid #0002;">
-                ${p.coins} 🪙
-              </div>
-            `).join('')}
-          </div>
-        </div>
-        <button class="btn cyan" style="max-width: 220px; margin: auto;" onclick="spinWheelWithRewardAd()">¡Ver Anuncio y Girar Ruleta!</button>
-      </div>
-
-      <!-- PLATAFORMAS / NIVELES CON INTERSTITIAL -->
+      <!-- PLATAFORMAS / URLs -->
       <div class="card">
-        <h3>Juegos y Niveles (Anuncio por Fase)</h3>
-        <p style="font-size: 12px; color: var(--muted);">Al superar cada nivel o entrar al juego, verás un anuncio y ganarás bono extra.</p>
+        <h3>Plataformas de la Aplicación</h3>
+        <p style="font-size: 12px; color: var(--muted);">Selecciona una plataforma para abrir su enlace.</p>
+
         <div class="grid" style="margin-top: 15px;">
-          ${state.platforms.length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
+          ${state.platforms.length === 0 ? `
+            <!-- Valores por defecto si la base de datos está vacía, asegurando las 5 URLs -->
+            <div class="platform-item">
+              <div style="font-size: 26px; margin-bottom: 8px;">🎮</div>
+              <strong>App 1</strong>
+              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo1.com')">Abrir URL 1</button>
+            </div>
+            <div class="platform-item">
+              <div style="font-size: 26px; margin-bottom: 8px;">🚀</div>
+              <strong>App 2</strong>
+              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo2.com')">Abrir URL 2</button>
+            </div>
+            <div class="platform-item">
+              <div style="font-size: 26px; margin-bottom: 8px;">💎</div>
+              <strong>App 3</strong>
+              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo3.com')">Abrir URL 3</button>
+            </div>
+            <div class="platform-item">
+              <div style="font-size: 26px; margin-bottom: 8px;">🔥</div>
+              <strong>App 4</strong>
+              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo4.com')">Abrir URL 4</button>
+            </div>
+            <div class="platform-item">
+              <div style="font-size: 26px; margin-bottom: 8px;">⭐</div>
+              <strong>App 5</strong>
+              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo5.com')">Abrir URL 5</button>
+            </div>
+          ` :
             state.platforms.map(p => `
               <div class="platform-item">
                 <div style="font-size: 26px; margin-bottom: 8px;">${p.logo_url || '🎮'}</div>
                 <strong>${p.name}</strong>
-                <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="triggerLevelInterstitial('${p.link}')">Superar Nivel / Jugar</button>
+                <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('${p.link}')">Abrir URL</button>
               </div>
             `).join('')}
         </div>
@@ -209,177 +117,89 @@
     `;
   }
 
-  function triggerLevelInterstitial(link) {
-    window.targetPlatformLink = link;
-    document.getElementById('interstitialModal').classList.remove('hidden');
+  function openPlatform(link) {
+    if (link) {
+      window.open(link, '_blank');
+    }
   }
 
-  async function closeInterstitial() {
-    document.getElementById('interstitialModal').classList.add('hidden');
-    // Reclamar bono por nivel completado
-    await fetch('/api/user/complete-level', { method: 'POST' });
-    if (window.targetPlatformLink) {
-      window.open(window.targetPlatformLink, '_blank');
-      window.targetPlatformLink = null;
+  async function registerUser() {
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    if (!name || !email) {
+      alert('Por favor ingresa tu nombre y correo.');
+      return;
     }
-    loadData();
-  }
+   
+    // Envía los datos al backend para que el usuario aparezca en tu panel de control de desarrollador
+    const res = await fetch('/api/user/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email })
+    }).catch(() => null);
 
-  async function spinWheelWithRewardAd() {
-    alert('📺 [Anuncio Recompensado AdMob]: Viendo video promocional...');
-    const res = await fetch('/api/user/spin', { method: 'POST' });
-    const data = await res.json();
-    if (data.ok) {
-      const wheel = document.getElementById('wheelElem');
-      wheel.style.transform = `rotate(${1800 + Math.floor(Math.random() * 360)}deg)`;
-      setTimeout(() => {
-        alert(`🎉 ¡Ganaste en la ruleta: ${data.prize.label}!`);
-        loadData();
-      }, 4000);
-    } else {
-      alert(data.error);
-    }
+    state.user = { name, email, coins: 0 };
+    document.getElementById('registerModal').classList.add('hidden');
+    renderUserInterface();
+    alert('¡Registro exitoso! Ya estás conectado al panel de control.');
   }
 
   function renderAdmin() {
-    document.getElementById('app').innerHTML = `
+    const container = document.getElementById('app');
+    container.innerHTML = `
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2>Panel de Control Admin Pro ⚙️</h2>
+          <h2>Panel de Control Desarrollador ⚙️</h2>
           <button class="btn" style="width: auto;" onclick="logout()">Cerrar Sesión</button>
         </div>
-        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Controla tus IDs de AdMob, plataformas, umbrales y premios de la ruleta.</p>
+        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Aquí visualizas los usuarios registrados, sus correos y monedas para realizar los pagos.</p>
       </div>
 
-      <!-- CONFIGURACIÓN DE ADMOB Y UMBRALES -->
+      <!-- LISTADO DE USUARIOS REGISTRADOS EN TU PANEL -->
       <div class="card">
-        <h3>Configuración de Anuncios (AdMob) & Retiros</h3>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-          <div>
-            <label style="font-size: 11px; color: var(--muted);">Monedas para $1:</label>
-            <input type="number" id="cfgCoins" class="input" value="${state.settings.coins_per_dollar || 5000}">
-          </div>
-          <div>
-            <label style="font-size: 11px; color: var(--muted);">AdMob Banner ID:</label>
-            <input type="text" id="cfgBanner" class="input" value="${state.settings.admob_banner || ''}">
-          </div>
-          <div>
-            <label style="font-size: 11px; color: var(--muted);">AdMob Interstitial ID:</label>
-            <input type="text" id="cfgInterstitial" class="input" value="${state.settings.admob_interstitial || ''}">
-          </div>
-          <div>
-            <label style="font-size: 11px; color: var(--muted);">AdMob Rewarded ID:</label>
-            <input type="text" id="cfgRewarded" class="input" value="${state.settings.admob_rewarded || ''}">
-          </div>
+        <h3>Usuarios Registrados (Control de Pagos)</h3>
+        <div style="margin-top: 15px; background: #0d132d; padding: 10px; border-radius: 8px;">
+          ${state.users && state.users.length > 0 ? state.users.map(u => `
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line);">
+              <div>
+                <strong>${u.name}</strong><br>
+                <span style="font-size: 11px; color: var(--muted);">${u.email}</span>
+              </div>
+              <div style="text-align: right;">
+                <span style="color: var(--cyan); font-weight: bold;">${u.coins} 🪙</span><br>
+                <button class="btn cyan" style="font-size: 10px; padding: 4px 8px; margin-top: 4px;" onclick="payUser('${u.email}')">Pagar Pin</button>
+              </div>
+            </div>
+          `).join('') : '<p style="color: var(--muted); font-size: 12px;">No hay usuarios registrados todavía.</p>'}
         </div>
-        <button class="btn cyan" style="margin-top: 10px; width: auto;" onclick="saveSettings()">Guardar Ajustes</button>
       </div>
 
       <!-- GESTIÓN DE LAS 5 PLATAFORMAS -->
       <div class="card">
-        <h3>Gestionar 5 Plataformas Dinámicas</h3>
+        <h3>Gestionar las 5 URLs de Plataformas</h3>
         ${state.platforms.map(p => `
           <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #0d132d; padding: 8px; border-radius: 10px; flex-wrap: wrap;">
             <span style="font-weight: bold; color: var(--cyan);">#${p.slot}</span>
             <input type="text" id="p_name_${p.slot}" class="input" value="${p.name}" placeholder="Nombre" style="flex:1; margin:0; min-width: 100px;">
             <input type="text" id="p_logo_${p.slot}" class="input" value="${p.logo_url}" placeholder="Emoji" style="width: 60px; margin:0;">
             <input type="text" id="p_link_${p.slot}" class="input" value="${p.link}" placeholder="URL" style="flex:2; margin:0; min-width: 120px;">
-            <label style="font-size: 11px; white-space: nowrap;"><input type="checkbox" id="p_active_${p.slot}" ${p.active ? 'checked' : ''}> Activa</label>
             <button class="btn cyan" style="width: auto; padding: 6px 10px;" onclick="savePlatform(${p.slot})">Guardar</button>
           </div>
         `).join('')}
       </div>
-
-      <!-- GESTIÓN DE PREMIOS DE LA RULETA -->
-      <div class="card">
-        <h3>Gestionar Premios de la Ruleta (suerte / Premios)</h3>
-        ${state.wheelPrizes.map(wp => `
-          <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #0d132d; padding: 8px; border-radius: 10px; flex-wrap: wrap;">
-            <span style="font-weight: bold; color: var(--yellow);">Pos #${wp.position}</span>
-            <input type="text" id="wp_label_${wp.position}" class="input" value="${wp.label}" placeholder="Etiqueta" style="flex:2; margin:0;">
-            <input type="number" id="wp_coins_${wp.position}" class="input" value="${wp.coins}" placeholder="Monedas" style="flex:1; margin:0;">
-            <input type="color" id="wp_color_${wp.position}" value="${wp.color}" style="width: 45px; height: 35px; border:0; background:none; cursor:pointer;">
-          </div>
-        `).join('')}
-        <button class="btn cyan" style="margin-top: 10px;" onclick="saveWheel()">Actualizar Ruleta</button>
-      </div>
-
-      <!-- USUARIOS -->
-      <div class="card">
-        <h3>Usuarios Registrados</h3>
-        <table>
-          <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Monedas</th></tr></thead>
-          <tbody>
-            ${state.users.map(u => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td><strong>🪙 ${u.coins}</strong></td></tr>`).join('')}
-          </tbody>
-        </table>
-      </div>
     `;
   }
 
-  async function requestRedemption(amount) {
-    if (!confirm(`¿Canjear ${amount} monedas?`)) return;
-    const res = await fetch('/api/user/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_coins: amount }) });
-    const data = await res.json();
-    if (data.ok) { alert(data.message); loadData(); } else alert(data.error);
+  async function logout() {
+    state.isAdmin = false;
+    state.user = null;
+    loadData();
   }
-
-  async function savePlatform(slot) {
-    const res = await fetch('/api/admin/platforms', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        slot, name: document.getElementById(`p_name_${slot}`).value,
-        logo_url: document.getElementById(`p_logo_${slot}`).value,
-        link: document.getElementById(`p_link_${slot}`).value,
-        active: document.getElementById(`p_active_${slot}`).checked
-      })
-    });
-    if ((await res.json()).ok) { alert('Plataforma guardada.'); loadData(); }
-  }
-
-  async function saveWheel() {
-    const prizes = [];
-    for (let i = 1; i <= 6; i++) {
-      prizes.push({
-        position: i,
-        label: document.getElementById(`wp_label_${i}`).value,
-        coins: Number(document.getElementById(`wp_coins_${i}`).value),
-        color: document.getElementById(`wp_color_${i}`).value
-      });
-    }
-    const res = await fetch('/api/admin/wheel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prizes }) });
-    if ((await res.json()).ok) { alert('Ruleta actualizada.'); loadData(); }
-  }
-
-  async function saveSettings() {
-    const res = await fetch('/api/admin/settings', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        coins_per_dollar: document.getElementById('cfgCoins').value,
-        admob_banner: document.getElementById('cfgBanner').value,
-        admob_interstitial: document.getElementById('cfgInterstitial').value,
-        admob_rewarded: document.getElementById('cfgRewarded').value
-      })
-    });
-    if ((await res.json()).ok) { alert('Ajustes y AdMob guardados.'); loadData(); }
-  }
-
-  function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
-  function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
-
-  async function loginAdmin() {
-    const res = await fetch('/api/auth/admin-login', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: document.getElementById('adminEmail').value, password: document.getElementById('adminPassword').value })
-    });
-    const data = await res.json();
-    if (data.ok) { closeAdminModal(); loadData(); } else alert(data.error);
-  }
-
-  async function logout() { await fetch('/api/auth/logout', { method: 'POST' }); loadData(); }
 
   loadData();
 </script>
 
 </body>
 </html>
+
+ 
