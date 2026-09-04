@@ -42,7 +42,7 @@
 
   <div class="container" id="mainContainer">
    
-    <!-- 1. PANTALLA DE LOGIN / REGISTRO (Lo único que ve el usuario al entrar) -->
+    <!-- 1. PANTALLA DE LOGIN / REGISTRO -->
     <div id="loginSection" style="text-align: center;">
       <div style="font-size: 40px; margin-bottom: 5px;">🦜💎</div>
       <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Iniciar Sesión</h2>
@@ -81,7 +81,7 @@
       <button class="btn-main" onclick="registrarUsuario()">Entrar a mi Panel</button>
     </div>
 
-    <!-- 2. PANEL DE CONTROL DEL USUARIO (Se muestra solo tras iniciar sesión) -->
+    <!-- 2. PANEL DE CONTROL DEL USUARIO -->
     <div id="userPanelSection" class="hidden">
       <div style="text-align: center; margin-bottom: 15px;">
         <span style="font-size: 30px;">🦜💎</span>
@@ -113,18 +113,26 @@
       <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
     </div>
 
-    <!-- 3. PANEL DE ADMINISTRADOR (Se abre con la tuerquita ⚙️) -->
+    <!-- 3. PANEL DE ADMINISTRADOR (Con control de usuarios y plataformas) -->
     <div id="adminSection" class="hidden">
       <h3 style="color: #46e0da; font-size: 16px; text-align: center;">⚙️ Panel de Administrador</h3>
-      <p style="font-size: 11px; color: #aaa; text-align: center;">Configura los enlaces de las 5 plataformas y guárdalos permanentemente.</p>
+      <p style="font-size: 11px; color: #aaa; text-align: center;">Gestiona los enlaces y revisa el recuento de tus usuarios.</p>
      
+      <!-- SECCIÓN DE CONTROL DE USUARIOS (Para llevar la cuenta) -->
+      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">👥 Control y Ganancias de Usuarios</h4>
+      <div id="listaUsuariosAdmin" style="background: #0b1024; padding: 8px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; text-align: left; margin-bottom: 15px; border: 1px solid #1f2947;">
+        Cargando usuarios...
+      </div>
+
+      <!-- SECCIÓN DE PLATAFORMAS -->
+      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Enlaces de Plataformas</h4>
       <div class="form-group"><label>Enlace Plataforma 1:</label><input type="text" id="adminPlat1" class="input-box"></div>
       <div class="form-group"><label>Enlace Plataforma 2:</label><input type="text" id="adminPlat2" class="input-box"></div>
       <div class="form-group"><label>Enlace Plataforma 3:</label><input type="text" id="adminPlat3" class="input-box"></div>
       <div class="form-group"><label>Enlace Plataforma 4:</label><input type="text" id="adminPlat4" class="input-box"></div>
       <div class="form-group"><label>Enlace Plataforma 5:</label><input type="text" id="adminPlat5" class="input-box"></div>
 
-      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Enlaces Permanentemente</button>
+      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Cambios</button>
       <button onclick="volverAlLoginDesdeAdmin()" style="background: none; border: none; color: #46e0da; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px;">⬅️ Volver</button>
     </div>
 
@@ -143,9 +151,8 @@
       }
     }
 
-    // Verificar si ya hay sesión iniciada al cargar
     window.onload = function() {
-      cargarPlataformasAdmin();
+      cargarAdminDatos();
       if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
         mostrarPanelUsuario();
       }
@@ -167,11 +174,19 @@
         return;
       }
 
-      // Guardar datos de usuario
+      // Guardar sesión actual
       localStorage.setItem('macacoin_nombre', nombre);
       localStorage.setItem('macacoin_correo', correo);
       localStorage.setItem('macacoin_numero', numero);
       localStorage.setItem('macacoin_sesion_activa', 'true');
+
+      // Inicializar monedas de este usuario si no existen
+      if(!localStorage.getItem('macacoin_monedas')) {
+        localStorage.setItem('macacoin_monedas', '0');
+      }
+
+      // Registrar o actualizar en la lista general de usuarios para el Admin
+      actualizarListaUsuariosAdminGeneral(nombre, correo, parseInt(localStorage.getItem('macacoin_monedas')));
 
       mostrarPanelUsuario();
     }
@@ -181,12 +196,16 @@
       document.getElementById('adminSection').classList.add('hidden');
       document.getElementById('userPanelSection').classList.remove('hidden');
 
-      document.getElementById('lblNombre').innerText = localStorage.getItem('macacoin_nombre');
-      document.getElementById('lblCorreo').innerText = localStorage.getItem('macacoin_correo');
-      document.getElementById('lblNumero').innerText = localStorage.getItem('macacoin_numero') || "No registrado";
+      let nombre = localStorage.getItem('macacoin_nombre') || "";
+      let correo = localStorage.getItem('macacoin_correo') || "";
+      let numero = localStorage.getItem('macacoin_numero') || "No registrado";
+
+      document.getElementById('lblNombre').innerText = nombre;
+      document.getElementById('lblCorreo').innerText = correo;
+      document.getElementById('lblNumero').innerText = numero;
 
       actualizarBarraMonedas();
-      cargarPlataformasAdminEnUsuario();
+      cargarPlataformasEnUsuario();
     }
 
     function cerrarSesion() {
@@ -197,11 +216,11 @@
     // Tuerquita Admin
     function abrirAdmin() {
       let claveAdmin = prompt("Introduce la clave de Administrador:");
-      if(claveAdmin === "admin123" || claveAdmin === "1234") { // Puedes cambiar tu clave aquí
+      if(claveAdmin === "admin123" || claveAdmin === "1234") {
         document.getElementById('loginSection').classList.add('hidden');
         document.getElementById('userPanelSection').classList.add('hidden');
         document.getElementById('adminSection').classList.remove('hidden');
-        cargarPlataformasAdmin();
+        cargarAdminDatos();
       } else if(claveAdmin !== null) {
         alert("❌ Clave incorrecta.");
       }
@@ -215,25 +234,68 @@
       }
     }
 
-    // Guardar y cargar plataformas permanentemente (LocalStorage)
+    // Guardar enlaces y recargar admin
     function guardarPlataformasAdmin() {
       for(let i=1; i<=5; i++) {
         let val = document.getElementById('adminPlat'+i).value;
         localStorage.setItem('macacoin_url_plat'+i, val);
       }
-      alert("✅ ¡Enlaces de plataformas guardados de forma permanente con éxito!");
+      alert("✅ ¡Cambios guardados con éxito!");
       volverAlLoginDesdeAdmin();
     }
 
-    function cargarPlataformasAdmin() {
+    function cargarAdminDatos() {
+      // Cargar plataformas
       for(let i=1; i<=5; i++) {
         let val = localStorage.getItem('macacoin_url_plat'+i) || "#";
         let campo = document.getElementById('adminPlat'+i);
         if(campo) campo.value = val;
       }
+      // Cargar lista de usuarios para que el Admin lleve la cuenta
+      let contenedor = document.getElementById('listaUsuariosAdmin');
+      let lista = JSON.parse(localStorage.getItem('macacoin_lista_usuarios')) || [];
+     
+      // Asegurarse de incluir al usuario activo actual si existe
+      let nombreActual = localStorage.getItem('macacoin_nombre');
+      if(nombreActual) {
+        let correoActual = localStorage.getItem('macacoin_correo');
+        let monedasActuales = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
+        let existe = lista.find(u => u.correo === correoActual);
+        if(!existe) {
+          lista.push({nombre: nombreActual, correo: correoActual, monedas: monedasActuales});
+        } else {
+          existe.monedas = monedasActuales;
+        }
+        localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
+      }
+
+      if(lista.length === 0) {
+        contenedor.innerHTML = "No hay usuarios registrados todavía.";
+      } else {
+        let html = "";
+        lista.forEach((u, index) => {
+          html += `<div style="border-bottom: 1px solid #1f2947; padding: 4px 0;">
+            <b>#${index+1}</b> ${u.nombre} (${u.correo})<br>
+            💰 Producción: <b>${u.monedas || 0} monedas</b>
+          </div>`;
+        });
+        contenedor.innerHTML = html;
+      }
     }
 
-    function cargarPlataformasAdminEnUsuario() {
+    function actualizarListaUsuariosAdminGeneral(nombre, correo, monedas) {
+      let lista = JSON.parse(localStorage.getItem('macacoin_lista_usuarios')) || [];
+      let index = lista.findIndex(u => u.correo === correo);
+      if(index >= 0) {
+        lista[index].nombre = nombre;
+        lista[index].monedas = monedas;
+      } else {
+        lista.push({nombre: nombre, correo: correo, monedas: monedas});
+      }
+      localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
+    }
+
+    function cargarPlataformasEnUsuario() {
       for(let i=1; i<=5; i++) {
         let val = localStorage.getItem('macacoin_url_plat'+i) || "#";
         document.getElementById('linkPlat'+i).href = val;
@@ -246,18 +308,35 @@
       monedas += cant;
       if(monedas > 5000) monedas = 5000;
       localStorage.setItem('macacoin_monedas', monedas);
+     
+      // Actualizar también en la lista general del Admin
+      let correoActual = localStorage.getItem('macacoin_correo');
+      let nombreActual = localStorage.getItem('macacoin_nombre');
+      if(correoActual) {
+        actualizarListaUsuariosAdminGeneral(nombreActual, correoActual, monedas);
+      }
+
       actualizarBarraMonedas();
     }
+   
     function actualizarBarraMonedas() {
       document.getElementById('lblMonedas').innerText = monedas;
       let pct = (monedas / 5000) * 100;
       document.getElementById('barraProgreso').style.width = pct + "%";
     }
+
     function reclamarPremio() {
       if(monedas >= 5000) {
         alert("🎉 ¡Meta completada de 5,000 monedas! Vuelve al panel para reclamar tu retiro.");
         monedas = 0;
         localStorage.setItem('macacoin_monedas', monedas);
+       
+        let correoActual = localStorage.getItem('macacoin_correo');
+        let nombreActual = localStorage.getItem('macacoin_nombre');
+        if(correoActual) {
+          actualizarListaUsuariosAdminGeneral(nombreActual, correoActual, monedas);
+        }
+
         actualizarBarraMonedas();
       } else {
         alert("⚠️ Aún te faltan monedas para completar la meta de 5,000.");
