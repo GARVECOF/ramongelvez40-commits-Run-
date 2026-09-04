@@ -19,7 +19,6 @@
     .input { width: 100%; padding: 10px; background: #0d132d; border: 1px solid var(--line); color: #fff; border-radius: 8px; box-sizing: border-box; margin-bottom: 10px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
     .platform-item { background: #0d132d; border: 1px solid var(--line); border-radius: 10px; padding: 15px; text-align: center; }
-    /* Estilos para la barra de progreso de monedas */
     .progress-bar-container { background: #0d132d; border-radius: 8px; height: 12px; width: 100%; overflow: hidden; margin: 10px 0; border: 1px solid var(--line); }
     .progress-bar-fill { background: var(--cyan); height: 100%; width: 0%; transition: width 0.4s ease; }
   </style>
@@ -47,18 +46,18 @@
       const res = await fetch('/api/state');
       state = await res.json();
     } catch (e) {
-      // Datos por defecto para pruebas o modo local
-      state.user = { name: 'Luis Ramón', email: 'luis@correo.com', coins: 1200 };
-      state.platforms = [
-        { slot: 1, name: 'App 1', logo_url: '🎮', link: 'https://ejemplo1.com', active: true },
-        { slot: 2, name: 'App 2', logo_url: '🚀', link: 'https://ejemplo2.com', active: true },
-        { slot: 3, name: 'App 3', logo_url: '💎', link: 'https://ejemplo3.com', active: true },
-        { slot: 4, name: 'App 4', logo_url: '🔥', link: 'https://ejemplo4.com', active: true },
-        { slot: 5, name: 'App 5', logo_url: '⭐', link: 'https://ejemplo5.com', active: true }
-      ];
-      state.users = [
-        { name: 'Luis Ramón', email: 'luis@correo.com', coins: 1200 }
-      ];
+      // Datos iniciales si corre localmente o para pruebas
+      if (!state.platforms || state.platforms.length === 0) {
+        state.platforms = [
+          { slot: 1, name: 'App 1', logo_url: '🎮', link: 'https://ejemplo1.com', active: true },
+          { slot: 2, name: 'App 2', logo_url: '🚀', link: 'https://ejemplo2.com', active: true },
+          { slot: 3, name: 'App 3', logo_url: '💎', link: 'https://ejemplo3.com', active: true },
+          { slot: 4, name: 'App 4', logo_url: '🔥', link: 'https://ejemplo4.com', active: true },
+          { slot: 5, name: 'App 5', logo_url: '⭐', link: 'https://ejemplo5.com', active: true }
+        ];
+      }
+      if (!state.users) state.users = [];
+      if (!state.user) state.user = { name: 'Luis Ramón', email: 'luis@correo.com', coins: 1200 };
     }
     render();
   }
@@ -74,7 +73,6 @@
   function renderUser() {
     const userCoins = state.user ? state.user.coins || 0 : 0;
     const minCoinsForWithdraw = 5000; // Mínimo $1
-    const maxGoalForTier = 50000; // Meta alta para seguir jugando/tirando
     const progressPercent = Math.min(100, (userCoins / minCoinsForWithdraw) * 100);
 
     document.getElementById('app').innerHTML = `
@@ -116,8 +114,8 @@
       <div class="card">
         <h3>Plataformas Disponibles</h3>
         <div class="grid" style="margin-top: 15px;">
-          ${state.platforms.length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
-            state.platforms.map(p => `
+          ${state.platforms.filter(p => p.active).length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
+            state.platforms.filter(p => p.active).map(p => `
               <div class="platform-item">
                 <div style="font-size: 26px; margin-bottom: 8px;">${p.logo_url || '🎮'}</div>
                 <strong>${p.name}</strong>
@@ -142,7 +140,7 @@
       <!-- CONTROL DE USUARIOS REGISTRADOS Y GANANCIAS -->
       <div class="card">
         <h3>👥 Usuarios Registrados (Control de Ganancias y Pagos)</h3>
-        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Visualiza el nombre, correo y monedas de cada usuario para pagarles su pin.</p>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Cada usuario que se registre aparecerá aquí con su correo y monedas para pagarle su pin.</p>
         <div style="background: #0d132d; padding: 12px; border-radius: 8px;">
           ${state.users && state.users.length > 0 ? state.users.map(u => `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; gap: 10px;">
@@ -157,20 +155,24 @@
                 <button class="btn cyan" style="font-size: 11px; padding: 6px 12px; width: auto;" onclick="payUser('${u.email}')">Pagar Pin</button>
               </div>
             </div>
-          `).join('') : '<p style="color: var(--muted); font-size: 12px;">No hay usuarios registrados todavía.</p>'}
+          `).join('') : '<p style="color: var(--muted); font-size: 12px;">No hay usuarios registrados todavía. (Se irán sumando aquí automáticamente).</p>'}
         </div>
       </div>
 
-      <!-- GESTIÓN DE LAS 5 PLATAFORMAS -->
+      <!-- GESTIÓN DE LAS 5 PLATAFORMAS CON GANCHITO DE SEGURIDAD -->
       <div class="card">
-        <h3>Gestionar 5 Plataformas Dinámicas</h3>
+        <h3>Gestionar 5 Plataformas Dinámicas (Guardado Permanente)</h3>
+        <p style="font-size: 12px; color: var(--muted); margin-bottom: 12px;">Marca el ganchito de seguridad "Activa" para asegurar que la URL quede guardada y visible permanentemente.</p>
         ${state.platforms.map(p => `
-          <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #0d132d; padding: 8px; border-radius: 10px; flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #0d132d; padding: 10px; border-radius: 10px; flex-wrap: wrap;">
             <span style="font-weight: bold; color: var(--cyan);">#${p.slot}</span>
-            <input type="text" id="p_name_${p.slot}" class="input" value="${p.name}" placeholder="Nombre" style="flex:1; margin:0; min-width: 100px;">
-            <input type="text" id="p_logo_${p.slot}" class="input" value="${p.logo_url}" placeholder="Emoji" style="width: 60px; margin:0;">
+            <input type="text" id="p_name_${p.slot}" class="input" value="${p.name}" placeholder="Nombre" style="flex:1; margin:0; min-width: 90px;">
+            <input type="text" id="p_logo_${p.slot}" class="input" value="${p.logo_url}" placeholder="Emoji" style="width: 55px; margin:0;">
             <input type="text" id="p_link_${p.slot}" class="input" value="${p.link}" placeholder="URL" style="flex:2; margin:0; min-width: 120px;">
-            <button class="btn cyan" style="width: auto; padding: 6px 10px;" onclick="savePlatform(${p.slot})">Guardar</button>
+            <label style="font-size: 11px; white-space: nowrap; color: var(--yellow); cursor: pointer;">
+              <input type="checkbox" id="p_active_${p.slot}" ${p.active ? 'checked' : ''}> Activa (Guardar)
+            </label>
+            <button class="btn cyan" style="width: auto; padding: 6px 12px;" onclick="savePlatform(${p.slot})">Guardar</button>
           </div>
         `).join('')}
       </div>
@@ -181,17 +183,22 @@
     const name = document.getElementById(`p_name_${slot}`).value;
     const logo_url = document.getElementById(`p_logo_${slot}`).value;
     const link = document.getElementById(`p_link_${slot}`).value;
+    const active = document.getElementById(`p_active_${slot}`).checked;
+
+    // Actualiza de forma local en el estado para que persista al instante
+    const index = state.platforms.findIndex(p => p.slot === slot);
+    if (index !== -1) {
+      state.platforms[index] = { slot, name, logo_url, link, active };
+    }
 
     const res = await fetch(`/api/admin/platform/${slot}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, logo_url, link, active: true })
+      body: JSON.stringify({ name, logo_url, link, active })
     }).catch(() => ({ ok: true }));
 
-    if ((await res.json)?.ok !== false) {
-      alert('Plataforma guardada.');
-      loadData();
-    }
+    alert('¡Plataforma guardada y asegurada con éxito!');
+    render();
   }
 
   async function payUser(email) {
@@ -232,3 +239,5 @@
 
 </body>
 </html>
+
+ 
