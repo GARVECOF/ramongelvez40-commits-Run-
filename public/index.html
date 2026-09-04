@@ -3,184 +3,480 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lu diamanst - Ruleta Pro</title>
+  <title>MacaCoin - Recompensas & Ruleta Pro</title>
   <style>
-    :root { --bg: #0b1024; --panel: #141c3f; --text: #ffffff; --muted: #94a3b8; --purple: #7c3aed; --cyan: #06b6d4; --yellow: #f59e0b; --line: rgba(255,255,255,0.1); }
+    :root { --bg: #0b1024; --panel: #121936; --text: #f8f9ff; --muted: #a8b0d2; --purple: #806cff; --cyan: #46e0da; --yellow: #ffd166; --line: #ffffff18; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, #090d1f 0%, #151b3b 100%); font-family: 'Inter', system-ui, sans-serif; color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 15px; padding-bottom: 60px; }
-    .shell { width: min(100%, 500px); }
-    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 20px; margin-bottom: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-    .btn { background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border: 0; padding: 14px 20px; border-radius: 14px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; transition: 0.2s; box-shadow: 0 4px 12px rgba(124,58,237,0.4); }
-    .btn:hover { opacity: 0.95; transform: translateY(-2px); }
-    .btn.cyan { background: linear-gradient(135deg, #06b6d4, #0284c7); box-shadow: 0 4px 12px rgba(6,182,212,0.4); color: #0b1024; }
-    .input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid var(--line); background: #080c1d; color: var(--text); font-size: 14px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .coins-badge { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); padding: 8px 16px; border-radius: 50px; font-weight: bold; color: var(--yellow); display: flex; align-items: center; gap: 6px; }
-   
-    /* Ruleta Visualmente Atractiva */
-    .wheel-box { display: flex; flex-direction: column; align-items: center; position: relative; margin: 15px 0; }
-    .wheel-wrapper { position: relative; width: 300px; height: 300px; }
-    .wheel-pointer { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 26px solid #ef4444; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); z-index: 30; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
-    .wheel-outer { width: 100%; height: 100%; border-radius: 50%; border: 8px solid #fbbf24; box-shadow: 0 0 30px rgba(251,191,36,0.3); overflow: hidden; position: relative; background: #080c1d; }
-    .wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.15, 0.85, 0.15, 1); }
-   
-    /* Segmentos de la Ruleta */
-    .slice { position: absolute; width: 50%; height: 50%; top: 50%; left: 50%; transform-origin: 0% 0%; display: flex; align-items: center; justify-content: flex-end; padding-right: 30px; font-weight: 800; font-size: 14px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-   
-    .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706); color: #0b1024; border: 4px solid #fff; font-weight: 900; font-size: 13px; cursor: pointer; z-index: 20; box-shadow: 0 4px 15px rgba(0,0,0,0.5); display: grid; place-items: center; }
-    .wheel-center:hover { transform: translate(-50%, -50%) scale(1.05); }
-
+    body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 15% -10%, #27235c 0, #0b1024 43%); font-family: Inter, system-ui, sans-serif; color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; padding-bottom: 70px; }
+    .shell { width: min(100%, 550px); }
+    .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .brand { display: flex; gap: 12px; align-items: center; }
+    .mascot-avatar { width: 55px; height: 55px; border-radius: 18px; background: linear-gradient(135deg, #46e0da, #806cff); display: grid; place-items: center; font-size: 28px; box-shadow: 0 4px 20px rgba(70,224,218,0.4); }
+    .brand strong { font-size: 20px; display: block; }
+    .brand small { font-size: 11px; color: var(--muted); }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .btn { background: linear-gradient(135deg, #806cff, #5c4ed6); color: white; border: 0; padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn.cyan { background: linear-gradient(135deg, #46e0da, #218e9a); color: #0b1024; }
+    .input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--line); background: #0d132d; color: var(--text); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+    .platform-item { background: #1a2145; padding: 18px; border-radius: 14px; border: 1px solid var(--line); text-align: center; }
+    .progress-bar { width: 100%; background: #0d132d; height: 16px; border-radius: 10px; overflow: hidden; margin: 15px 0; border: 1px solid var(--line); }
+    .progress-fill { background: linear-gradient(90deg, #46e0da, #806cff); height: 100%; width: 0%; transition: width 0.4s ease; }
+    .gear-btn { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-size: 18px; }
+    .gear-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); }
     .hidden { display: none !important; }
-    .gear { background: transparent; border: 1px solid var(--line); color: var(--muted); padding: 8px 12px; border-radius: 12px; cursor: pointer; font-size: 16px; }
+   
+    /* Banner Fijo Inferior */
+    .admob-banner-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #121936ee; border-top: 1px solid var(--line); padding: 8px; text-align: center; z-index: 99; font-size: 11px; color: var(--muted); }
+   
+    /* Ruleta Pro Atractiva con Secciones */
+    .wheel-container { display: flex; flex-direction: column; align-items: center; position: relative; margin: 20px 0; }
+    .wheel-outer { position: relative; width: 260px; height: 260px; border-radius: 50%; border: 6px solid var(--yellow); box-shadow: 0 0 25px rgba(255,209,102,0.4); overflow: hidden; background: #0d132d; }
+    .wheel { width: 100%; height: 100%; border-radius: 50%; position: relative; transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1); }
+    .wheel-slice { position: absolute; width: 50%; height: 50%; top: 50%; left: 50%; transform-origin: 0% 0%; display: flex; align-items: center; justify-content: flex-end; padding-right: 25px; font-weight: bold; font-size: 13px; color: #0b1024; text-shadow: 0 1px 2px rgba(255,255,255,0.6); }
+    .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 22px solid #ff4757; position: absolute; top: -10px; z-index: 20; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+    .wheel-center-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #ffd166, #f39c12); color: #0b1024; border: 3px solid #fff; font-weight: bold; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+   
+    .footer-links { text-align: center; margin-top: 20px; font-size: 12px; color: var(--muted); }
+    .footer-links a { color: var(--cyan); text-decoration: none; margin: 0 10px; }
   </style>
 </head>
 <body>
 
 <div class="shell">
-  <div class="header">
-    <div>
-      <h2 style="margin:0;">💎 Lu diamanst</h2>
-      <small style="color: var(--muted);">Ruleta de Recompensas</small>
+  <div class="top">
+    <div class="brand">
+      <div class="mascot-avatar" title="MacaCoin">🪙</div>
+      <div>
+        <strong>MacaCoin</strong>
+        <small>Recompensas & Gaming</small>
+      </div>
     </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-      <div class="coins-badge" id="userCoinsHeader">🪙 0</div>
-      <button class="gear" onclick="toggleAdmin()">⚙️</button>
-    </div>
+    <button class="gear-btn" onclick="openAdminModal()" title="Panel Admin">⚙️</button>
   </div>
 
-  <div id="appView"></div>
+  <div id="app"></div>
+
+  <div class="footer-links">
+    <a href="/terminos" target="_blank">Términos y Condiciones</a> |
+    <a href="/privacidad" target="_blank">Política de Privacidad</a>
+  </div>
+</div>
+
+<!-- MODAL ADMIN -->
+<div id="adminModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: #121936; border: 2px solid var(--cyan);">
+  <h3>Panel Admin MacaCoin ⚙️</h3>
+  <input type="email" id="adminEmail" class="input" placeholder="Correo Admin">
+  <input type="password" id="adminPassword" class="input" placeholder="Contraseña Admin">
+  <button class="btn cyan" onclick="loginAdmin()">Entrar al Panel</button>
+  <button class="btn" style="background:transparent; margin-top:5px;" onclick="closeAdminModal()">Cancelar</button>
+</div>
+
+<!-- MODAL ANUNCIO RECOMPENSADO -->
+<div id="rewardedAdModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 110; background: #121936; border: 2px solid var(--yellow); text-align: center;">
+  <h3>📺 Anuncio Recompensado</h3>
+  <p style="font-size: 12px; color: var(--muted);">Espera que el anuncio termine para desbloquear tu giro:</p>
+  <div style="background: #0d132d; padding: 25px; border-radius: 12px; margin: 15px 0; border: 1px dashed var(--yellow);">
+    <div id="adCountdownText" style="font-size: 20px; font-weight: bold; color: var(--yellow);">Cargando anuncio...</div>
+    <p style="font-size: 11px; color: var(--muted); margin-top: 8px;">ID: <span id="displayRewardedId">--</span></p>
+  </div>
+  <button id="claimRewardBtn" class="btn cyan" disabled style="opacity: 0.5;" onclick="finishRewardAdAndSpin()">Girar Ruleta y Reclamar</button>
+</div>
+
+<!-- MODAL ANUNCIO INTERSTITIAL -->
+<div id="interstitialModal" class="card hidden" style="max-width: 400px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: #121936; border: 2px solid var(--yellow); text-align: center;">
+  <h3>📺 Anuncio Interstitial</h3>
+  <p style="font-size: 12px; color: var(--muted);">Disfruta este anuncio patrocinado antes de abrir tu plataforma:</p>
+  <div style="background: #0d132d; padding: 20px; border-radius: 12px; margin: 15px 0; border: 1px dashed var(--yellow);">
+    <b>ID Interstitial: <span id="displayInterstitialId">--</span></b>
+    <p style="font-size: 11px; color: var(--muted); margin-top: 5px;">Cargando contenido...</p>
+  </div>
+  <button class="btn cyan" onclick="closeInterstitial()">Cerrar Anuncio y Continuar</button>
+</div>
+
+<!-- BANNER FIJO INFERIOR -->
+<div class="admob-banner-footer" id="bannerFooter">
+  <span>[Banner Fijo] ID de Banner Activo: <strong id="displayBannerId">--</strong></span>
 </div>
 
 <script>
-  // Datos locales de ejemplo para que veas los premios bonitos de inmediato
-  let userCoins = 1250;
-  let currentDegree = 0;
-  let isAdminOpen = false;
+  let state = { user: null, isAdmin: false, platforms: [], wheelPrizes: [], users: [], settings: {} };
+  let currentWheelDegree = 0;
+  let isRegistering = false;
 
-  // Premios definidos con colores llamativos, texto y emojis claros
-  let wheelPrizes = [
-    { label: '5 🪙', color: '#06b6d4', coins: 5 },
-    { label: '🎁 Cofre', color: '#7c3aed', coins: 15 },
-    { label: '10 🪙', color: '#f59e0b', coins: 10 },
-    { label: '20 🪙', color: '#ef4444', coins: 20 },
-    { label: '🎁 Bonus', color: '#10b981', coins: 25 },
-    { label: '2 🪙', color: '#6366f1', coins: 2 }
-  ];
+  async function loadData() {
+    try {
+      const res = await fetch('/api/me');
+      const data = await res.json();
+      if (data.ok && data.user) {
+        state.isAdmin = data.isAdmin;
+        state.settings = data.settings || {};
+        updateAdIdsDisplay();
+        if (data.isAdmin) {
+          state.users = data.users;
+          state.platforms = data.platforms;
+          state.wheelPrizes = data.wheelPrizes;
+          renderAdmin();
+        } else {
+          state.user = data.user;
+          state.platforms = data.platforms;
+          state.wheelPrizes = data.wheelPrizes;
+          renderUser();
+        }
+      } else {
+        renderAuth();
+      }
+    } catch {
+      renderAuth();
+    }
+  }
 
-  function renderApp() {
-    const app = document.getElementById('appView');
-    document.getElementById('userCoinsHeader').innerText = `🪙 ${userCoins}`;
+  function updateAdIdsDisplay() {
+    const bId = state.settings.admob_banner || 'Banner_ID_Default';
+    const iId = state.settings.admob_interstitial || 'Interstitial_ID_Default';
+    const rId = state.settings.admob_rewarded || 'Rewarded_ID_Default';
+   
+    const db = document.getElementById('displayBannerId');
+    const di = document.getElementById('displayInterstitialId');
+    const dr = document.getElementById('displayRewardedId');
+    if(db) db.innerText = bId;
+    if(di) di.innerText = iId;
+    if(dr) dr.innerText = rId;
+  }
 
-    if (isAdminOpen) {
-      app.innerHTML = `
-        <div class="card">
-          <h3>Panel de Configuración ⚙️</h3>
-          <p style="font-size: 13px; color: var(--muted);">Modifica los premios de la ruleta fácilmente:</p>
-          ${wheelPrizes.map((p, i) => `
-            <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
-              <span style="font-size: 12px; width: 30px;">#${i+1}</span>
-              <input type="text" id="label_${i}" class="input" value="${p.label}" style="margin:0; flex:2;">
-              <input type="number" id="coins_${i}" class="input" value="${p.coins}" style="margin:0; flex:1;" placeholder="Monedas">
-              <input type="color" id="color_${i}" value="${p.color}" style="width: 40px; height: 40px; border:0; background:none; cursor:pointer;">
-            </div>
-          `).join('')}
-          <button class="btn cyan" style="margin-top: 10px;" onclick="saveWheelConfig()">Guardar Cambios</button>
-          <button class="btn" style="background: transparent; margin-top: 8px;" onclick="toggleAdmin()">Volver a la Ruleta</button>
-        </div>
-      `;
+  function renderAuth() {
+    isRegistering = false;
+    document.getElementById('app').innerHTML = `
+      <div class="card" style="max-width: 380px; margin: 30px auto; text-align: center;">
+        <div style="font-size: 35px; margin-bottom: 10px;">🪙🦜</div>
+        <h2>MacaCoin</h2>
+        <p style="color: var(--muted); font-size: 13px;">Inicia sesión con tu correo o regístrate para ganar.</p>
+        <div id="regNameBox" class="hidden"><input type="text" id="name" class="input" placeholder="Tu Nombre"></div>
+        <input type="email" id="email" class="input" placeholder="Correo electrónico">
+        <input type="password" id="password" class="input" placeholder="Contraseña (mínimo 6)">
+        <button class="btn" onclick="submitAuth()">Iniciar Sesión / Entrar</button>
+        <p id="toggleText" style="font-size: 12px; margin-top: 15px; color: var(--cyan); cursor: pointer;" onclick="toggleRegister()">¿No tienes cuenta? Regístrate aquí</p>
+      </div>
+    `;
+  }
+
+  function toggleRegister() {
+    isRegistering = !isRegistering;
+    const nameBox = document.getElementById('regNameBox');
+    const toggleText = document.getElementById('toggleText');
+    if (nameBox) nameBox.classList.toggle('hidden', !isRegistering);
+    if (toggleText) toggleText.innerText = isRegistering ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate aquí';
+  }
+
+  async function submitAuth() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const name = isRegistering ? document.getElementById('name').value.trim() : undefined;
+   
+    if (!email || !password) {
+      alert('Por favor completa el correo y la contraseña.');
       return;
     }
 
-    app.innerHTML = `
-      <div class="card" style="text-align: center;">
-        <h3 style="margin-top: 0;">🎡 ¡Gira y Gana!</h3>
-        <p style="font-size: 13px; color: var(--muted); margin-bottom: 10px;">Presiona el centro para girar la ruleta y llevarte tus monedas.</p>
-       
-        <div class="wheel-box">
-          <div class="wheel-pointer"></div>
-          <div class="wheel-wrapper">
-            <div class="wheel-outer">
-              <div id="wheelElem" class="wheel"></div>
-            </div>
-            <button class="wheel-center" onclick="spinWheel()">GIRAR</button>
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, name })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      loadData();
+    } else if (data.needsRegister) {
+      isRegistering = true;
+      const nameBox = document.getElementById('regNameBox');
+      const toggleText = document.getElementById('toggleText');
+      if (nameBox) nameBox.classList.remove('hidden');
+      if (toggleText) toggleText.innerText = '¿Ya tienes cuenta? Inicia sesión';
+      alert(data.error || 'Este correo no existe. Por favor completa tu nombre para registrarte.');
+    } else {
+      alert(data.error || 'Credenciales incorrectas.');
+    }
+  }
+
+  function renderUser() {
+    const coins = state.user.coins || 0;
+    const threshold = Number(state.settings.coins_per_dollar || 5000);
+    const progress = Math.min(100, (coins / threshold) * 100);
+
+    document.getElementById('app').innerHTML = `
+      <!-- SALDO Y BARRA DE 5000 PUNTOS -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <small style="color: var(--muted);">Bienvenido, ${state.user.name}</small>
+            <h2 style="margin: 5px 0;">🪙 ${coins} MacaCoins</h2>
           </div>
+          <button class="btn" style="width: auto;" onclick="logout()">Salir</button>
         </div>
        
-        <p id="resultMsg" style="font-size: 14px; font-weight: bold; color: var(--yellow); min-height: 20px; margin-top: 15px;"></p>
+        <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);">
+          <span>Meta de retiro: ${threshold.toLocaleString()} monedas ($1)</span>
+          <span>${coins} / ${threshold.toLocaleString()}</span>
+        </div>
+        <button class="btn cyan" style="margin-top: 15px;" onclick="requestRedemption(${threshold})" ${coins < threshold ? 'disabled style="opacity:0.5"' : ''}>Retirar $1 (Recompensa)</button>
       </div>
 
-      <div class="card" style="text-align: center; background: rgba(6,182,212,0.05); border-color: rgba(6,182,212,0.2);">
-        <h4 style="margin: 0 0 8px 0; color: var(--cyan);">💡 ¿Cómo funciona?</h4>
-        <p style="font-size: 12px; color: var(--muted); margin: 0;">Cada giro te otorga el premio exacto que marca la sección seleccionada en la rueda de la fortuna.</p>
+      <!-- RULETA PRO -->
+      <div class="card" style="text-align: center;">
+        <h3>🎡 Ruleta MacaCoin Pro</h3>
+        <p style="font-size: 12px; color: var(--muted);">Ve el anuncio recompensado para girar y ganar.</p>
+       
+        <div class="wheel-container">
+          <div class="wheel-pointer"></div>
+          <div class="wheel-outer">
+            <div id="wheelElem" class="wheel"></div>
+            <button class="wheel-center-btn" onclick="openRewardAdModal()">GIRAR</button>
+          </div>
+        </div>
+        <p id="wheelResultMsg" style="font-size: 13px; font-weight: bold; color: var(--yellow); margin-top: 10px;"></p>
+      </div>
+
+      <!-- 5 ESPACIOS EXACTOS DE PLATAFORMAS CONFIGURABLES -->
+      <div class="card">
+        <h3>Tus 5 Plataformas Personalizadas</h3>
+        <p style="font-size: 12px; color: var(--muted);">Accede a tus plataformas configuradas (se mostrará un anuncio interstitial).</p>
+        <div class="grid" style="margin-top: 15px;">
+          ${state.platforms.length === 0 ? '<p style="color: var(--muted);">No hay plataformas configuradas en el panel.</p>' :
+            state.platforms.map(p => `
+              <div class="platform-item">
+                <div style="font-size: 26px; margin-bottom: 8px;">${p.logo_url || '🌐'}</div>
+                <strong>${p.name || 'Plataforma ' + p.slot}</strong>
+                <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="triggerPlatformInterstitial('${p.link}')">Abrir Plataforma</button>
+              </div>
+            `).join('')}
+        </div>
       </div>
     `;
 
-    setTimeout(buildWheelGraphics, 50);
+    setTimeout(buildWheelSlices, 50);
   }
 
-  // Dibuja matemáticamente los cortes de la ruleta con sus textos y colores visibles
-  function buildWheelGraphics() {
+  function buildWheelSlices() {
     const wheel = document.getElementById('wheelElem');
     if (!wheel) return;
+    const prizes = state.wheelPrizes && state.wheelPrizes.length > 0 ? state.wheelPrizes : [
+      {label: '5 🪙', color: '#46e0da'}, {label: '🎁 Cofre', color: '#806cff'},
+      {label: '10 🪙', color: '#ffd166'}, {label: '20 🪙', color: '#ff6b6b'},
+      {label: '15 🪙', color: '#4ecdc4'}, {label: '🎁 Bonus', color: '#ffe66d'}
+    ];
    
     let html = '';
-    const total = wheelPrizes.length;
-    const sliceAngle = 360 / total;
-
-    wheelPrizes.forEach((p, index) => {
+    const sliceAngle = 360 / prizes.length;
+    prizes.forEach((p, index) => {
       const angle = index * sliceAngle;
-      // El truco CSS de skewY permite formar porciones de torta perfectas
       html += `
-        <div class="slice" style="background: ${p.color}; transform: rotate(${angle}deg) skewY(${90 - sliceAngle}deg);">
-          <span style="transform: skewY(${-(90 - sliceAngle)}deg) rotate(${sliceAngle / 2}deg); position: absolute; right: 22px; color: #fff;">${p.label}</span>
+        <div class="wheel-slice" style="background: ${p.color}; transform: rotate(${angle}deg) skewY(${90 - sliceAngle}deg);">
+          <span style="transform: skewY(${-(90 - sliceAngle)}deg) rotate(${sliceAngle/2}deg); position: absolute; right: 20px;">${p.label}</span>
         </div>
       `;
     });
     wheel.innerHTML = html;
   }
 
-  function spinWheel() {
-    const wheel = document.getElementById('wheelElem');
-    const msg = document.getElementById('resultMsg');
-    msg.innerText = "Girando ruleta...";
+  function triggerPlatformInterstitial(link) {
+    window.targetPlatformLink = link;
+    document.getElementById('interstitialModal').classList.remove('hidden');
+  }
 
-    // Seleccionar un premio aleatorio
-    const randomIndex = Math.floor(Math.random() * wheelPrizes.length);
-    const prize = wheelPrizes[randomIndex];
+  async function closeInterstitial() {
+    document.getElementById('interstitialModal').classList.add('hidden');
+    await fetch('/api/user/complete-level', { method: 'POST' });
+    if (window.targetPlatformLink) {
+      window.open(window.targetPlatformLink, '_blank');
+      window.targetPlatformLink = null;
+    }
+    loadData();
+  }
 
-    // Calcular grados de giro (vueltas completas + la porción exacta)
-    const sliceAngle = 360 / wheelPrizes.length;
-    const extraRotations = 360 * 5; // 5 vueltas completas
-    const targetDegree = currentDegree + extraRotations + (360 - (randomIndex * sliceAngle + sliceAngle / 2));
+  function openRewardAdModal() {
+    document.getElementById('rewardedAdModal').classList.remove('hidden');
+    const claimBtn = document.getElementById('claimRewardBtn');
+    const countdownText = document.getElementById('adCountdownText');
    
-    currentDegree = targetDegree;
-    wheel.style.transform = `rotate(${currentDegree}deg)`;
+    claimBtn.disabled = true;
+    claimBtn.style.opacity = '0.5';
+   
+    let countdown = 5;
+    countdownText.innerText = `Anuncio en curso (${countdown}s)`;
+   
+    const timer = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        countdownText.innerText = `Anuncio en curso (${countdown}s)`;
+      } else {
+        clearInterval(timer);
+        countdownText.innerText = `✅ ¡Anuncio Completo!`;
+        claimBtn.disabled = false;
+        claimBtn.style.opacity = '1';
+      }
+    }, 1000);
+  }
+
+  async function finishRewardAdAndSpin() {
+    document.getElementById('rewardedAdModal').classList.add('hidden');
+   
+    const res = await fetch('/api/user/spin', { method: 'POST' });
+    const data = await res.json();
+   
+    const wheel = document.getElementById('wheelElem');
+    const randomSpin = 1800 + Math.floor(Math.random() * 360);
+    currentWheelDegree += randomSpin;
+    if(wheel) wheel.style.transform = `rotate(${currentWheelDegree}deg)`;
 
     setTimeout(() => {
-      userCoins += prize.coins;
-      document.getElementById('userCoinsHeader').innerText = `🪙 ${userCoins}`;
-      msg.innerText = `🎉 ¡Ganaste ${prize.label}! (+${prize.coins} monedas)`;
+      const msg = document.getElementById('wheelResultMsg');
+      if(msg) msg.innerText = "🎉 ¡Premio acreditado con éxito!";
+      loadData();
     }, 4000);
   }
 
-  function toggleAdmin() {
-    isAdminOpen = !isAdminOpen;
-    renderApp();
+  function renderAdmin() {
+    document.getElementById('app').innerHTML = `
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Panel Admin MacaCoin ⚙️</h2>
+          <button class="btn" style="width: auto;" onclick="logout()">Cerrar Sesión</button>
+        </div>
+        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Configura tus IDs de anuncios y tus 5 plataformas en fila.</p>
+      </div>
+
+      <!-- IDs DE ANUNCIOS EN FILA -->
+      <div class="card">
+        <h3>Configuración de Anuncios (IDs)</h3>
+        <div style="margin-top: 10px;">
+          <label style="font-size: 11px; color: var(--muted);">Meta de Monedas para $1:</label>
+          <input type="number" id="cfgCoins" class="input" value="${state.settings.coins_per_dollar || 5000}">
+         
+          <label style="font-size: 11px; color: var(--muted);">Banner ID:</label>
+          <input type="text" id="cfgBanner" class="input" value="${state.settings.admob_banner || ''}" placeholder="ca-app-pub-xxx/xxx">
+         
+          <label style="font-size: 11px; color: var(--muted);">Interstitial ID:</label>
+          <input type="text" id="cfgInterstitial" class="input" value="${state.settings.admob_interstitial || ''}" placeholder="ca-app-pub-xxx/xxx">
+         
+          <label style="font-size: 11px; color: var(--muted);">Rewarded ID:</label>
+          <input type="text" id="cfgRewarded" class="input" value="${state.settings.admob_rewarded || ''}" placeholder="ca-app-pub-xxx/xxx">
+        </div>
+        <button class="btn cyan" style="margin-top: 15px;" onclick="saveSettings()">Guardar Ajustes y IDs</button>
+      </div>
+
+      <!-- LOS 5 ESPACIOS DE PLATAFORMAS EN FILA -->
+      <div class="card">
+        <h3>Tus 5 Plataformas (Slots 1 al 5)</h3>
+        <p style="font-size: 11px; color: var(--muted); margin-bottom: 10px;">Pon el nombre, emoji o logo, URL y marca si está activa:</p>
+        ${state.platforms.map(p => `
+          <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #0d132d; padding: 10px; border-radius: 10px; flex-wrap: wrap;">
+            <span style="font-weight: bold; color: var(--cyan); min-width: 45px;">Slot #${p.slot}</span>
+            <input type="text" id="p_name_${p.slot}" class="input" value="${p.name}" placeholder="Nombre" style="flex:1; margin:0; min-width: 90px;">
+            <input type="text" id="p_logo_${p.slot}" class="input" value="${p.logo_url}" placeholder="Emoji" style="width: 55px; margin:0;">
+            <input type="text" id="p_link_${p.slot}" class="input" value="${p.link}" placeholder="URL de la plataforma" style="flex:2; margin:0; min-width: 120px;">
+            <label style="font-size: 11px; white-space: nowrap;"><input type="checkbox" id="p_active_${p.slot}" ${p.active ? 'checked' : ''}> Activa</label>
+            <button class="btn cyan" style="width: auto; padding: 8px 12px;" onclick="savePlatform(${p.slot})">Guardar</button>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- RULETA PREMIOS -->
+      <div class="card">
+        <h3>Ruleta MacaCoin (Premios)</h3>
+        ${state.wheelPrizes.map(wp => `
+          <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #0d132d; padding: 8px; border-radius: 10px; flex-wrap: wrap;">
+            <span style="font-weight: bold; color: var(--yellow);">Pos #${wp.position}</span>
+            <input type="text" id="wp_label_${wp.position}" class="input" value="${wp.label}" style="flex:2; margin:0;">
+            <input type="number" id="wp_coins_${wp.position}" class="input" value="${wp.coins}" style="flex:1; margin:0;">
+            <input type="color" id="wp_color_${wp.position}" value="${wp.color}" style="width: 40px; height: 35px; border:0; background:none; cursor:pointer;">
+          </div>
+        `).join('')}
+        <button class="btn cyan" style="margin-top: 10px;" onclick="saveWheel()">Actualizar Ruleta</button>
+      </div>
+
+      <!-- USUARIOS REGISTRADOS -->
+      <div class="card">
+        <h3>Usuarios Registrados</h3>
+        <table>
+          <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Monedas</th></tr></thead>
+          <tbody>
+            ${state.users.map(u => `<tr><td>${u.id}</td><td>${u.name}</td><td>${u.email}</td><td><strong>🪙 ${u.coins}</strong></td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
   }
 
-  function saveWheelConfig() {
-    for (let i = 0; i < wheelPrizes.length; i++) {
-      wheelPrizes[i].label = document.getElementById(`label_${i}`).value;
-      wheelPrizes[i].coins = Number(document.getElementById(`coins_${i}`).value);
-      wheelPrizes[i].color = document.getElementById(`color_${i}`).value;
+  async function requestRedemption(amount) {
+    if (!confirm(`¿Canjear ${amount} MacaCoins?`)) return;
+    const res = await fetch('/api/user/redeem', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount_coins: amount }) });
+    const data = await res.json();
+    if (data.ok) { alert(data.message); loadData(); } else alert(data.error);
+  }
+
+  async function savePlatform(slot) {
+    const res = await fetch('/api/admin/platforms', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slot, name: document.getElementById(`p_name_${slot}`).value,
+        logo_url: document.getElementById(`p_logo_${slot}`).value,
+        link: document.getElementById(`p_link_${slot}`).value,
+        active: document.getElementById(`p_active_${slot}`).checked
+      })
+    });
+    if ((await res.json()).ok) { alert('Plataforma guardada con éxito.'); loadData(); }
+  }
+
+  async function saveWheel() {
+    const prizes = [];
+    for (let i = 1; i <= 6; i++) {
+      prizes.push({
+        position: i,
+        label: document.getElementById(`wp_label_${i}`).value,
+        coins: Number(document.getElementById(`wp_coins_${i}`).value),
+        color: document.getElementById(`wp_color_${i}`).value
+      });
     }
-    alert('¡Premios de la ruleta actualizados con éxito!');
-    isAdminOpen = false;
-    renderApp();
+    const res = await fetch('/api/admin/wheel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prizes }) });
+    if ((await res.json()).ok) { alert('Ruleta actualizada.'); loadData(); }
   }
 
-  // Inicializar
-  renderApp();
+  async function saveSettings() {
+    const res = await fetch('/api/admin/settings', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        coins_per_dollar: document.getElementById('cfgCoins').value,
+        admob_banner: document.getElementById('cfgBanner').value,
+        admob_interstitial: document.getElementById('cfgInterstitial').value,
+        admob_rewarded: document.getElementById('cfgRewarded').value
+      })
+    });
+    if ((await res.json()).ok) { alert('Ajustes e IDs guardados correctamente.'); loadData(); }
+  }
+
+  function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
+  function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
+
+  async function loginAdmin() {
+    const res = await fetch('/api/auth/admin-login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: document.getElementById('adminEmail').value, password: document.getElementById('adminPassword').value })
+    });
+    const data = await res.json();
+    if (data.ok) { closeAdminModal(); loadData(); } else alert(data.error);
+  }
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    loadData();
+  }
+
+  loadData();
 </script>
 
 </body>
