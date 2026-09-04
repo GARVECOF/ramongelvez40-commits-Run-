@@ -103,14 +103,11 @@
 
       <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
     
-      <!-- Contenedor general de plataformas con el script integrado correctamente -->
+      <!-- Cuadrícula de plataformas con el Muro Principal con su botón funcional -->
       <div class="platforms-grid" id="userPlatformsGrid">
-        <div class="platform-card" style="grid-column: 1 / -1; text-align: left;">
-          <div style="font-size: 13px; font-weight: bold; color: #46e0da; margin-bottom: 8px;">Muro de Ofertas Principal (CPAGrip)</div>
-          <div id="cpagrip-offerwall-container">
-            <!-- El script oficial se inyecta aquí de manera segura -->
-            <script type="text/javascript" src="https://getafilenow.com/script_include.php?id=1912064"></script>
-          </div>
+        <div class="platform-card">
+          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Muro Principal</div>
+          <a href="https://getafilenow.com/show.php?l=0&u=1912064&id=1912064" target="_blank">Abrir</a>
         </div>
       </div>
 
@@ -128,11 +125,11 @@
         Cargando usuarios...
       </div>
 
-      <!-- CONFIGURACIÓN DE PLATAFORMAS ADICIONALES -->
+      <!-- CONFIGURACIÓN DE PLATAFORMAS -->
       <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas Adicionales</h4>
     
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Monlix"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Offerwall"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 1:</label><input type="text" id="adminUrl1" class="input-box" placeholder="https://..."></div>
       </div>
 
@@ -316,11 +313,11 @@
     function renderizarPlataformasUsuario() {
       let grid = document.getElementById('userPlatformsGrid');
      
-      // Mantiene fijo el contenedor del script de CPAGrip que funciona incrustado
+      // Muro Principal con su tarjeta y botón "Abrir" idéntico
       let html = `
-        <div class="platform-card" style="grid-column: 1 / -1; text-align: left; margin-bottom: 10px;">
-          <div style="font-size: 13px; font-weight: bold; color: #46e0da; margin-bottom: 8px;">Muro de Ofertas Principal (CPAGrip)</div>
-          <script type="text/javascript" src="https://getafilenow.com/script_include.php?id=1912064"><\/script>
+        <div class="platform-card">
+          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Muro Principal</div>
+          <a href="https://getafilenow.com/show.php?l=0&u=1912064&id=1912064" target="_blank">Abrir</a>
         </div>
       `;
 
@@ -377,3 +374,5 @@
 
 </body>
 </html>
+
+ 
