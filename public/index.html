@@ -37,7 +37,7 @@
 </head>
 <body>
 
-  <!-- TUERQUITA DE ACCESO ADMINISTRADOR (Arriba) -->
+  <!-- TUERQUITA DE ACCESO ADMINISTRADOR -->
   <a class="admin-gear" onclick="abrirAdmin()" title="Panel de Administrador">⚙️</a>
 
   <div class="container" id="mainContainer">
@@ -103,11 +103,14 @@
 
       <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
     
-      <!-- Las plataformas que configure el admin aparecen aquí + Offer Wall fijo -->
+      <!-- Contenedor general de plataformas con el script integrado correctamente -->
       <div class="platforms-grid" id="userPlatformsGrid">
-        <div class="platform-card">
-          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Offer Wall Principal</div>
-          <a href="https://getafilenow.com/script_include.php?id=1912064" target="_blank">Abrir</a>
+        <div class="platform-card" style="grid-column: 1 / -1; text-align: left;">
+          <div style="font-size: 13px; font-weight: bold; color: #46e0da; margin-bottom: 8px;">Muro de Ofertas Principal (CPAGrip)</div>
+          <div id="cpagrip-offerwall-container">
+            <!-- El script oficial se inyecta aquí de manera segura -->
+            <script type="text/javascript" src="https://getafilenow.com/script_include.php?id=1912064"></script>
+          </div>
         </div>
       </div>
 
@@ -125,16 +128,16 @@
         Cargando usuarios...
       </div>
 
-      <!-- CONFIGURACIÓN DE LAS 5 PLATAFORMAS -->
-      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas</h4>
+      <!-- CONFIGURACIÓN DE PLATAFORMAS ADICIONALES -->
+      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas Adicionales</h4>
     
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Offerwall"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Monlix"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 1:</label><input type="text" id="adminUrl1" class="input-box" placeholder="https://..."></div>
       </div>
 
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 2 - Nombre:</label><input type="text" id="adminName2" class="input-box" placeholder="Ej: Monlix"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 2 - Nombre:</label><input type="text" id="adminName2" class="input-box" placeholder="Ej: App 2"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 2:</label><input type="text" id="adminUrl2" class="input-box" placeholder="https://..."></div>
       </div>
 
@@ -148,12 +151,7 @@
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 4:</label><input type="text" id="adminUrl4" class="input-box" placeholder="https://..."></div>
       </div>
 
-      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 12px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 5 - Nombre:</label><input type="text" id="adminName5" class="input-box" placeholder="Ej: App 5"></div>
-        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 5:</label><input type="text" id="adminUrl5" class="input-box" placeholder="https://..."></div>
-      </div>
-
-      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Plataformas</button>
+      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Cambios</button>
       <button onclick="volverAlLoginDesdeAdmin()" style="background: none; border: none; color: #46e0da; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px;">⬅️ Volver al Panel / Login</button>
     </div>
 
@@ -250,19 +248,19 @@
     }
 
     function guardarPlataformasAdmin() {
-      for(let i=1; i<=5; i++) {
+      for(let i=1; i<=4; i++) {
         let nameVal = document.getElementById('adminName'+i).value.trim();
         let urlVal = document.getElementById('adminUrl'+i).value.trim();
        
         localStorage.setItem('macacoin_name_plat'+i, nameVal);
         localStorage.setItem('macacoin_url_plat'+i, urlVal);
       }
-      alert("✅ ¡Enlace conectado con éxito para los usuarios!");
+      alert("✅ ¡Plataformas actualizadas con éxito!");
       cargarAdminDatos();
     }
 
     function cargarAdminDatos() {
-      for(let i=1; i<=5; i++) {
+      for(let i=1; i<=4; i++) {
         let nameVal = localStorage.getItem('macacoin_name_plat'+i) || ('Plataforma ' + i);
         let urlVal = localStorage.getItem('macacoin_url_plat'+i) || "";
        
@@ -318,15 +316,15 @@
     function renderizarPlataformasUsuario() {
       let grid = document.getElementById('userPlatformsGrid');
      
-      // Iniciamos con el Offer Wall principal fijo con su URL exacta
+      // Mantiene fijo el contenedor del script de CPAGrip que funciona incrustado
       let html = `
-        <div class="platform-card">
-          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Offer Wall Principal</div>
-          <a href="https://getafilenow.com/script_include.php?id=1912064" target="_blank">Abrir</a>
+        <div class="platform-card" style="grid-column: 1 / -1; text-align: left; margin-bottom: 10px;">
+          <div style="font-size: 13px; font-weight: bold; color: #46e0da; margin-bottom: 8px;">Muro de Ofertas Principal (CPAGrip)</div>
+          <script type="text/javascript" src="https://getafilenow.com/script_include.php?id=1912064"><\/script>
         </div>
       `;
 
-      for(let i=1; i<=5; i++) {
+      for(let i=1; i<=4; i++) {
         let name = localStorage.getItem('macacoin_name_plat'+i);
         let url = localStorage.getItem('macacoin_url_plat'+i);
 
@@ -343,13 +341,6 @@
             <div class="platform-card">
               <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
               <a href="${linkFinal}" target="_blank">Abrir</a>
-            </div>
-          `;
-        } else {
-          html += `
-            <div class="platform-card">
-              <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
-              <span style="font-size:10px; color:#888; display:block; margin-top:8px;">Próximamente</span>
             </div>
           `;
         }
