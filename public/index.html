@@ -174,15 +174,19 @@
       let nombre = document.getElementById('regNombre').value.trim();
       let correo = document.getElementById('regCorreo').value.trim();
       let numero = document.getElementById('regNumero').value.trim();
-      let p1 = document.getElementById('regPassword').value;
-      let p2 = document.getElementById('regPasswordConfirm').value;
+     
+      // .trim() elimina espacios en blanco que el teclado agregue por error
+      let p1 = document.getElementById('regPassword').value.trim();
+      let p2 = document.getElementById('regPasswordConfirm').value.trim();
 
-      if(!nombre || !correo || !p1 || !p2) {
+      if(!nombre || !correo || !p1) {
         alert("⚠️ Por favor completa todos los campos.");
         return;
       }
-      if(p1 !== p2) {
-        alert("❌ Las contraseñas no coinciden. Verifícalas.");
+     
+      // Si el usuario llena el campo de confirmar contraseña, verificamos
+      if(p2 !== "" && p1 !== p2) {
+        alert("❌ Las contraseñas no coinciden. Verifícalas bien.");
         return;
       }
 
@@ -242,7 +246,6 @@
       }
     }
 
-    // CONEXIÓN DIRECTA ADMIN -> USUARIO (Guarda y vincula el enlace)
     function guardarPlataformasAdmin() {
       for(let i=1; i<=5; i++) {
         let nameVal = document.getElementById('adminName'+i).value.trim();
@@ -309,7 +312,6 @@
       localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
     }
 
-    // CONEXIÓN DIRECTA USUARIO <- ADMIN (Muestra el botón "Abrir" si hay enlace)
     function renderizarPlataformasUsuario() {
       let grid = document.getElementById('userPlatformsGrid');
       let html = "";
