@@ -3,211 +3,267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Control - MacaCoin</title>
+  <title>MacaCoin - Plataforma</title>
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background: #0b1024;
-      color: #fff;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    /* Cabecera con el periquito y diamante */
-    .header {
-      background: #121936;
-      border: 1px solid #1f2947;
-      border-radius: 12px;
-      padding: 15px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .user-info {
-      background: #0b1024;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 10px;
-      font-size: 13px;
-      color: #46e0da;
-      text-align: left;
-    }
-    /* Barra de progreso de monedas */
-    .progress-box {
-      background: #121936;
-      border: 1px solid #1f2947;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .progress-bar-container {
-      background: #0b1024;
-      border-radius: 10px;
-      height: 20px;
-      width: 100%;
-      border: 1px solid #46e0da;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-    .progress-bar {
-      background: #46e0da;
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    /* Cuadrícula de las 5 plataformas */
-    .platforms-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .platform-card {
-      background: #121936;
-      border: 1px solid #1f2947;
-      border-radius: 10px;
-      padding: 15px;
-      text-align: center;
-    }
-    .platform-card a {
-      display: inline-block;
-      margin-top: 10px;
-      background: #46e0da;
-      color: #0b1024;
-      padding: 6px 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    .btn-action {
-      background: #46e0da;
-      color: #0b1024;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 14px;
-      margin-top: 5px;
-    }
+    body, html { margin: 0; padding: 0; font-family: sans-serif; background: #0b1024; color: #fff; }
+    .container { max-width: 500px; margin: 40px auto; padding: 20px; background: #121936; border: 1px solid #1f2947; border-radius: 12px; position: relative; }
+   
+    /* Tuerquita de Administración arriba a la derecha */
+    .admin-gear { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; text-decoration: none; }
+
+    /* Estilo de formularios y botones */
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; font-size: 12px; color: #46e0da; margin-bottom: 5px; }
+    .input-box { width: 100%; padding: 10px; background: #0b1024; border: 1px solid #1f2947; border-radius: 6px; color: #fff; box-sizing: border-box; }
+   
+    /* Contenedor del input con el botón del ojito */
+    .password-container { position: relative; }
+    .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #46e0da; cursor: pointer; font-size: 14px; }
+
+    .btn-main { width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; }
+
+    /* Se ocultan secciones hasta iniciar sesión */
+    .hidden { display: none; }
+
+    /* Panel de usuario y plataformas */
+    .platforms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
+    .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; text-align: center; }
+    .platform-card a { display: inline-block; margin-top: 8px; background: #46e0da; color: #0b1024; padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; }
+   
+    /* Barra de progreso */
+    .progress-bar-container { background: #0b1024; border-radius: 8px; height: 16px; width: 100%; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
+    .progress-bar { background: #46e0da; height: 100%; width: 0%; transition: width 0.3s; }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <!-- TUERQUITA DE ACCESO ADMINISTRADOR (Arriba) -->
+  <a class="admin-gear" onclick="abrirAdmin()" title="Panel de Administrador">⚙️</a>
+
+  <div class="container" id="mainContainer">
    
-    <!-- CABECERA: Periquito con diamante y datos del usuario -->
-    <div class="header">
-      <div style="font-size: 28px; margin-bottom: 5px;">🦜💎</div>
-      <h2 style="margin: 0; color: #46e0da; font-size: 18px;">MacaCoin - Panel de Control</h2>
+    <!-- 1. PANTALLA DE LOGIN / REGISTRO (Lo único que ve el usuario al entrar) -->
+    <div id="loginSection" style="text-align: center;">
+      <div style="font-size: 40px; margin-bottom: 5px;">🦜💎</div>
+      <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Iniciar Sesión</h2>
      
-      <div class="user-info" id="userInfoBox">
-        <strong>👤 Nombre:</strong> <span id="nombreUsuario">Cargando...</span><br>
-        <strong>📧 Correo:</strong> <span id="correoUsuario">Cargando...</span><br>
-        <strong>📱 Número:</strong> <span id="numeroUsuario">Cargando...</span>
+      <div class="form-group">
+        <label>Nombre de Usuario:</label>
+        <input type="text" id="regNombre" class="input-box" placeholder="Tu nombre">
       </div>
+
+      <div class="form-group">
+        <label>Correo Electrónico:</label>
+        <input type="email" id="regCorreo" class="input-box" placeholder="correo@ejemplo.com">
+      </div>
+
+      <div class="form-group">
+        <label>Número de Teléfono / WhatsApp:</label>
+        <input type="text" id="regNumero" class="input-box" placeholder="+57 3000000000">
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña:</label>
+        <div class="password-container">
+          <input type="password" id="regPassword" class="input-box" placeholder="Ingresa tu clave">
+          <button type="button" class="toggle-eye" onclick="togglePass('regPassword', this)">👁️</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Confirmar Contraseña:</label>
+        <div class="password-container">
+          <input type="password" id="regPasswordConfirm" class="input-box" placeholder="Confirma tu clave">
+          <button type="button" class="toggle-eye" onclick="togglePass('regPasswordConfirm', this)">👁️</button>
+        </div>
+      </div>
+
+      <button class="btn-main" onclick="registrarUsuario()">Entrar a mi Panel</button>
     </div>
 
-    <!-- BARRA DE PROGRESO (0 a 50,000 con reinicio cada 5,000) -->
-    <div class="progress-box">
-      <h3 style="margin: 0 0 5px 0; font-size: 14px; color: #fff;">Progreso de Monedas (Meta: 5,000 para Retirar)</h3>
-      <p style="font-size: 12px; color: #46e0da; margin: 0 0 10px 0;"><span id="monedasActuales">0</span> / 5,000 Monedas</p>
-     
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="barraProgreso"></div>
+    <!-- 2. PANEL DE CONTROL DEL USUARIO (Se muestra solo tras iniciar sesión) -->
+    <div id="userPanelSection" class="hidden">
+      <div style="text-align: center; margin-bottom: 15px;">
+        <span style="font-size: 30px;">🦜💎</span>
+        <h3 style="color: #46e0da; margin: 5px 0; font-size: 16px;">Panel de Usuario</h3>
       </div>
-     
-      <button class="btn-action" onclick="reclamarPremio()">🎁 Reclamar Premio (5k)</button>
+
+      <div style="background: #0b1024; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; border: 1px solid #1f2947;">
+        👤 <b>Nombre:</b> <span id="lblNombre"></span><br>
+        📧 <b>Correo:</b> <span id="lblCorreo"></span><br>
+        📱 <b>Número:</b> <span id="lblNumero"></span>
+      </div>
+
+      <!-- Barra de progreso (0 a 5,000 monedas) -->
+      <div style="background: #0b1024; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #1f2947; text-align: center;">
+        <div style="font-size: 12px; margin-bottom: 4px;">Progreso: <span id="lblMonedas">0</span> / 5,000 Monedas</div>
+        <div class="progress-bar-container"><div class="progress-bar" id="barraProgreso"></div></div>
+        <button onclick="reclamarPremio()" style="background: #46e0da; color: #0b1024; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; margin-top: 6px;">🎁 Reclamar Premio (5k)</button>
+      </div>
+
+      <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
+      <div class="platforms-grid">
+        <div class="platform-card"><div>🎮 Offerwall</div><a id="linkPlat1" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
+        <div class="platform-card"><div>🚀 Monlix</div><a id="linkPlat2" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
+        <div class="platform-card"><div>💎 App 3</div><a id="linkPlat3" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
+        <div class="platform-card"><div>🔥 App 4</div><a id="linkPlat4" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
+        <div class="platform-card"><div>⭐ App 5</div><a id="linkPlat5" href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a></div>
+      </div>
+
+      <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
     </div>
 
-    <!-- LAS 5 PLATAFORMAS DISPONIBLES (FIJAS Y GUARDADAS) -->
-    <h3 style="font-size: 15px; color: #46e0da; margin-bottom: 10px;">Plataformas Disponibles</h3>
-    <div class="platforms-grid">
+    <!-- 3. PANEL DE ADMINISTRADOR (Se abre con la tuerquita ⚙️) -->
+    <div id="adminSection" class="hidden">
+      <h3 style="color: #46e0da; font-size: 16px; text-align: center;">⚙️ Panel de Administrador</h3>
+      <p style="font-size: 11px; color: #aaa; text-align: center;">Configura los enlaces de las 5 plataformas y guárdalos permanentemente.</p>
      
-      <div class="platform-card">
-        <span style="font-size: 20px;">🎮</span>
-        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">Offerwall.me</div>
-        <!-- Aquí colocas tu enlace -->
-        <a href="https://offerwall.me" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
-      </div>
+      <div class="form-group"><label>Enlace Plataforma 1:</label><input type="text" id="adminPlat1" class="input-box"></div>
+      <div class="form-group"><label>Enlace Plataforma 2:</label><input type="text" id="adminPlat2" class="input-box"></div>
+      <div class="form-group"><label>Enlace Plataforma 3:</label><input type="text" id="adminPlat3" class="input-box"></div>
+      <div class="form-group"><label>Enlace Plataforma 4:</label><input type="text" id="adminPlat4" class="input-box"></div>
+      <div class="form-group"><label>Enlace Plataforma 5:</label><input type="text" id="adminPlat5" class="input-box"></div>
 
-      <div class="platform-card">
-        <span style="font-size: 20px;">🚀</span>
-        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">Monlix</div>
-        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
-      </div>
-
-      <div class="platform-card">
-        <span style="font-size: 20px;">💎</span>
-        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">App 3</div>
-        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
-      </div>
-
-      <div class="platform-card">
-        <span style="font-size: 20px;">🔥</span>
-        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">App 4</div>
-        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
-      </div>
-
-      <div class="platform-card">
-        <span style="font-size: 20px;">⭐</span>
-        <div style="font-size: 13px; font-weight: bold; margin-top: 5px;">App 5</div>
-        <a href="#" target="_blank" onclick="sumarMonedas(500)">Abrir</a>
-      </div>
-
+      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Enlaces Permanentemente</button>
+      <button onclick="volverAlLoginDesdeAdmin()" style="background: none; border: none; color: #46e0da; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px;">⬅️ Volver</button>
     </div>
 
   </div>
 
   <script>
-    // 1. CARGAR DATOS DEL USUARIO (Guardados de forma fija en el navegador)
-    window.onload = function() {
-      let nombre = localStorage.getItem('macacoin_nombre') || "Usuario Invitado";
-      let correo = localStorage.getItem('macacoin_correo') || "correo@ejemplo.com";
-      let numero = localStorage.getItem('macacoin_numero') || "+57 3000000000";
-
-      // Si no están guardados, puedes pedirlos por prompt la primera vez o dejarlos fijos
-      document.getElementById('nombreUsuario').innerText = nombre;
-      document.getElementById('correoUsuario').innerText = correo;
-      document.getElementById('numeroUsuario').innerText = numero;
-
-      actualizarBarra();
-    };
-
-    // 2. SISTEMA DE MONEDAS Y BARRA DE PROGRESO (Meta de 5,000)
-    let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-
-    function sumarMonedas(cantidad) {
-      monedas += cantidad;
-      if (monedas > 5000) monedas = 5000; // Tope máximo de la barra actual
-      localStorage.setItem('macacoin_monedas', monedas);
-      actualizarBarra();
-    }
-
-    function actualizarBarra() {
-      document.getElementById('monedasActuales').innerText = monedas;
-      let porcentaje = (monedas / 5000) * 100;
-      document.getElementById('barraProgreso').style.width = porcentaje + "%";
-    }
-
-    function reclamarPremio() {
-      if (monedas >= 5000) {
-        alert("🎉 ¡Felicitaciones! Has completado la meta de 5,000 monedas. Vuelve al panel o WhatsApp para retirar tu premio.");
-        monedas = 0; // Se reinicia a cero como pediste para la siguiente ronda
-        localStorage.setItem('macacoin_monedas', monedas);
-        actualizarBarra();
+    // Mostrar/Ocultar clave con el ojito
+    function togglePass(idInput, btn) {
+      let input = document.getElementById(idInput);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.innerText = "🙈";
       } else {
-        alert("⚠️ Aún te faltan monedas para completar la meta de 5,000 y poder retirar.");
+        input.type = "password";
+        btn.innerText = "👁️";
+      }
+    }
+
+    // Verificar si ya hay sesión iniciada al cargar
+    window.onload = function() {
+      cargarPlataformasAdmin();
+      if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
+        mostrarPanelUsuario();
+      }
+    }
+
+    function registrarUsuario() {
+      let nombre = document.getElementById('regNombre').value.trim();
+      let correo = document.getElementById('regCorreo').value.trim();
+      let numero = document.getElementById('regNumero').value.trim();
+      let p1 = document.getElementById('regPassword').value;
+      let p2 = document.getElementById('regPasswordConfirm').value;
+
+      if(!nombre || !correo || !p1 || !p2) {
+        alert("⚠️ Por favor completa todos los campos.");
+        return;
+      }
+      if(p1 !== p2) {
+        alert("❌ Las contraseñas no coinciden. Verifícalas.");
+        return;
+      }
+
+      // Guardar datos de usuario
+      localStorage.setItem('macacoin_nombre', nombre);
+      localStorage.setItem('macacoin_correo', correo);
+      localStorage.setItem('macacoin_numero', numero);
+      localStorage.setItem('macacoin_sesion_activa', 'true');
+
+      mostrarPanelUsuario();
+    }
+
+    function mostrarPanelUsuario() {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('adminSection').classList.add('hidden');
+      document.getElementById('userPanelSection').classList.remove('hidden');
+
+      document.getElementById('lblNombre').innerText = localStorage.getItem('macacoin_nombre');
+      document.getElementById('lblCorreo').innerText = localStorage.getItem('macacoin_correo');
+      document.getElementById('lblNumero').innerText = localStorage.getItem('macacoin_numero') || "No registrado";
+
+      actualizarBarraMonedas();
+      cargarPlataformasAdminEnUsuario();
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('macacoin_sesion_activa');
+      location.reload();
+    }
+
+    // Tuerquita Admin
+    function abrirAdmin() {
+      let claveAdmin = prompt("Introduce la clave de Administrador:");
+      if(claveAdmin === "admin123" || claveAdmin === "1234") { // Puedes cambiar tu clave aquí
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('userPanelSection').classList.add('hidden');
+        document.getElementById('adminSection').classList.remove('hidden');
+        cargarPlataformasAdmin();
+      } else if(claveAdmin !== null) {
+        alert("❌ Clave incorrecta.");
+      }
+    }
+
+    function volverAlLoginDesdeAdmin() {
+      if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
+        mostrarPanelUsuario();
+      } else {
+        location.reload();
+      }
+    }
+
+    // Guardar y cargar plataformas permanentemente (LocalStorage)
+    function guardarPlataformasAdmin() {
+      for(let i=1; i<=5; i++) {
+        let val = document.getElementById('adminPlat'+i).value;
+        localStorage.setItem('macacoin_url_plat'+i, val);
+      }
+      alert("✅ ¡Enlaces de plataformas guardados de forma permanente con éxito!");
+      volverAlLoginDesdeAdmin();
+    }
+
+    function cargarPlataformasAdmin() {
+      for(let i=1; i<=5; i++) {
+        let val = localStorage.getItem('macacoin_url_plat'+i) || "#";
+        let campo = document.getElementById('adminPlat'+i);
+        if(campo) campo.value = val;
+      }
+    }
+
+    function cargarPlataformasAdminEnUsuario() {
+      for(let i=1; i<=5; i++) {
+        let val = localStorage.getItem('macacoin_url_plat'+i) || "#";
+        document.getElementById('linkPlat'+i).href = val;
+      }
+    }
+
+    // Monedas y barra de progreso
+    let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
+    function sumarMonedas(cant) {
+      monedas += cant;
+      if(monedas > 5000) monedas = 5000;
+      localStorage.setItem('macacoin_monedas', monedas);
+      actualizarBarraMonedas();
+    }
+    function actualizarBarraMonedas() {
+      document.getElementById('lblMonedas').innerText = monedas;
+      let pct = (monedas / 5000) * 100;
+      document.getElementById('barraProgreso').style.width = pct + "%";
+    }
+    function reclamarPremio() {
+      if(monedas >= 5000) {
+        alert("🎉 ¡Meta completada de 5,000 monedas! Vuelve al panel para reclamar tu retiro.");
+        monedas = 0;
+        localStorage.setItem('macacoin_monedas', monedas);
+        actualizarBarraMonedas();
+      } else {
+        alert("⚠️ Aún te faltan monedas para completar la meta de 5,000.");
       }
     }
   </script>
 
 </body>
 </html>
-
- 
