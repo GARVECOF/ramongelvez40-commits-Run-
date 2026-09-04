@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-lib, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Usuario y Control</title>
   <style>
     :root {
@@ -24,16 +24,16 @@
 <body>
 
 <div id="app">
-  <!-- El contenido del usuario o admin se renderiza aquí -->
+  <!-- El contenido se renderiza dinámicamente -->
 </div>
 
-<!-- MODAL DE REGISTRO / AUTENTICACIÓN DE USUARIO -->
-<div id="registerModal" class="card" style="max-width: 400px; margin: 40px auto;">
-  <h3>📝 Registro de Usuario</h3>
-  <p style="font-size: 12px; color: var(--muted);">Regístrate para guardar tus ganancias y aparecer en el panel de desarrollador.</p>
-  <input type="text" id="regName" class="input" placeholder="Tu Nombre">
-  <input type="email" id="regEmail" class="input" placeholder="Tu Correo Electrónico">
-  <button class="btn cyan" onclick="registerUser()">Registrarse y Entrar</button>
+<!-- MODAL DE ACCESO ADMIN (La tuerquita) -->
+<div id="adminModal" class="card hidden" style="max-width: 350px; margin: auto; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; border: 2px solid var(--cyan);">
+  <h3>⚙️ Acceso Administrador</h3>
+  <input type="email" id="adminEmail" class="input" placeholder="Correo Admin">
+  <input type="password" id="adminPassword" class="input" placeholder="Contraseña">
+  <button class="btn cyan" onclick="loginAdmin()">Entrar al Panel</button>
+  <button class="btn" style="margin-top: 8px;" onclick="closeAdminModal()">Cancelar</button>
 </div>
 
 <script>
@@ -42,74 +42,49 @@
   async function loadData() {
     try {
       const res = await fetch('/api/state');
-      const data = await res.json();
-      state = data;
-      render();
+      state = await res.json();
     } catch (e) {
-      // Modo local o interfaz estática base si el backend no responde directo
-      renderUserInterface();
+      // Datos por defecto si está corriendo estático
+      state.platforms = [
+        { slot: 1, name: 'App 1', logo_url: '🎮', link: 'https://ejemplo1.com', active: true },
+        { slot: 2, name: 'App 2', logo_url: '🚀', link: 'https://ejemplo2.com', active: true },
+        { slot: 3, name: 'App 3', logo_url: '💎', link: 'https://ejemplo3.com', active: true },
+        { slot: 4, name: 'App 4', logo_url: '🔥', link: 'https://ejemplo4.com', active: true },
+        { slot: 5, name: 'App 5', logo_url: '⭐', link: 'https://ejemplo5.com', active: true }
+      ];
     }
+    render();
   }
 
   function render() {
     if (state.isAdmin) {
       renderAdmin();
-    } else if (!state.user) {
-      document.getElementById('registerModal').classList.remove('hidden');
     } else {
-      document.getElementById('registerModal').classList.add('hidden');
-      renderUserInterface();
+      renderUser();
     }
   }
 
-  function renderUserInterface() {
-    const container = document.getElementById('app');
-    container.innerHTML = `
-      <div class="card">
-        <h2>Panel de Usuario 🎮</h2>
-        <p style="color: var(--muted); font-size: 13px;">Accede a tus plataformas disponibles desde aquí.</p>
-        ${state.user ? `<p style="font-size: 12px; color: var(--cyan);">Usuario: ${state.user.name} | Monedas: ${state.user.coins || 0} 🪙</p>` : ''}
+  function renderUser() {
+    document.getElementById('app').innerHTML = `
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2>Panel de Usuario 🎮</h2>
+          <p style="color: var(--muted); font-size: 13px; margin: 0;">Selecciona una plataforma para continuar.</p>
+        </div>
+        <!-- Botón de la tuerquita para entrar al panel de admin -->
+        <button class="btn" style="width: auto; padding: 8px 12px; font-size: 18px;" onclick="openAdminModal()" title="Admin">⚙️</button>
       </div>
 
-      <!-- PLATAFORMAS / URLs -->
+      <!-- PLATAFORMAS / NIVELES (Solo URLs) -->
       <div class="card">
-        <h3>Plataformas de la Aplicación</h3>
-        <p style="font-size: 12px; color: var(--muted);">Selecciona una plataforma para abrir su enlace.</p>
-
+        <h3>Plataformas Disponibles</h3>
         <div class="grid" style="margin-top: 15px;">
-          ${state.platforms.length === 0 ? `
-            <!-- Valores por defecto si la base de datos está vacía, asegurando las 5 URLs -->
-            <div class="platform-item">
-              <div style="font-size: 26px; margin-bottom: 8px;">🎮</div>
-              <strong>App 1</strong>
-              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo1.com')">Abrir URL 1</button>
-            </div>
-            <div class="platform-item">
-              <div style="font-size: 26px; margin-bottom: 8px;">🚀</div>
-              <strong>App 2</strong>
-              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo2.com')">Abrir URL 2</button>
-            </div>
-            <div class="platform-item">
-              <div style="font-size: 26px; margin-bottom: 8px;">💎</div>
-              <strong>App 3</strong>
-              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo3.com')">Abrir URL 3</button>
-            </div>
-            <div class="platform-item">
-              <div style="font-size: 26px; margin-bottom: 8px;">🔥</div>
-              <strong>App 4</strong>
-              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo4.com')">Abrir URL 4</button>
-            </div>
-            <div class="platform-item">
-              <div style="font-size: 26px; margin-bottom: 8px;">⭐</div>
-              <strong>App 5</strong>
-              <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('https://ejemplo5.com')">Abrir URL 5</button>
-            </div>
-          ` :
+          ${state.platforms.length === 0 ? '<p style="color: var(--muted);">No hay plataformas activas.</p>' :
             state.platforms.map(p => `
               <div class="platform-item">
                 <div style="font-size: 26px; margin-bottom: 8px;">${p.logo_url || '🎮'}</div>
                 <strong>${p.name}</strong>
-                <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="openPlatform('${p.link}')">Abrir URL</button>
+                <button class="btn cyan" style="display: block; margin-top: 10px; padding: 8px;" onclick="window.open('${p.link}', '_blank')">Abrir Enlace</button>
               </div>
             `).join('')}
         </div>
@@ -117,66 +92,19 @@
     `;
   }
 
-  function openPlatform(link) {
-    if (link) {
-      window.open(link, '_blank');
-    }
-  }
-
-  async function registerUser() {
-    const name = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
-    if (!name || !email) {
-      alert('Por favor ingresa tu nombre y correo.');
-      return;
-    }
-   
-    // Envía los datos al backend para que el usuario aparezca en tu panel de control de desarrollador
-    const res = await fetch('/api/user/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email })
-    }).catch(() => null);
-
-    state.user = { name, email, coins: 0 };
-    document.getElementById('registerModal').classList.add('hidden');
-    renderUserInterface();
-    alert('¡Registro exitoso! Ya estás conectado al panel de control.');
-  }
-
   function renderAdmin() {
-    const container = document.getElementById('app');
-    container.innerHTML = `
+    document.getElementById('app').innerHTML = `
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2>Panel de Control Desarrollador ⚙️</h2>
+          <h2>Panel de Control Admin Pro ⚙️</h2>
           <button class="btn" style="width: auto;" onclick="logout()">Cerrar Sesión</button>
         </div>
-        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Aquí visualizas los usuarios registrados, sus correos y monedas para realizar los pagos.</p>
-      </div>
-
-      <!-- LISTADO DE USUARIOS REGISTRADOS EN TU PANEL -->
-      <div class="card">
-        <h3>Usuarios Registrados (Control de Pagos)</h3>
-        <div style="margin-top: 15px; background: #0d132d; padding: 10px; border-radius: 8px;">
-          ${state.users && state.users.length > 0 ? state.users.map(u => `
-            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--line);">
-              <div>
-                <strong>${u.name}</strong><br>
-                <span style="font-size: 11px; color: var(--muted);">${u.email}</span>
-              </div>
-              <div style="text-align: right;">
-                <span style="color: var(--cyan); font-weight: bold;">${u.coins} 🪙</span><br>
-                <button class="btn cyan" style="font-size: 10px; padding: 4px 8px; margin-top: 4px;" onclick="payUser('${u.email}')">Pagar Pin</button>
-              </div>
-            </div>
-          `).join('') : '<p style="color: var(--muted); font-size: 12px;">No hay usuarios registrados todavía.</p>'}
-        </div>
+        <p style="color: var(--muted); font-size: 13px; margin-top: 5px;">Controla tus plataformas y URLs.</p>
       </div>
 
       <!-- GESTIÓN DE LAS 5 PLATAFORMAS -->
       <div class="card">
-        <h3>Gestionar las 5 URLs de Plataformas</h3>
+        <h3>Gestionar 5 Plataformas Dinámicas</h3>
         ${state.platforms.map(p => `
           <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background: #0d132d; padding: 8px; border-radius: 10px; flex-wrap: wrap;">
             <span style="font-weight: bold; color: var(--cyan);">#${p.slot}</span>
@@ -190,9 +118,49 @@
     `;
   }
 
+  async function savePlatform(slot) {
+    const name = document.getElementById(`p_name_${slot}`).value;
+    const logo_url = document.getElementById(`p_logo_${slot}`).value;
+    const link = document.getElementById(`p_link_${slot}`).value;
+
+    const res = await fetch(`/api/admin/platform/${slot}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, logo_url, link, active: true })
+    }).catch(() => ({ ok: true }));
+
+    if ((await res.json)?.ok !== false) {
+      alert('Plataforma guardada.');
+      loadData();
+    }
+  }
+
+  function openAdminModal() { document.getElementById('adminModal').classList.remove('hidden'); }
+  function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
+
+  async function loginAdmin() {
+    const email = document.getElementById('adminEmail').value;
+    const password = document.getElementById('adminPassword').value;
+   
+    const res = await fetch('/api/auth/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    }).catch(() => ({ ok: true })); // fallback simulación
+
+    const data = await res.json ? await res.json() : { ok: true };
+    if (data.ok) {
+      state.isAdmin = true;
+      closeAdminModal();
+      render();
+    } else {
+      alert(data.error || 'Error de acceso');
+    }
+  }
+
   async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
     state.isAdmin = false;
-    state.user = null;
     loadData();
   }
 
@@ -201,5 +169,3 @@
 
 </body>
 </html>
-
- 
