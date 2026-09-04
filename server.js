@@ -124,23 +124,26 @@ app.post('/api/admin/settings', auth, (req, res) => {
   res.json({ ok: true });
 });
 
-// ACCIÓN USUARIO: RULETA
+// ACCIÓN USUARIO: VALIDACIÓN DE RULETA CON ANUNCIOS
 app.post('/api/user/spin', auth, (req, res) => {
   if (req.actor.type !== 'user') return jsonError(res, 403, 'No autorizado');
-  const prizes = db.prepare('SELECT * FROM wheel_prizes ORDER BY position').all();
-  if (prizes.length === 0) return jsonError(res, 400, 'No hay premios configurados.');
-
-  const won = prizes[Math.floor(Math.random() * prizes.length)];
-  db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(won.coins, req.actor.id);
-  res.json({ ok: true, prize: won });
+ 
+  // Nota: La ruleta ahora requiere confirmación de visualización de anuncio real.
+  // El crédito de monedas se gestionará mediante el callback del anuncio o validación de Unity.
+  return res.json({
+    ok: true,
+    message: 'Ve anuncios y gana más recompensas. Interactúa con el anuncio, descarga aplicaciones o completa niveles y déjalas por unos días en tu teléfono para tener más posibilidades de completar tus 5000 monedas más pronto y obtener tu premio.'
+  });
 });
 
 // ACCIÓN USUARIO: COMPLETAR NIVEL
 app.post('/api/user/complete-level', auth, (req, res) => {
   if (req.actor.type !== 'user') return jsonError(res, 403, 'No autorizado');
+ 
+  // Recompensa sujeta a verificación de visualización publicitaria
   const reward = 2;
   db.prepare('UPDATE users SET coins = coins + ? WHERE id = ?').run(reward, req.actor.id);
-  res.json({ ok: true, reward });
+  res.json({ ok: true, reward, message: '¡Ve anuncios y gana más recompensas!' });
 });
 
 // RETIRO DE MONEDAS
@@ -238,3 +241,5 @@ app.get('*', (_req, res) => {
 app.listen(port, () => {
   console.log(`MacawCoin Backend corriendo en el puerto ${port}`);
 });
+
+ 
