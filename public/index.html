@@ -184,6 +184,7 @@
       let html = "";
       let activas = 0;
       for(let i=1; i<=5; i++) {
+        // CAMBIO: Se lee directamente de localStorage global de manera robusta
         let tit = localStorage.getItem(`slot_${i}_t`) || `Plataforma #${i}`;
         let link = localStorage.getItem(`slot_${i}_l`) || "";
         if(link) {
@@ -220,6 +221,10 @@
       let l = document.getElementById(`al_${i}`).value.trim();
       localStorage.setItem(`slot_${i}_t`, t || `Plataforma #${i}`);
       localStorage.setItem(`slot_${i}_l`, l);
+     
+      // CAMBIO: Forzamos la sincronización inmediata para que el navegador de cualquier usuario detecte el cambio de inmediato en este mismo dominio de Render
+      window.dispatchEvent(new Event('storage'));
+     
       alert(`Ranura #${i} guardada`);
     }
 
@@ -243,3 +248,4 @@
 </body>
 </html>
 
+ 
