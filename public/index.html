@@ -29,7 +29,7 @@
     .platforms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
     .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; text-align: center; }
     .platform-card a { display: inline-block; margin-top: 8px; background: #46e0da; color: #0b1024; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; cursor: pointer; }
-   
+  
     /* Barra de progreso */
     .progress-bar-container { background: #0b1024; border-radius: 8px; height: 16px; width: 100%; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
     .progress-bar { background: #46e0da; height: 100%; width: 0%; transition: width 0.3s; }
@@ -41,12 +41,12 @@
   <a class="admin-gear" onclick="abrirAdmin()" title="Panel de Administrador">⚙️</a>
 
   <div class="container" id="mainContainer">
-   
+  
     <!-- 1. PANTALLA DE LOGIN / REGISTRO -->
     <div id="loginSection" style="text-align: center;">
       <div style="font-size: 40px; margin-bottom: 5px;">🦜💎</div>
       <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Iniciar Sesión</h2>
-     
+    
       <div class="form-group">
         <label>Nombre de Usuario:</label>
         <input type="text" id="regNombre" class="input-box" placeholder="Tu nombre">
@@ -94,21 +94,19 @@
         📱 <b>Número:</b> <span id="lblNumero"></span>
       </div>
 
-      <!-- Barra de progreso -->
+      <!-- Barra de progreso orientada a retiros escalonados -->
       <div style="background: #0b1024; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #1f2947; text-align: center;">
-        <div style="font-size: 12px; margin-bottom: 4px;">Progreso: <span id="lblMonedas">0</span> / 5,000 Monedas</div>
+        <div style="font-size: 12px; margin-bottom: 4px;">Puntos: <span id="lblMonedas">0</span> / <span id="lblMetaActual">5,000</span> (Equivale a $<span id="lblDolaresRetiro">1</span>)</div>
         <div class="progress-bar-container"><div class="progress-bar" id="barraProgreso"></div></div>
-        <button onclick="reclamarPremio()" style="background: #46e0da; color: #0b1024; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; margin-top: 6px;">🎁 Reclamar Premio (5k)</button>
+        <div style="font-size: 10px; color: #aaa; margin-bottom: 6px;">Mínimo de retiro: 5,000 pts ($1) | Máximo por ciclo: 50,000 pts ($10)</div>
+        <button onclick="reclamarPremio()" style="background: #46e0da; color: #0b1024; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">🎁 Reclamar Retiro</button>
       </div>
 
       <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
-    
-      <!-- Cuadrícula de plataformas con el Muro Principal con su botón funcional -->
+  
+      <!-- Cuadrícula de plataformas dinámicas -->
       <div class="platforms-grid" id="userPlatformsGrid">
-        <div class="platform-card">
-          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Muro Principal</div>
-          <a href="https://getafilenow.com/show.php?l=0&u=1912064&id=1912064" target="_blank">Abrir</a>
-        </div>
+        <!-- Se cargan automáticamente vía JavaScript -->
       </div>
 
       <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
@@ -118,34 +116,39 @@
     <div id="adminSection" class="hidden">
       <h3 style="color: #46e0da; font-size: 16px; text-align: center;">⚙️ Panel de Administrador</h3>
       <p style="font-size: 11px; color: #aaa; text-align: center;">Personaliza los nombres, enlaces y revisa los usuarios.</p>
-    
+  
       <!-- CONTROL DE USUARIOS -->
-      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">👥 Control y Ganancias de Usuarios</h4>
+      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">👥 Control y Puntos de Usuarios</h4>
       <div id="listaUsuariosAdmin" style="background: #0b1024; padding: 8px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; text-align: left; margin-bottom: 15px; border: 1px solid #1f2947;">
         Cargando usuarios...
       </div>
 
-      <!-- CONFIGURACIÓN DE PLATAFORMAS -->
-      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas Adicionales</h4>
-    
+      <!-- CONFIGURACIÓN DE PLATAFORMAS (1 a 5) -->
+      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas</h4>
+  
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Offerwall"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Muro Principal"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 1:</label><input type="text" id="adminUrl1" class="input-box" placeholder="https://..."></div>
       </div>
 
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 2 - Nombre:</label><input type="text" id="adminName2" class="input-box" placeholder="Ej: App 2"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 2 - Nombre:</label><input type="text" id="adminName2" class="input-box" placeholder="Ej: Offerwall 2"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 2:</label><input type="text" id="adminUrl2" class="input-box" placeholder="https://..."></div>
       </div>
 
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 3 - Nombre:</label><input type="text" id="adminName3" class="input-box" placeholder="Ej: App 3"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 3 - Nombre:</label><input type="text" id="adminName3" class="input-box" placeholder="Ej: Encuestas"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 3:</label><input type="text" id="adminUrl3" class="input-box" placeholder="https://..."></div>
       </div>
 
       <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 4 - Nombre:</label><input type="text" id="adminName4" class="input-box" placeholder="Ej: App 4"></div>
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 4 - Nombre:</label><input type="text" id="adminName4" class="input-box" placeholder="Ej: Tareas App"></div>
         <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 4:</label><input type="text" id="adminUrl4" class="input-box" placeholder="https://..."></div>
+      </div>
+
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
+        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 5 - Nombre:</label><input type="text" id="adminName5" class="input-box" placeholder="Ej: Juegos CPA"></div>
+        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 5:</label><input type="text" id="adminUrl5" class="input-box" placeholder="https://..."></div>
       </div>
 
       <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Cambios</button>
@@ -174,7 +177,6 @@
       let nombre = document.getElementById('regNombre').value.trim();
       let correo = document.getElementById('regCorreo').value.trim();
       let numero = document.getElementById('regNumero').value.trim();
-     
       let p1 = document.getElementById('regPassword').value.trim();
       let p2 = document.getElementById('regPasswordConfirm').value.trim();
 
@@ -245,7 +247,7 @@
     }
 
     function guardarPlataformasAdmin() {
-      for(let i=1; i<=4; i++) {
+      for(let i=1; i<=5; i++) {
         let nameVal = document.getElementById('adminName'+i).value.trim();
         let urlVal = document.getElementById('adminUrl'+i).value.trim();
        
@@ -257,7 +259,7 @@
     }
 
     function cargarAdminDatos() {
-      for(let i=1; i<=4; i++) {
+      for(let i=1; i<=5; i++) {
         let nameVal = localStorage.getItem('macacoin_name_plat'+i) || ('Plataforma ' + i);
         let urlVal = localStorage.getItem('macacoin_url_plat'+i) || "";
        
@@ -291,7 +293,7 @@
         lista.forEach((u, index) => {
           html += `<div style="border-bottom: 1px solid #1f2947; padding: 4px 0;">
             <b>#${index+1}</b> ${u.nombre} (${u.correo})<br>
-            💰 Monedas: <b>${u.monedas || 0}</b>
+            💰 Puntos: <b>${u.monedas || 0}</b>
           </div>`;
         });
         contenedor.innerHTML = html;
@@ -310,56 +312,11 @@
       localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
     }
 
-    
-     function renderizarPlataformasUsuario() {
-    let grid = document.getElementById('userPlatformsGrid');
-    let html = '';
+    function renderizarPlataformasUsuario() {
+      let grid = document.getElementById('userPlatformsGrid');
+      let html = '';
 
-    // Recorremos las plataformas configuradas (por ejemplo, del 1 al 4)
-    for(let i = 1; i <= 4; i++) {
-        // Obtenemos el nombre que escribiste en el panel de administrador
-        let nombrePlat = localStorage.getItem('macacoin_name_plat' + i) || ('Plataforma ' + i);
-        let urlPlat = localStorage.getItem('macacoin_url_plat' + i);
-
-        // Solo mostramos la tarjeta si tiene un enlace válido guardado
-        if(urlPlat && urlPlat !== "") {
-            let linkFinal = urlPlat;
-            if(!linkFinal.startsWith('http://') && !linkFinal.startsWith('https://')) {
-                linkFinal = 'https://' + linkFinal;
-            }
-
-            // Aquí armamos la tarjeta visual del usuario con su logo, su nombre dinámico y su botón
-            html += `
-                <div class="platform-card" style="background: #1e1e2f; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <!-- Aquí va el logo, icono o "muñequito" -->
-                        <div style="width: 45px; height: 45px; background: #2a2a40; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                            🎮
-                        </div>
-                        <div>
-                            <!-- Nombre dinámico que cambia según lo que escribas en el panel -->
-                            <div style="font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 3px;">${nombrePlat}</div>
-                            <div style="font-size: 11px; color: #46e0da;">Disponible para ganar</div>
-                        </div>
-                    </div>
-                    <!-- Botón para que el usuario abra el enlace y complete la oferta -->
-                    <a href="${linkFinal}" target="_blank" style="background: #46e0da; color: #000000; padding: 8px 16px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 13px;">Abrir</a>
-                </div>
-            `;
-        }
-    }
-
-    // Si no hay ninguna plataforma configurada, mostramos un aviso
-    if(html === "") {
-        html = '<div style="color: #aaa; text-align: center; padding: 20px;">No hay plataformas activas en este momento. Configúralas desde el panel.</div>';
-    }
-
-    grid.innerHTML = html;
-}
-
- 
-
-      for(let i=1; i<=4; i++) {
+      for(let i=1; i<=5; i++) {
         let name = localStorage.getItem('macacoin_name_plat'+i);
         let url = localStorage.getItem('macacoin_url_plat'+i);
 
@@ -380,23 +337,53 @@
           `;
         }
       }
+     
+      if(html === "") {
+        html = '<div style="color: #aaa; text-align: center; padding: 15px; grid-column: 1 / -1; font-size: 12px;">No hay plataformas activas. Configúralas desde el panel de administración.</div>';
+      }
+
       grid.innerHTML = html;
     }
 
-    let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-  
     function actualizarBarraMonedas() {
+      let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
       document.getElementById('lblMonedas').innerText = monedas;
-      let pct = (monedas / 5000) * 100;
+
+      // Cada bloque de 5,000 puntos representa $1 dólar (hasta 50,000 pts / $10)
+      let dolares = Math.floor(monedas / 5000);
+      let dolaresRestantesVisuales = dolares > 0 ? dolares : 1;
+      if(dolaresRestantesVisuales > 10) dolaresRestantesVisuales = 10;
+     
+      let metaActual = dolaresRestantesVisuales * 5000;
+     
+      document.getElementById('lblMetaActual').innerText = metaActual.toLocaleString();
+      document.getElementById('lblDolaresRetiro').innerText = dolaresRestantesVisuales;
+
+      // Progreso porcentual hacia la meta actual de retiro
+      let puntosEnCiclo = monedas % 5000;
+      if (monedas > 0 && puntosEnCiclo === 0 && monedas <= 50000) {
+        puntosEnCiclo = 5000; // Si completa exacto el múltiplo
+      }
+      let pct = (puntosEnCiclo / 5000) * 100;
+      if(pct > 100) pct = 100;
       document.getElementById('barraProgreso').style.width = pct + "%";
     }
 
     function reclamarPremio() {
+      let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
+     
+      // Validar si tiene al menos el mínimo de retiro ($1 = 5,000 puntos)
       if(monedas >= 5000) {
-        alert("🎉 ¡Meta completada de 5,000 monedas!");
-        monedas = 0;
+        let dolaresAretirar = Math.floor(monedas / 5000);
+        if(dolaresAretirar > 10) dolaresAretirar = 10; // Tope máximo de $10 por tanda
+        let puntosDescontar = dolaresAretirar * 5000;
+
+        alert(`🎉 ¡Felicitaciones! Has solicitado un retiro de $${dolaresAretirar} (${puntosDescontar.toLocaleString()} puntos).`);
+       
+        // Descontamos los puntos cobrados y la barra vuelve a cero (o al sobrante)
+        monedas -= puntosDescontar;
         localStorage.setItem('macacoin_monedas', monedas);
-      
+     
         let correoActual = localStorage.getItem('macacoin_correo');
         let nombreActual = localStorage.getItem('macacoin_nombre');
         if(correoActual) {
@@ -405,7 +392,7 @@
 
         actualizarBarraMonedas();
       } else {
-        alert("⚠️ Aún te faltan monedas para completar la meta de 5,000.");
+        alert("⚠️ Necesitas al menos 5,000 puntos ($1.00) para poder realizar un retiro.");
       }
     }
   </script>
