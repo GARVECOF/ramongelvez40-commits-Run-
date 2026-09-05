@@ -3,71 +3,243 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MacaCoin - Plataforma Oficial</title>
+  <title>MacaCoin</title>
   <style>
-    body, html { margin: 0; padding: 0; font-family: sans-serif; background: #0b1024; color: #fff; }
-    .container { max-width: 500px; margin: 40px auto; padding: 20px; background: #121936; border: 1px solid #1f2947; border-radius: 12px; position: relative; }
-    
-    /* Tuerca de Administrador */
-    .admin-gear { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #46e0da; font-size: 20px; cursor: pointer; }
-
-    .form-group { margin-bottom: 15px; text-align: left; }
-    .form-group label { display: block; font-size: 12px; color: #46e0da; margin-bottom: 5px; }
-    .input-box { width: 100%; padding: 10px; background: #0b1024; border: 1px solid #1f2947; border-radius: 6px; color: #fff; box-sizing: border-box; }
-    
-    .password-container { position: relative; }
-    .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #46e0da; cursor: pointer; font-size: 14px; }
-
-    .btn-main { width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; }
-    .btn-save { background: #28a745; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; width: 100%; margin-top: 5px; }
-
+    body { margin: 0; background: #0b1024; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .box { width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; background: #121936; border: 1px solid #1f2947; padding: 20px; border-radius: 12px; position: relative; box-sizing: border-box; }
+    .gear { position: absolute; top: 15px; right: 15px; background: #1f2947; border: 1px solid #46e0da; color: #46e0da; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; z-index: 5; }
+    .group { margin-bottom: 12px; text-align: left; }
+    .group label { display: block; font-size: 12px; color: #46e0da; margin-bottom: 4px; }
+    .input { width: 100%; padding: 10px; background: #0b1024; border: 1px solid #1f2947; border-radius: 6px; color: #fff; box-sizing: border-box; font-size: 14px; }
+    .btn { width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; }
+    .btn-sec { width: 100%; background: #555; color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 8px; }
     .hidden { display: none; }
-
-    .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-    .platform-card a { background: #46e0da; color: #0b1024; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; cursor: pointer; }
-   
-    .progress-bar-container { background: #0b1024; border-radius: 8px; height: 16px; width: 100%; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
-    .progress-bar { background: #46e0da; height: 100%; width: 0%; transition: width 0.3s; }
-    
-    .slot-box { background: #0b1024; border: 1px solid #1f2947; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
-    
-    .user-table { width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 10px; }
-    .user-table th, .user-table td { border: 1px solid #1f2947; padding: 8px; text-align: left; vertical-align: middle; }
-    .user-table th { background: #0b1024; color: #46e0da; }
+    .bar-cont { background: #0b1024; border-radius: 6px; height: 14px; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
+    .bar { background: #46e0da; height: 100%; width: 0%; }
+    .table { width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 8px; }
+    .table th, .table td { border: 1px solid #1f2947; padding: 6px; text-align: left; }
+    .table th { background: #0b1024; color: #46e0da; }
   </style>
 </head>
 <body>
 
-  <div class="container" id="mainContainer">
-   
-    <!-- TUERCA DE ADMINISTRADOR -->
-    <button class="admin-gear" onclick="abrirAdminLogin()" title="Panel de Administrador">⚙️</button>
+  <div class="box">
+    <button class="gear" onclick="irAdmin()">⚙️</button>
 
-    <!-- 1. PANTALLA DE ACCESO / REGISTRO DE USUARIO -->
-    <div id="loginSection" style="text-align: center;">
-      <div style="font-size: 40px; margin-bottom: 5px;">🦜💎</div>
-      <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Entrar a la Plataforma</h2>
-     
-      <div class="form-group">
-        <label>Nombre de Usuario:</label>
-        <input type="text" id="regNombre" class="input-box" placeholder="Tu nombre">
+    <div id="secLogin" style="text-align: center;">
+      <div style="font-size: 35px;">🦜💎</div>
+      <h3 style="color: #46e0da; font-size: 16px; margin: 10px 0;">MacaCoin - Acceso</h3>
+      <div class="group"><label>Nombre:</label><input type="text" id="rName" class="input" placeholder="Tu nombre"></div>
+      <div class="group"><label>Correo:</label><input type="email" id="rMail" class="input" placeholder="correo@ejemplo.com"></div>
+      <div class="group"><label>Contraseña:</label><input type="password" id="rPass1" class="input" placeholder="Clave"></div>
+      <div class="group"><label>Confirmar Contraseña:</label><input type="password" id="rPass2" class="input" placeholder="Repite clave"></div>
+      <button class="btn" onclick="loginUser()">Entrar a mi Panel</button>
+    </div>
+
+    <div id="secUser" class="hidden">
+      <div style="text-align: center;"><h3 style="color: #46e0da; margin: 5px 0;">Panel de Usuario</h3></div>
+      <div style="background: #0b1024; padding: 8px; border-radius: 6px; font-size: 11px; border: 1px solid #1f2947; margin-bottom: 10px;">
+        👤 <b id="uName"></b><br>📧 <span id="uMail"></span>
       </div>
-
-      <div class="form-group">
-        <label>Correo Electrónico:</label>
-        <input type="email" id="regCorreo" class="input-box" placeholder="correo@ejemplo.com">
+      <div style="background: #0b1024; padding: 10px; border-radius: 6px; border: 1px solid #1f2947; text-align: center; margin-bottom: 10px;">
+        <div style="font-size: 11px;">Puntos: <span id="pMonedas">0</span> / <span id="pMeta">5000</span></div>
+        <div class="bar-cont"><div class="bar" id="pBar"></div></div>
+        <button onclick="reclamar()" style="background: #46e0da; color: #0b1024; border: none; padding: 6px; border-radius: 4px; font-weight: bold; width: 100%; font-size: 11px; margin-top: 5px;">🎁 Reclamar Retiro</button>
       </div>
+      <h4 style="color: #46e0da; font-size: 13px; margin: 8px 0 4px 0;">Plataformas Activas</h4>
+      <div id="listPlatforms"></div>
+      <button class="btn-sec" style="background: #ff4d4d; margin-top: 15px;" onclick="salir()">Cerrar Sesión</button>
+    </div>
 
-      <div class="form-group">
-        <label>Contraseña:</label>
-        <div class="password-container">
-          <input type="password" id="regPassword" class="input-box" placeholder="Tu clave">
-          <button type="button" class="toggle-eye" onclick="togglePass('regPassword', this)">👁️</button>
-        </div>
+    <div id="secAdminLogin" class="hidden">
+      <h3 style="color: #46e0da; text-align: center; font-size: 15px;">⚙️ Acceso Administrador</h3>
+      <div class="group"><label>Correo Admin:</label><input type="email" id="aMail" class="input" placeholder="admin@macacoin.com"></div>
+      <div class="group"><label>Contraseña:</label><input type="password" id="aPass1" class="input" placeholder="Clave"></div>
+      <div class="group"><label>Confirmar Contraseña:</label><input type="password" id="aPass2" class="input" placeholder="Repite clave"></div>
+      <button class="btn" onclick="verificarAdmin()">Entrar al Panel Admin</button>
+      <button class="btn-sec" onclick="volverInicio()">Volver</button>
+    </div>
+
+    <div id="secAdminPanel" class="hidden">
+      <h3 style="color: #46e0da; text-align: center; font-size: 15px; margin-bottom: 10px;">🛠️ Panel Admin</h3>
+      <h4 style="color: #46e0da; font-size: 12px; margin-bottom: 5px;">Configurar 5 Plataformas</h4>
+      <div id="adminSlots"></div>
+      <h4 style="color: #46e0da; font-size: 12px; margin: 10px 0 5px 0;">Progreso de Usuarios</h4>
+      <div style="max-height: 180px; overflow-y: auto; background: #0b1024; padding: 5px; border-radius: 6px; border: 1px solid #1f2947;">
+        <table class="table">
+          <thead><tr><th>Usuario</th><th>Progreso (0 - 50k)</th></tr></thead>
+          <tbody id="adminTableUsers"></tbody>
+        </table>
       </div>
+      <button class="btn-sec" onclick="volverInicio()">Cerrar Panel Admin</button>
+    </div>
 
-      <div class="form-group">
-        <label>Confirmar Contraseña:</label>
-        <div class="password-container">
-          <input type="password" id="regPasswordConfirm" class="input-box" placeholder="Repite tu clave">
-          <button type="button" class
+  </div>
+
+  <script>
+    const ADM_M = "admin@macacoin.com";
+    const ADM_P = "123456";
+
+    window.onload = function() {
+      if(localStorage.getItem('m_activa') === 'true') mostrarUsuario();
+    }
+
+    function loginUser() {
+      let n = document.getElementById('rName').value.trim();
+      let m = document.getElementById('rMail').value.trim();
+      let p1 = document.getElementById('rPass1').value.trim();
+      let p2 = document.getElementById('rPass2').value.trim();
+
+      if(!n || !m || !p1 || !p2) { alert("Llena todos los campos"); return; }
+      if(p1 !== p2) { alert("Las contraseñas no coinciden"); return; }
+
+      localStorage.setItem('m_nombre', n);
+      localStorage.setItem('m_correo', m);
+      localStorage.setItem('m_activa', 'true');
+      if(!localStorage.getItem('m_monedas')) localStorage.setItem('m_monedas', '0');
+
+      sincronizarLista(n, m, parseInt(localStorage.getItem('m_monedas')));
+      mostrarUsuario();
+    }
+
+    function sincronizarLista(n, m, moneda) {
+      let lista = JSON.parse(localStorage.getItem('m_lista')) || [];
+      let idx = lista.findIndex(u => u.correo === m);
+      if(idx >= 0) { lista[idx].nombre = n; lista[idx].monedas = moneda; }
+      else { lista.push({ nombre: n, correo: m, monedas: moneda }); }
+      localStorage.setItem('m_lista', JSON.stringify(lista));
+    }
+
+    function mostrarUsuario() {
+      OcultarTodo();
+      document.getElementById('secUser').classList.remove('hidden');
+      document.getElementById('uName').innerText = localStorage.getItem('m_nombre');
+      document.getElementById('uMail').innerText = localStorage.getItem('m_correo');
+      actualizarBarra();
+      cargarOfertasUsuario();
+    }
+
+    function salir() {
+      localStorage.removeItem('m_activa');
+      location.reload();
+    }
+
+    function irAdmin() {
+      OcultarTodo();
+      document.getElementById('secAdminLogin').classList.remove('hidden');
+    }
+
+    function verificarAdmin() {
+      let m = document.getElementById('aMail').value.trim();
+      let p1 = document.getElementById('aPass1').value.trim();
+      let p2 = document.getElementById('aPass2').value.trim();
+      if(p1 !== p2) { alert("Las claves no coinciden"); return; }
+      if(m === ADM_M && p1 === ADM_P) {
+        OcultarTodo();
+        document.getElementById('secAdminPanel').classList.remove('hidden');
+        cargarSlotsAdmin();
+        cargarTablaAdmin();
+      } else { alert("Datos de admin incorrectos"); }
+    }
+
+    function volverInicio() {
+      if(localStorage.getItem('m_activa') === 'true') mostrarUsuario();
+      else location.reload();
+    }
+
+    function OcultarTodo() {
+      document.getElementById('secLogin').classList.add('hidden');
+      document.getElementById('secUser').classList.add('hidden');
+      document.getElementById('secAdminLogin').classList.add('hidden');
+      document.getElementById('secAdminPanel').classList.add('hidden');
+    }
+
+    function actualizarBarra() {
+      let mon = parseInt(localStorage.getItem('m_monedas')) || 0;
+      document.getElementById('pMonedas').innerText = mon.toLocaleString();
+      let bloque = Math.floor(mon / 5000);
+      let meta = (bloque + 1) * 5000;
+      if(meta > 50000) meta = 50000;
+      document.getElementById('pMeta').innerText = meta.toLocaleString();
+      let resto = mon % 5000;
+      let pct = (resto / 5000) * 100;
+      if(mon >= 50000) pct = 100;
+      document.getElementById('pBar').style.width = pct + "%";
+      sincronizarLista(localStorage.getItem('m_nombre'), localStorage.getItem('m_correo'), mon);
+    }
+
+    function reclamar() {
+      let mon = parseInt(localStorage.getItem('m_monedas')) || 0;
+      if(mon >= 5000) {
+        let cobro = Math.floor(mon / 5000);
+        alert(`¡Retiro exitoso de $${cobro} USD!`);
+        localStorage.setItem('m_monedas', mon % 5000);
+        actualizarBarra();
+      } else { alert("Necesitas al menos 5,000 puntos."); }
+    }
+
+    function cargarOfertasUsuario() {
+      let cont = document.getElementById('listPlatforms');
+      let usr = localStorage.getItem('m_nombre');
+      let html = "";
+      let activas = 0;
+      for(let i=1; i<=5; i++) {
+        let tit = localStorage.getItem(`slot_${i}_t`) || `Plataforma #${i}`;
+        let link = localStorage.getItem(`slot_${i}_l`) || "";
+        if(link) {
+          activas++;
+          let urlFinal = link + (link.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(usr);
+          html += `<div style="background: #0b1024; border: 1px solid #1f2947; padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+            <div style="font-size: 11px;"><b style="color: #46e0da;">${tit}</b></div>
+            <a href="${urlFinal}" target="_blank" style="background: #46e0da; color: #0b1024; padding: 4px 8px; text-decoration: none; font-size: 10px; font-weight: bold; border-radius: 4px;">Ir</a>
+          </div>`;
+        }
+      }
+      if(activas === 0) html = "<div style='text-align:center; font-size:10px; color:#aaa;'>No hay plataformas activas.</div>";
+      cont.innerHTML = html;
+    }
+
+    function cargarSlotsAdmin() {
+      let cont = document.getElementById('adminSlots');
+      let html = "";
+      for(let i=1; i<=5; i++) {
+        let t = localStorage.getItem(`slot_${i}_t`) || `Plataforma #${i}`;
+        let l = localStorage.getItem(`slot_${i}_l`) || "";
+        html += `<div style="background: #0b1024; border: 1px solid #1f2947; padding: 8px; border-radius: 6px; margin-bottom: 6px;">
+          <div style="font-size: 10px; color: #46e0da; font-weight: bold;">Ranura #${i}</div>
+          <input type="text" id="at_${i}" class="input" value="${t}" style="margin: 4px 0; padding: 6px; font-size: 11px;">
+          <input type="text" id="al_${i}" class="input" value="${l}" placeholder="https://..." style="margin-bottom: 4px; padding: 6px; font-size: 11px;">
+          <button style="background: #28a745; color: #fff; border: none; padding: 4px; font-size: 10px; font-weight: bold; border-radius: 4px; width: 100%; cursor: pointer;" onclick="guardarSlot(${i})">Guardar Ranura #${i}</button>
+        </div>`;
+      }
+      cont.innerHTML = html;
+    }
+
+    function guardarSlot(i) {
+      let t = document.getElementById(`at_${i}`).value.trim();
+      let l = document.getElementById(`al_${i}`).value.trim();
+      localStorage.setItem(`slot_${i}_t`, t || `Plataforma #${i}`);
+      localStorage.setItem(`slot_${i}_l`, l);
+      alert(`Ranura #${i} guardada`);
+    }
+
+    function cargarTablaAdmin() {
+      let tbody = document.getElementById('adminTableUsers');
+      let lista = JSON.parse(localStorage.getItem('m_lista')) || [];
+      let html = "";
+      lista.forEach(u => {
+        let m = u.monedas || 0;
+        let bloque = Math.floor(m / 5000);
+        let meta = (bloque + 1) * 5000;
+        if(meta > 50000) meta = 50000;
+        let resto = m % 5000;
+        let pct = (resto / 5000) * 100;
+        if(m >= 50000) pct = 100;
+        html += `<tr><td><b>${u.nombre}</b><br><span style="color:#aaa; font-size:9px;">${u.correo}</span></td><td><div style="font-size:9px;">${m.toLocaleString()} / ${meta.toLocaleString()}</div><div class="bar-cont" style="height:10px; margin:2px 0;"><div class="bar" style="width:${pct}%;"></div></div></td></tr>`;
+      });
+      tbody.innerHTML = html || "<tr><td colspan='2' style='text-align:center;'>Sin usuarios</td></tr>";
+    }
+  </script>
+</body>
+</html>
+
