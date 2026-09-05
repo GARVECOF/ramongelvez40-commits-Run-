@@ -313,13 +313,6 @@
     function renderizarPlataformasUsuario() {
       let grid = document.getElementById('userPlatformsGrid');
      
-      // Muro Principal con su tarjeta y botón "Abrir" idéntico
-      let html = `
-        <div class="platform-card">
-          <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Muro Principal</div>
-          <a href="https://getafilenow.com/show.php?l=0&u=1912064&id=1912064" target="_blank">Abrir</a>
-        </div>
-      `;
 
       for(let i=1; i<=4; i++) {
         let name = localStorage.getItem('macacoin_name_plat'+i);
