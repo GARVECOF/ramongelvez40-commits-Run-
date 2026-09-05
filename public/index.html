@@ -7,34 +7,47 @@
   <style>
     body, html { margin: 0; padding: 0; font-family: sans-serif; background: #0b1024; color: #fff; }
     .container { max-width: 500px; margin: 40px auto; padding: 20px; background: #121936; border: 1px solid #1f2947; border-radius: 12px; position: relative; }
-   
+    
+    /* Tuerca de Administrador */
+    .admin-gear { position: absolute; top: 15px; right: 15px; background: none; border: none; color: #46e0da; font-size: 20px; cursor: pointer; }
+
     .form-group { margin-bottom: 15px; text-align: left; }
     .form-group label { display: block; font-size: 12px; color: #46e0da; margin-bottom: 5px; }
     .input-box { width: 100%; padding: 10px; background: #0b1024; border: 1px solid #1f2947; border-radius: 6px; color: #fff; box-sizing: border-box; }
-   
+    
     .password-container { position: relative; }
     .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #46e0da; cursor: pointer; font-size: 14px; }
 
     .btn-main { width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; }
+    .btn-save { background: #28a745; color: #fff; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; width: 100%; margin-top: 5px; }
 
     .hidden { display: none; }
 
-    .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+    .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
     .platform-card a { background: #46e0da; color: #0b1024; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; cursor: pointer; }
-  
+   
     .progress-bar-container { background: #0b1024; border-radius: 8px; height: 16px; width: 100%; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
     .progress-bar { background: #46e0da; height: 100%; width: 0%; transition: width 0.3s; }
+    
+    .slot-box { background: #0b1024; border: 1px solid #1f2947; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    
+    .user-table { width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 10px; }
+    .user-table th, .user-table td { border: 1px solid #1f2947; padding: 8px; text-align: left; vertical-align: middle; }
+    .user-table th { background: #0b1024; color: #46e0da; }
   </style>
 </head>
 <body>
 
   <div class="container" id="mainContainer">
-  
-    <!-- 1. PANTALLA DE ACCESO DEL USUARIO -->
+   
+    <!-- TUERCA DE ADMINISTRADOR -->
+    <button class="admin-gear" onclick="abrirAdminLogin()" title="Panel de Administrador">⚙️</button>
+
+    <!-- 1. PANTALLA DE ACCESO / REGISTRO DE USUARIO -->
     <div id="loginSection" style="text-align: center;">
       <div style="font-size: 40px; margin-bottom: 5px;">🦜💎</div>
       <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Entrar a la Plataforma</h2>
-    
+     
       <div class="form-group">
         <label>Nombre de Usuario:</label>
         <input type="text" id="regNombre" class="input-box" placeholder="Tu nombre">
@@ -53,176 +66,8 @@
         </div>
       </div>
 
-      <button class="btn-main" onclick="entrarPlataforma()">Entrar a mi Panel</button>
-    </div>
-
-    <!-- 2. PANEL DEL USUARIO (DONDE APARECE LA OFERTA AUTOMÁTICA Y LOS RETIROS) -->
-    <div id="userPanelSection" class="hidden">
-      <div style="text-align: center; margin-bottom: 15px;">
-        <span style="font-size: 30px;">🦜💎</span>
-        <h3 style="color: #46e0da; margin: 5px 0; font-size: 16px;">Panel de Usuario</h3>
-      </div>
-
-      <div style="background: #0b1024; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; border: 1px solid #1f2947;">
-        👤 <b>Usuario:</b> <span id="lblNombre"></span><br>
-        📧 <b>Correo:</b> <span id="lblCorreo"></span>
-      </div>
-
-      <!-- Barra de Puntos Escalonados (Múltiplos de 5,000 hasta 50,000) -->
-      <div style="background: #0b1024; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #1f2947; text-align: center;">
-        <div style="font-size: 12px; margin-bottom: 4px;">Puntos: <span id="lblMonedas">0</span> / <span id="lblMetaBarra">5,000</span> (Equivale a $<span id="lblDolaresValor">1</span>)</div>
-        <div class="progress-bar-container"><div class="progress-bar" id="barraProgreso"></div></div>
-        <div style="font-size: 10px; color: #aaa; margin-bottom: 8px;">Retiros disponibles desde 5,000 hasta 50,000 puntos (cada 5k)</div>
-        <button onclick="reclamarRetiro()" style="width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 6px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">🎁 Reclamar Retiro y Reiniciar Barra</button>
-      </div>
-
-      <!-- LA PLATAFORMA O ANUNCIO QUE APARECE AUTOMÁTICO PARA TODOS -->
-      <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Oferta Activa (EE.UU.)</h4>
-      <div id="contenedorPlataformaAutomatica">
-        <!-- Se carga solo al abrir el enlace -->
-      </div>
-
-      <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
-    </div>
-
-  </div>
-
-  <script>
-    // =========================================================================
-    // CONFIGURACIÓN MAESTRA: Ponga aquí su enlace global de CPAGrip.
-    // Al abrirlo cualquier usuario desde cualquier país, le saldrá de una vez.
-    // =========================================================================
-    const ENLACE_OFERTA_GLOBAL = "https://singingfiles.com/show.php?l=0&u=25548";
-    const TITULO_OFERTA_GLOBAL = "🎁 Tarjeta Nike $100 (Oferta USA)";
-    const PUNTOS_POR_CLIC = 1000; // Puntos que se suman por interactuar
-    // =========================================================================
-
-    function togglePass(idInput, btn) {
-      let input = document.getElementById(idInput);
-      if (input.type === "password") {
-        input.type = "text";
-        btn.innerText = "🙈";
-      } else {
-        input.type = "password";
-        btn.innerText = "👁️";
-      }
-    }
-
-    window.onload = function() {
-      if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
-        mostrarPanelUsuario();
-      }
-    }
-
-    function entrarPlataforma() {
-      let nombre = document.getElementById('regNombre').value.trim();
-      let correo = document.getElementById('regCorreo').value.trim();
-      let p1 = document.getElementById('regPassword').value.trim();
-
-      if(!nombre || !correo || !p1) {
-        alert("⚠️ Por favor completa los datos para entrar.");
-        return;
-      }
-
-      localStorage.setItem('macacoin_nombre', nombre);
-      localStorage.setItem('macacoin_correo', correo);
-      localStorage.setItem('macacoin_sesion_activa', 'true');
-
-      if(!localStorage.getItem('macacoin_monedas')) {
-        localStorage.setItem('macacoin_monedas', '0');
-      }
-
-      mostrarPanelUsuario();
-    }
-
-    function mostrarPanelUsuario() {
-      document.getElementById('loginSection').classList.add('hidden');
-      document.getElementById('userPanelSection').classList.remove('hidden');
-
-      document.getElementById('lblNombre').innerText = localStorage.getItem('macacoin_nombre') || "";
-      document.getElementById('lblCorreo').innerText = localStorage.getItem('macacoin_correo') || "";
-
-      actualizarBarraYMetas();
-      cargarPlataformaAutomaticaParaUsuario();
-    }
-
-    function cerrarSesion() {
-      localStorage.removeItem('macacoin_sesion_activa');
-      location.reload();
-    }
-
-    function cargarPlataformaAutomaticaParaUsuario() {
-      let contenedor = document.getElementById('contenedorPlataformaAutomatica');
-      let nombreUsuario = localStorage.getItem('macacoin_nombre') || "usuario";
-
-      // Añade el SubID automático con el nombre del usuario para que lo rastree en CPAGrip
-      let enlaceConRastreo = ENLACE_OFERTA_GLOBAL + (ENLACE_OFERTA_GLOBAL.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(nombreUsuario);
-
-      contenedor.innerHTML = `
-        <div class="platform-card">
-          <div>
-            <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 2px;">${TITULO_OFERTA_GLOBAL}</div>
-            <div style="font-size: 10px; color: #aaa;">Gana puntos al completar el registro</div>
-          </div>
-          <a href="${enlaceConRastreo}" target="_blank" onclick="sumarPuntosAutomaticos()">Ir a Oferta</a>
-        </div>
-      `;
-    }
-
-    function sumarPuntosAutomaticos() {
-      let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-      monedas += PUNTOS_POR_CLIC;
-      if(monedas > 50000) monedas = 50000; // Tope máximo de 50,000 puntos
-     
-      localStorage.setItem('macacoin_monedas', monedas);
-      actualizarBarraYMetas();
-    }
-
-    function actualizarBarraYMetas() {
-      let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-      document.getElementById('lblMonedas').innerText = monedas.toLocaleString();
-
-      // Cálculo dinámico para la barra en bloques de 5,000 en 5,000
-      let bloqueActual = Math.floor(monedas / 5000);
-      let metaVisual = (bloqueActual + 1) * 5000;
-      if(metaVisual > 50000) metaVisual = 50000;
-      if(metaVisual < 5000) metaVisual = 5000;
-
-      let dolaresValor = Math.floor(metaVisual / 5000);
-
-      document.getElementById('lblMetaBarra').innerText = metaVisual.toLocaleString();
-      document.getElementById('lblDolaresValor').innerText = dolaresValor;
-
-      let puntosEnProgreso = monedas % 5000;
-      if(monedas > 0 && puntosEnProgreso === 0) puntosEnProgreso = 5000; // Si completa exacto el bloque
-
-      let pct = (puntosEnProgreso / 5000) * 100;
-      if(monedas >= 50000) pct = 100;
-     
-      document.getElementById('barraProgreso').style.width = pct + "%";
-    }
-
-    function reclamarRetiro() {
-      let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-
-      if(monedas >= 5000) {
-        // Calcula cuántos bloques de 5,000 tiene acumulados (ej: 5k, 10k, 15k... hasta 50k)
-        let bloquesParaRetirar = Math.floor(monedas / 5000);
-        let puntosARetirar = bloquesParaRetirar * 5000;
-        let dolaresCobrados = bloquesParaRetirar; // 5k = $1, 10k = $2, etc.
-
-        alert(`🎉 ¡Retiro exitoso! Has cobrado $${dolaresCobrados} USD (${puntosARetirar.toLocaleString()} puntos).`);
-       
-        // LA BARRA VUELVE A CERO O RESIDUO AUTOMÁTICAMENTE
-        let puntosSobrantes = monedas % 5000;
-        localStorage.setItem('macacoin_monedas', puntosSobrantes);
-       
-        actualizarBarraYMetas();
-      } else {
-        alert("⚠️ Necesitas acumular al menos 5,000 puntos para poder realizar un retiro.");
-      }
-    }
-  </script>
-
-</body>
-</html>
+      <div class="form-group">
+        <label>Confirmar Contraseña:</label>
+        <div class="password-container">
+          <input type="password" id="regPasswordConfirm" class="input-box" placeholder="Repite tu clave">
+          <button type="button" class
