@@ -310,9 +310,54 @@
       localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
     }
 
-    function renderizarPlataformasUsuario() {
-      let grid = document.getElementById('userPlatformsGrid');
-     
+    
+     function renderizarPlataformasUsuario() {
+    let grid = document.getElementById('userPlatformsGrid');
+    let html = '';
+
+    // Recorremos las plataformas configuradas (por ejemplo, del 1 al 4)
+    for(let i = 1; i <= 4; i++) {
+        // Obtenemos el nombre que escribiste en el panel de administrador
+        let nombrePlat = localStorage.getItem('macacoin_name_plat' + i) || ('Plataforma ' + i);
+        let urlPlat = localStorage.getItem('macacoin_url_plat' + i);
+
+        // Solo mostramos la tarjeta si tiene un enlace válido guardado
+        if(urlPlat && urlPlat !== "") {
+            let linkFinal = urlPlat;
+            if(!linkFinal.startsWith('http://') && !linkFinal.startsWith('https://')) {
+                linkFinal = 'https://' + linkFinal;
+            }
+
+            // Aquí armamos la tarjeta visual del usuario con su logo, su nombre dinámico y su botón
+            html += `
+                <div class="platform-card" style="background: #1e1e2f; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <!-- Aquí va el logo, icono o "muñequito" -->
+                        <div style="width: 45px; height: 45px; background: #2a2a40; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                            🎮
+                        </div>
+                        <div>
+                            <!-- Nombre dinámico que cambia según lo que escribas en el panel -->
+                            <div style="font-size: 15px; font-weight: bold; color: #ffffff; margin-bottom: 3px;">${nombrePlat}</div>
+                            <div style="font-size: 11px; color: #46e0da;">Disponible para ganar</div>
+                        </div>
+                    </div>
+                    <!-- Botón para que el usuario abra el enlace y complete la oferta -->
+                    <a href="${linkFinal}" target="_blank" style="background: #46e0da; color: #000000; padding: 8px 16px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 13px;">Abrir</a>
+                </div>
+            `;
+        }
+    }
+
+    // Si no hay ninguna plataforma configurada, mostramos un aviso
+    if(html === "") {
+        html = '<div style="color: #aaa; text-align: center; padding: 20px;">No hay plataformas activas en este momento. Configúralas desde el panel.</div>';
+    }
+
+    grid.innerHTML = html;
+}
+
+ 
 
       for(let i=1; i<=4; i++) {
         let name = localStorage.getItem('macacoin_name_plat'+i);
