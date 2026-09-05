@@ -197,27 +197,24 @@
     }
 
     // FUNCIÓN PUENTE: Recorta y procesa el enlace de forma segura para móviles y PC
-    function abrirOferta(link) {
+     function abrirOferta(link) {
       let usr = localStorage.getItem('m_nombre') || "usuario";
       let urlFinal = link;
      
-      // Si el enlace no es de offerwall limpio, le adjuntamos el subid de forma segura
       if (!link.includes("offerwall.me")) {
         urlFinal += (link.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(usr);
       }
-     
-      // Abre el enlace exactamente igual que un enlace directo de WhatsApp
-      window.open(urlFinal, '_system') || window.open(urlFinal, '_blank');
+
+      let fakeLink = document.createElement('a');
+      fakeLink.href = urlFinal;
+      fakeLink.target = '_blank';
+      fakeLink.rel = 'noopener noreferrer';
+      document.body.appendChild(fakeLink);
+      fakeLink.click();
+      document.body.removeChild(fakeLink);
     }
 
-    function cargarOfertasUsuario() {
-      let cont = document.getElementById('listPlatforms');
-      let html = "";
-      let activas = 0;
-      for(let i=1; i<=5; i++) {
-        let tit = localStorage.getItem(`slot_${i}_t`) || `Plataforma #${i}`;
-        let link = localStorage.getItem(`slot_${i}_l`) || "";
-        if(link) {
+ 
           activas++;
           // Convertimos el enlace en una llamada segura a la función puente
           let linkEscapado = link.replace(/'/g, "\\'");
