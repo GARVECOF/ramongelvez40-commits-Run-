@@ -3,49 +3,37 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MacaCoin - Plataforma</title>
+  <title>MacaCoin - Plataforma Oficial</title>
   <style>
     body, html { margin: 0; padding: 0; font-family: sans-serif; background: #0b1024; color: #fff; }
     .container { max-width: 500px; margin: 40px auto; padding: 20px; background: #121936; border: 1px solid #1f2947; border-radius: 12px; position: relative; }
    
-    /* Tuerquita de Administración arriba a la derecha */
-    .admin-gear { position: absolute; top: 15px; right: 15px; font-size: 20px; cursor: pointer; text-decoration: none; z-index: 10; }
-
-    /* Estilo de formularios y botones */
     .form-group { margin-bottom: 15px; text-align: left; }
     .form-group label { display: block; font-size: 12px; color: #46e0da; margin-bottom: 5px; }
     .input-box { width: 100%; padding: 10px; background: #0b1024; border: 1px solid #1f2947; border-radius: 6px; color: #fff; box-sizing: border-box; }
    
-    /* Contenedor del input con el botón del ojito */
     .password-container { position: relative; }
     .toggle-eye { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #46e0da; cursor: pointer; font-size: 14px; }
 
     .btn-main { width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px; }
 
-    /* Se ocultan secciones hasta iniciar sesión */
     .hidden { display: none; }
 
-    /* Panel de usuario y plataformas dinámicas */
-    .platforms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
-    .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; text-align: center; }
-    .platform-card a { display: inline-block; margin-top: 8px; background: #46e0da; color: #0b1024; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .platform-card { background: #0b1024; border: 1px solid #1f2947; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+    .platform-card a { background: #46e0da; color: #0b1024; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 11px; font-weight: bold; cursor: pointer; }
   
-    /* Barra de progreso */
     .progress-bar-container { background: #0b1024; border-radius: 8px; height: 16px; width: 100%; border: 1px solid #46e0da; overflow: hidden; margin: 8px 0; }
     .progress-bar { background: #46e0da; height: 100%; width: 0%; transition: width 0.3s; }
   </style>
 </head>
 <body>
 
-  <!-- TUERQUITA DE ACCESO ADMINISTRADOR -->
-  <a class="admin-gear" onclick="abrirAdmin()" title="Panel de Administrador">⚙️</a>
-
   <div class="container" id="mainContainer">
   
-    <!-- 1. PANTALLA DE LOGIN / REGISTRO -->
+    <!-- 1. PANTALLA DE ACCESO DEL USUARIO -->
     <div id="loginSection" style="text-align: center;">
       <div style="font-size: 40px; margin-bottom: 5px;">🦜💎</div>
-      <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Iniciar Sesión</h2>
+      <h2 style="color: #46e0da; font-size: 18px; margin-bottom: 15px;">MacaCoin - Entrar a la Plataforma</h2>
     
       <div class="form-group">
         <label>Nombre de Usuario:</label>
@@ -58,30 +46,17 @@
       </div>
 
       <div class="form-group">
-        <label>Número de Teléfono / WhatsApp:</label>
-        <input type="text" id="regNumero" class="input-box" placeholder="+57 3000000000">
-      </div>
-
-      <div class="form-group">
         <label>Contraseña:</label>
         <div class="password-container">
-          <input type="password" id="regPassword" class="input-box" placeholder="Ingresa tu clave">
+          <input type="password" id="regPassword" class="input-box" placeholder="Tu clave">
           <button type="button" class="toggle-eye" onclick="togglePass('regPassword', this)">👁️</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Confirmar Contraseña:</label>
-        <div class="password-container">
-          <input type="password" id="regPasswordConfirm" class="input-box" placeholder="Confirma tu clave">
-          <button type="button" class="toggle-eye" onclick="togglePass('regPasswordConfirm', this)">👁️</button>
-        </div>
-      </div>
-
-      <button class="btn-main" onclick="registrarUsuario()">Entrar a mi Panel</button>
+      <button class="btn-main" onclick="entrarPlataforma()">Entrar a mi Panel</button>
     </div>
 
-    <!-- 2. PANEL DE CONTROL DEL USUARIO -->
+    <!-- 2. PANEL DEL USUARIO (DONDE APARECE LA OFERTA AUTOMÁTICA Y LOS RETIROS) -->
     <div id="userPanelSection" class="hidden">
       <div style="text-align: center; margin-bottom: 15px;">
         <span style="font-size: 30px;">🦜💎</span>
@@ -89,75 +64,39 @@
       </div>
 
       <div style="background: #0b1024; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; border: 1px solid #1f2947;">
-        👤 <b>Nombre:</b> <span id="lblNombre"></span><br>
-        📧 <b>Correo:</b> <span id="lblCorreo"></span><br>
-        📱 <b>Número:</b> <span id="lblNumero"></span>
+        👤 <b>Usuario:</b> <span id="lblNombre"></span><br>
+        📧 <b>Correo:</b> <span id="lblCorreo"></span>
       </div>
 
-      <!-- Barra de progreso orientada a retiros escalonados -->
+      <!-- Barra de Puntos Escalonados (Múltiplos de 5,000 hasta 50,000) -->
       <div style="background: #0b1024; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #1f2947; text-align: center;">
-        <div style="font-size: 12px; margin-bottom: 4px;">Puntos: <span id="lblMonedas">0</span> / <span id="lblMetaActual">5,000</span> (Equivale a $<span id="lblDolaresRetiro">1</span>)</div>
+        <div style="font-size: 12px; margin-bottom: 4px;">Puntos: <span id="lblMonedas">0</span> / <span id="lblMetaBarra">5,000</span> (Equivale a $<span id="lblDolaresValor">1</span>)</div>
         <div class="progress-bar-container"><div class="progress-bar" id="barraProgreso"></div></div>
-        <div style="font-size: 10px; color: #aaa; margin-bottom: 6px;">Mínimo de retiro: 5,000 pts ($1) | Máximo por ciclo: 50,000 pts ($10)</div>
-        <button onclick="reclamarPremio()" style="background: #46e0da; color: #0b1024; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">🎁 Reclamar Retiro</button>
+        <div style="font-size: 10px; color: #aaa; margin-bottom: 8px;">Retiros disponibles desde 5,000 hasta 50,000 puntos (cada 5k)</div>
+        <button onclick="reclamarRetiro()" style="width: 100%; background: #46e0da; color: #0b1024; border: none; padding: 6px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px;">🎁 Reclamar Retiro y Reiniciar Barra</button>
       </div>
 
-      <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Plataformas Disponibles</h4>
-  
-      <!-- Cuadrícula de plataformas dinámicas -->
-      <div class="platforms-grid" id="userPlatformsGrid">
-        <!-- Se cargan automáticamente vía JavaScript -->
+      <!-- LA PLATAFORMA O ANUNCIO QUE APARECE AUTOMÁTICO PARA TODOS -->
+      <h4 style="color: #46e0da; font-size: 14px; margin: 10px 0 5px 0;">Oferta Activa (EE.UU.)</h4>
+      <div id="contenedorPlataformaAutomatica">
+        <!-- Se carga solo al abrir el enlace -->
       </div>
 
       <button onclick="cerrarSesion()" style="background: #ff4d4d; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-top: 15px; cursor: pointer; font-size: 12px; font-weight: bold;">Cerrar Sesión</button>
     </div>
 
-    <!-- 3. PANEL DE ADMINISTRADOR -->
-    <div id="adminSection" class="hidden">
-      <h3 style="color: #46e0da; font-size: 16px; text-align: center;">⚙️ Panel de Administrador</h3>
-      <p style="font-size: 11px; color: #aaa; text-align: center;">Personaliza los nombres, enlaces y revisa los usuarios.</p>
-  
-      <!-- CONTROL DE USUARIOS -->
-      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">👥 Control y Puntos de Usuarios</h4>
-      <div id="listaUsuariosAdmin" style="background: #0b1024; padding: 8px; border-radius: 6px; font-size: 11px; max-height: 120px; overflow-y: auto; text-align: left; margin-bottom: 15px; border: 1px solid #1f2947;">
-        Cargando usuarios...
-      </div>
-
-      <!-- CONFIGURACIÓN DE PLATAFORMAS (1 a 5) -->
-      <h4 style="color: #46e0da; font-size: 13px; margin-top: 10px; border-bottom: 1px solid #1f2947; padding-bottom: 5px;">🔗 Configurar Plataformas</h4>
-  
-      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 1 - Nombre:</label><input type="text" id="adminName1" class="input-box" placeholder="Ej: Muro Principal"></div>
-        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 1:</label><input type="text" id="adminUrl1" class="input-box" placeholder="https://..."></div>
-      </div>
-
-      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 2 - Nombre:</label><input type="text" id="adminName2" class="input-box" placeholder="Ej: Offerwall 2"></div>
-        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 2:</label><input type="text" id="adminUrl2" class="input-box" placeholder="https://..."></div>
-      </div>
-
-      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 3 - Nombre:</label><input type="text" id="adminName3" class="input-box" placeholder="Ej: Encuestas"></div>
-        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 3:</label><input type="text" id="adminUrl3" class="input-box" placeholder="https://..."></div>
-      </div>
-
-      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 4 - Nombre:</label><input type="text" id="adminName4" class="input-box" placeholder="Ej: Tareas App"></div>
-        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 4:</label><input type="text" id="adminUrl4" class="input-box" placeholder="https://..."></div>
-      </div>
-
-      <div style="background: #0b1024; padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid #1f2947;">
-        <div class="form-group" style="margin-bottom: 5px;"><label>Plataforma 5 - Nombre:</label><input type="text" id="adminName5" class="input-box" placeholder="Ej: Juegos CPA"></div>
-        <div class="form-group" style="margin-bottom: 0;"><label>Enlace URL 5:</label><input type="text" id="adminUrl5" class="input-box" placeholder="https://..."></div>
-      </div>
-
-      <button class="btn-main" onclick="guardarPlataformasAdmin()">💾 Guardar Cambios</button>
-      <button onclick="volverAlLoginDesdeAdmin()" style="background: none; border: none; color: #46e0da; width: 100%; margin-top: 10px; cursor: pointer; font-size: 12px;">⬅️ Volver al Panel / Login</button>
-    </div>
-
   </div>
 
   <script>
+    // =========================================================================
+    // CONFIGURACIÓN MAESTRA: Ponga aquí su enlace global de CPAGrip.
+    // Al abrirlo cualquier usuario desde cualquier país, le saldrá de una vez.
+    // =========================================================================
+    const ENLACE_OFERTA_GLOBAL = "https://singingfiles.com/show.php?l=0&u=25548";
+    const TITULO_OFERTA_GLOBAL = "🎁 Tarjeta Nike $100 (Oferta USA)";
+    const PUNTOS_POR_CLIC = 1000; // Puntos que se suman por interactuar
+    // =========================================================================
+
     function togglePass(idInput, btn) {
       let input = document.getElementById(idInput);
       if (input.type === "password") {
@@ -170,54 +109,41 @@
     }
 
     window.onload = function() {
-      cargarAdminDatos();
+      if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
+        mostrarPanelUsuario();
+      }
     }
 
-    function registrarUsuario() {
+    function entrarPlataforma() {
       let nombre = document.getElementById('regNombre').value.trim();
       let correo = document.getElementById('regCorreo').value.trim();
-      let numero = document.getElementById('regNumero').value.trim();
       let p1 = document.getElementById('regPassword').value.trim();
-      let p2 = document.getElementById('regPasswordConfirm').value.trim();
 
       if(!nombre || !correo || !p1) {
-        alert("⚠️ Por favor completa todos los campos.");
-        return;
-      }
-     
-      if(p2 !== "" && p1 !== p2) {
-        alert("❌ Las contraseñas no coinciden. Verifícalas bien.");
+        alert("⚠️ Por favor completa los datos para entrar.");
         return;
       }
 
       localStorage.setItem('macacoin_nombre', nombre);
       localStorage.setItem('macacoin_correo', correo);
-      localStorage.setItem('macacoin_numero', numero);
       localStorage.setItem('macacoin_sesion_activa', 'true');
 
       if(!localStorage.getItem('macacoin_monedas')) {
         localStorage.setItem('macacoin_monedas', '0');
       }
 
-      actualizarListaUsuariosAdminGeneral(nombre, correo, parseInt(localStorage.getItem('macacoin_monedas')));
       mostrarPanelUsuario();
     }
 
     function mostrarPanelUsuario() {
       document.getElementById('loginSection').classList.add('hidden');
-      document.getElementById('adminSection').classList.add('hidden');
       document.getElementById('userPanelSection').classList.remove('hidden');
 
-      let nombre = localStorage.getItem('macacoin_nombre') || "";
-      let correo = localStorage.getItem('macacoin_correo') || "";
-      let numero = localStorage.getItem('macacoin_numero') || "No registrado";
+      document.getElementById('lblNombre').innerText = localStorage.getItem('macacoin_nombre') || "";
+      document.getElementById('lblCorreo').innerText = localStorage.getItem('macacoin_correo') || "";
 
-      document.getElementById('lblNombre').innerText = nombre;
-      document.getElementById('lblCorreo').innerText = correo;
-      document.getElementById('lblNumero').innerText = numero;
-
-      actualizarBarraMonedas();
-      renderizarPlataformasUsuario();
+      actualizarBarraYMetas();
+      cargarPlataformaAutomaticaParaUsuario();
     }
 
     function cerrarSesion() {
@@ -225,179 +151,78 @@
       location.reload();
     }
 
-    function abrirAdmin() {
-      let claveAdmin = prompt("Introduce la clave de Administrador:");
-      if(claveAdmin === "admin123" || claveAdmin === "1234") {
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('userPanelSection').classList.add('hidden');
-        document.getElementById('adminSection').classList.remove('hidden');
-        cargarAdminDatos();
-      } else if(claveAdmin !== null) {
-        alert("❌ Clave incorrecta.");
-      }
+    function cargarPlataformaAutomaticaParaUsuario() {
+      let contenedor = document.getElementById('contenedorPlataformaAutomatica');
+      let nombreUsuario = localStorage.getItem('macacoin_nombre') || "usuario";
+
+      // Añade el SubID automático con el nombre del usuario para que lo rastree en CPAGrip
+      let enlaceConRastreo = ENLACE_OFERTA_GLOBAL + (ENLACE_OFERTA_GLOBAL.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(nombreUsuario);
+
+      contenedor.innerHTML = `
+        <div class="platform-card">
+          <div>
+            <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 2px;">${TITULO_OFERTA_GLOBAL}</div>
+            <div style="font-size: 10px; color: #aaa;">Gana puntos al completar el registro</div>
+          </div>
+          <a href="${enlaceConRastreo}" target="_blank" onclick="sumarPuntosAutomaticos()">Ir a Oferta</a>
+        </div>
+      `;
     }
 
-    function volverAlLoginDesdeAdmin() {
-      if(localStorage.getItem('macacoin_sesion_activa') === 'true') {
-        mostrarPanelUsuario();
-      } else {
-        document.getElementById('adminSection').classList.add('hidden');
-        document.getElementById('loginSection').classList.remove('hidden');
-      }
-    }
-
-    function guardarPlataformasAdmin() {
-      for(let i=1; i<=5; i++) {
-        let nameVal = document.getElementById('adminName'+i).value.trim();
-        let urlVal = document.getElementById('adminUrl'+i).value.trim();
-       
-        localStorage.setItem('macacoin_name_plat'+i, nameVal);
-        localStorage.setItem('macacoin_url_plat'+i, urlVal);
-      }
-      alert("✅ ¡Plataformas actualizadas con éxito!");
-      cargarAdminDatos();
-    }
-
-    function cargarAdminDatos() {
-      for(let i=1; i<=5; i++) {
-        let nameVal = localStorage.getItem('macacoin_name_plat'+i) || ('Plataforma ' + i);
-        let urlVal = localStorage.getItem('macacoin_url_plat'+i) || "";
-       
-        let nameInput = document.getElementById('adminName'+i);
-        let urlInput = document.getElementById('adminUrl'+i);
-       
-        if(nameInput) nameInput.value = nameVal;
-        if(urlInput) urlInput.value = urlVal;
-      }
-
-      let contenedor = document.getElementById('listaUsuariosAdmin');
-      let lista = JSON.parse(localStorage.getItem('macacoin_lista_usuarios')) || [];
-     
-      let nombreActual = localStorage.getItem('macacoin_nombre');
-      if(nombreActual) {
-        let correoActual = localStorage.getItem('macacoin_correo');
-        let monedasActuales = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-        let existe = lista.find(u => u.correo === correoActual);
-        if(!existe) {
-          lista.push({nombre: nombreActual, correo: correoActual, monedas: monedasActuales});
-        } else {
-          existe.monedas = monedasActuales;
-        }
-        localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
-      }
-
-      if(lista.length === 0) {
-        contenedor.innerHTML = "No hay usuarios registrados todavía.";
-      } else {
-        let html = "";
-        lista.forEach((u, index) => {
-          html += `<div style="border-bottom: 1px solid #1f2947; padding: 4px 0;">
-            <b>#${index+1}</b> ${u.nombre} (${u.correo})<br>
-            💰 Puntos: <b>${u.monedas || 0}</b>
-          </div>`;
-        });
-        contenedor.innerHTML = html;
-      }
-    }
-
-    function actualizarListaUsuariosAdminGeneral(nombre, correo, monedas) {
-      let lista = JSON.parse(localStorage.getItem('macacoin_lista_usuarios')) || [];
-      let index = lista.findIndex(u => u.correo === correo);
-      if(index >= 0) {
-        lista[index].nombre = nombre;
-        lista[index].monedas = monedas;
-      } else {
-        lista.push({nombre: nombre, correo: correo, monedas: monedas});
-      }
-      localStorage.setItem('macacoin_lista_usuarios', JSON.stringify(lista));
-    }
-
-    function renderizarPlataformasUsuario() {
-      let grid = document.getElementById('userPlatformsGrid');
-      let html = '';
-
-      for(let i=1; i<=5; i++) {
-        let name = localStorage.getItem('macacoin_name_plat'+i);
-        let url = localStorage.getItem('macacoin_url_plat'+i);
-
-        if(!name || name === "") {
-          name = "Plataforma " + i;
-        }
-
-        if(url && url !== "") {
-          let linkFinal = url;
-          if(!linkFinal.startsWith('http://') && !linkFinal.startsWith('https://')) {
-            linkFinal = 'https://' + linkFinal;
-          }
-          html += `
-            <div class="platform-card">
-              <div style="font-size: 12px; font-weight: bold; color: #46e0da; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
-              <a href="${linkFinal}" target="_blank">Abrir</a>
-            </div>
-          `;
-        }
-      }
-     
-      if(html === "") {
-        html = '<div style="color: #aaa; text-align: center; padding: 15px; grid-column: 1 / -1; font-size: 12px;">No hay plataformas activas. Configúralas desde el panel de administración.</div>';
-      }
-
-      grid.innerHTML = html;
-    }
-
-    function actualizarBarraMonedas() {
+    function sumarPuntosAutomaticos() {
       let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-      document.getElementById('lblMonedas').innerText = monedas;
-
-      // Cada bloque de 5,000 puntos representa $1 dólar (hasta 50,000 pts / $10)
-      let dolares = Math.floor(monedas / 5000);
-      let dolaresRestantesVisuales = dolares > 0 ? dolares : 1;
-      if(dolaresRestantesVisuales > 10) dolaresRestantesVisuales = 10;
+      monedas += PUNTOS_POR_CLIC;
+      if(monedas > 50000) monedas = 50000; // Tope máximo de 50,000 puntos
      
-      let metaActual = dolaresRestantesVisuales * 5000;
-     
-      document.getElementById('lblMetaActual').innerText = metaActual.toLocaleString();
-      document.getElementById('lblDolaresRetiro').innerText = dolaresRestantesVisuales;
+      localStorage.setItem('macacoin_monedas', monedas);
+      actualizarBarraYMetas();
+    }
 
-      // Progreso porcentual hacia la meta actual de retiro
-      let puntosEnCiclo = monedas % 5000;
-      if (monedas > 0 && puntosEnCiclo === 0 && monedas <= 50000) {
-        puntosEnCiclo = 5000; // Si completa exacto el múltiplo
-      }
-      let pct = (puntosEnCiclo / 5000) * 100;
-      if(pct > 100) pct = 100;
+    function actualizarBarraYMetas() {
+      let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
+      document.getElementById('lblMonedas').innerText = monedas.toLocaleString();
+
+      // Cálculo dinámico para la barra en bloques de 5,000 en 5,000
+      let bloqueActual = Math.floor(monedas / 5000);
+      let metaVisual = (bloqueActual + 1) * 5000;
+      if(metaVisual > 50000) metaVisual = 50000;
+      if(metaVisual < 5000) metaVisual = 5000;
+
+      let dolaresValor = Math.floor(metaVisual / 5000);
+
+      document.getElementById('lblMetaBarra').innerText = metaVisual.toLocaleString();
+      document.getElementById('lblDolaresValor').innerText = dolaresValor;
+
+      let puntosEnProgreso = monedas % 5000;
+      if(monedas > 0 && puntosEnProgreso === 0) puntosEnProgreso = 5000; // Si completa exacto el bloque
+
+      let pct = (puntosEnProgreso / 5000) * 100;
+      if(monedas >= 50000) pct = 100;
+     
       document.getElementById('barraProgreso').style.width = pct + "%";
     }
 
-    function reclamarPremio() {
+    function reclamarRetiro() {
       let monedas = parseInt(localStorage.getItem('macacoin_monedas')) || 0;
-     
-      // Validar si tiene al menos el mínimo de retiro ($1 = 5,000 puntos)
+
       if(monedas >= 5000) {
-        let dolaresAretirar = Math.floor(monedas / 5000);
-        if(dolaresAretirar > 10) dolaresAretirar = 10; // Tope máximo de $10 por tanda
-        let puntosDescontar = dolaresAretirar * 5000;
+        // Calcula cuántos bloques de 5,000 tiene acumulados (ej: 5k, 10k, 15k... hasta 50k)
+        let bloquesParaRetirar = Math.floor(monedas / 5000);
+        let puntosARetirar = bloquesParaRetirar * 5000;
+        let dolaresCobrados = bloquesParaRetirar; // 5k = $1, 10k = $2, etc.
 
-        alert(`🎉 ¡Felicitaciones! Has solicitado un retiro de $${dolaresAretirar} (${puntosDescontar.toLocaleString()} puntos).`);
+        alert(`🎉 ¡Retiro exitoso! Has cobrado $${dolaresCobrados} USD (${puntosARetirar.toLocaleString()} puntos).`);
        
-        // Descontamos los puntos cobrados y la barra vuelve a cero (o al sobrante)
-        monedas -= puntosDescontar;
-        localStorage.setItem('macacoin_monedas', monedas);
-     
-        let correoActual = localStorage.getItem('macacoin_correo');
-        let nombreActual = localStorage.getItem('macacoin_nombre');
-        if(correoActual) {
-          actualizarListaUsuariosAdminGeneral(nombreActual, correoActual, monedas);
-        }
-
-        actualizarBarraMonedas();
+        // LA BARRA VUELVE A CERO O RESIDUO AUTOMÁTICAMENTE
+        let puntosSobrantes = monedas % 5000;
+        localStorage.setItem('macacoin_monedas', puntosSobrantes);
+       
+        actualizarBarraYMetas();
       } else {
-        alert("⚠️ Necesitas al menos 5,000 puntos ($1.00) para poder realizar un retiro.");
+        alert("⚠️ Necesitas acumular al menos 5,000 puntos para poder realizar un retiro.");
       }
     }
   </script>
 
 </body>
 </html>
-
- 
