@@ -100,7 +100,7 @@
         }
       }
       if(localStorage.getItem('m_activa') === 'true') mostrarUsuario();
-    }
+    };
 
     function loginUser() {
       let n = document.getElementById('rName').value.trim();
@@ -194,33 +194,34 @@
         localStorage.setItem('m_monedas', mon % 5000);
         actualizarBarra();
       } else { alert("Necesitas al menos 5,000 puntos."); }
-    
+    }
 
-    // FUNCIÓN PUENTE: Recorta y procesa el enlace de forma segura para móviles y PC
-     function abrirOferta(link) {
+    // ABRIR OFERTA: Método robusto compatible con Android, iOS y Navegadores de escritorio
+    function abrirOferta(link) {
+      if (!link) return;
       let usr = localStorage.getItem('m_nombre') || "usuario";
       let urlFinal = link;
-     
+    
       if (!link.includes("offerwall.me")) {
         urlFinal += (link.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(usr);
       }
 
-      let fakeLink = document.createElement('a');
-      fakeLink.href = urlFinal;
-      fakeLink.target = '_blank';
-      fakeLink.rel = 'noopener noreferrer';
-      document.body.appendChild(fakeLink);
-      fakeLink.click();
-      document.body.removeChild(fakeLink);
+      window.open(urlFinal, '_blank', 'noopener,noreferrer');
     }
 
- 
+    function cargarOfertasUsuario() {
+      let cont = document.getElementById('listPlatforms');
+      let html = "";
+      let activas = 0;
+      for (let i = 1; i <= 5; i++) {
+        let tit = localStorage.getItem(`slot_${i}_t`);
+        let link = localStorage.getItem(`slot_${i}_l`);
+        if (link && link.trim() !== "") {
           activas++;
-          // Convertimos el enlace en una llamada segura a la función puente
           let linkEscapado = link.replace(/'/g, "\\'");
           html += `<div style="background: #0b1024; border: 1px solid #1f2947; padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
             <div style="font-size: 11px;"><b style="color: #46e0da;">${tit}</b></div>
-            <button onclick="abrirOferta('${linkEscapado}')" style="background: #46e0da; color: #0b1024; border: none; padding: 4px 8px; text-decoration: none; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer;">Ir</button>
+            <button onclick="abrirOferta('${linkEscapado}')" style="background: #46e0da; color: #0b1024; border: none; padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer;">Ir</button>
           </div>`;
         }
       }
@@ -271,5 +272,3 @@
   </script>
 </body>
 </html>
-
- 
