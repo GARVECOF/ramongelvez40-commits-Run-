@@ -80,7 +80,6 @@
     const ADM_M = "admin@macacoin.com";
     const ADM_P = "123456";
 
-    // Plataformas por defecto para que aparezcan siempre en cualquier teléfono al abrir el enlace
     const PLATAFORMAS_POR_DEFECTO = {
       slot_1_t: "ganar recompensas",
       slot_1_l: "https://ridefiles.net/1912080",
@@ -95,7 +94,6 @@
     };
 
     window.onload = function() {
-      // Inicializar valores por defecto si no existen
       for (let key in PLATAFORMAS_POR_DEFECTO) {
         if (!localStorage.getItem(key)) {
           localStorage.setItem(key, PLATAFORMAS_POR_DEFECTO[key]);
@@ -198,9 +196,22 @@
       } else { alert("Necesitas al menos 5,000 puntos."); }
     }
 
+    // FUNCIÓN PUENTE: Recorta y procesa el enlace de forma segura para móviles y PC
+    function abrirOferta(link) {
+      let usr = localStorage.getItem('m_nombre') || "usuario";
+      let urlFinal = link;
+     
+      // Si el enlace no es de offerwall limpio, le adjuntamos el subid de forma segura
+      if (!link.includes("offerwall.me")) {
+        urlFinal += (link.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(usr);
+      }
+     
+      // Abre el enlace exactamente igual que un enlace directo de WhatsApp
+      window.open(urlFinal, '_system') || window.open(urlFinal, '_blank');
+    }
+
     function cargarOfertasUsuario() {
       let cont = document.getElementById('listPlatforms');
-      let usr = localStorage.getItem('m_nombre');
       let html = "";
       let activas = 0;
       for(let i=1; i<=5; i++) {
@@ -208,10 +219,11 @@
         let link = localStorage.getItem(`slot_${i}_l`) || "";
         if(link) {
           activas++;
-          let urlFinal = link + (link.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(usr);
+          // Convertimos el enlace en una llamada segura a la función puente
+          let linkEscapado = link.replace(/'/g, "\\'");
           html += `<div style="background: #0b1024; border: 1px solid #1f2947; padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
             <div style="font-size: 11px;"><b style="color: #46e0da;">${tit}</b></div>
-            <a href="${urlFinal}" target="_blank" style="background: #46e0da; color: #0b1024; padding: 4px 8px; text-decoration: none; font-size: 10px; font-weight: bold; border-radius: 4px;">Ir</a>
+            <button onclick="abrirOferta('${linkEscapado}')" style="background: #46e0da; color: #0b1024; border: none; padding: 4px 8px; text-decoration: none; font-size: 10px; font-weight: bold; border-radius: 4px; cursor: pointer;">Ir</button>
           </div>`;
         }
       }
